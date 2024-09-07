@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+    const a = await auth();
+
     return (
         <main>
-            Formless <Button>Button</Button>
+            userRole: {a?.user.role} <Button>Button</Button>
         </main>
     );
 }
