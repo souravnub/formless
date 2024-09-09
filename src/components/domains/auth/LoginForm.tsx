@@ -16,10 +16,10 @@ const LoginForm = () => {
     async function handleLoginFormAction(e: FormEvent) {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
-        const name = formData.get("name") as string | undefined;
+        const email = formData.get("email") as string | undefined;
         const password = formData.get("password") as string | undefined;
 
-        if (!name || !password) {
+        if (!email || !password) {
             return toast({
                 variant: "destructive",
                 title: "Invalid inputs",
@@ -28,7 +28,7 @@ const LoginForm = () => {
         }
         setIsLoading(true);
         const res = await signIn("credentials", {
-            name,
+            email,
             password,
             redirect: false,
         });
@@ -50,8 +50,8 @@ const LoginForm = () => {
             className="grid w-full items-center gap-4"
             onSubmit={handleLoginFormAction}>
             <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" />
+                <Label htmlFor="email">Email</Label>
+                <Input id="name" name="email" />
             </div>
             <div>
                 <Label htmlFor="password">Password</Label>
