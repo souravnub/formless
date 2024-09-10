@@ -2,7 +2,6 @@ import NextAuth, { Session } from "next-auth";
 import bcrypt from "bcryptjs";
 import credentials from "next-auth/providers/credentials";
 import prisma from "@/db";
-import { JWT } from "next-auth/jwt";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
