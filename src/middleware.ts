@@ -11,6 +11,25 @@ export default auth((req) => {
     if (req.auth && req.nextUrl.pathname == "/login") {
         return Response.redirect(req.nextUrl.origin);
     }
+
+    if (req.auth) {
+        const pathElements = req.nextUrl.pathname.split("/");
+        const userRole = req.auth.user.role;
+
+        const notFoundRoute = new URL("/not-found", req.nextUrl.origin);
+        const isProtectedRoute =
+            pathElements.includes("admin") ||
+            pathElements.includes("supervisor") ||
+            pathElements.includes("user");
+
+        // trying to access a protected route && accessing a page which shouldn't be accessed by the current role :: redirect to a not found page
+        if (
+            isProtectedRoute &&
+            !pathElements.includes(userRole.toLowerCase())
+        ) {
+            return Response.redirect(notFoundRoute);
+        }
+    }
 });
 
 export const config = {
