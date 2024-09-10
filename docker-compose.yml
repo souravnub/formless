@@ -1,0 +1,17 @@
+services:
+    db:
+        image: postgres:9.6
+        container_name: formless-database
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: formless
+
+        ports:
+            - 3000:5432
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data:
