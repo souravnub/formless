@@ -6,7 +6,7 @@ export default async function Home() {
 
     return (
         <main>
-            userRole: {a?.user.role} <Button>Button</Button>
+            userRole: {a?.user.role} <Button>Wallahi</Button>
         </main>
     );
 }

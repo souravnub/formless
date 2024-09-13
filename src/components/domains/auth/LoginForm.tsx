@@ -38,7 +38,7 @@ const LoginForm = () => {
                 variant: "destructive",
                 title: "Invalid Credentials",
                 description:
-                    "The credentails provided were in-correct. Please Try with valid credentials",
+                    "The credentials provided were incorrect. Please Try with valid credentials",
             });
         }
 
