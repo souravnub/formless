@@ -1,5 +1,6 @@
 
 import React, { FormEvent, useState } from "react";
+// will need for later
 import {
   Menubar,
   MenubarContent,
@@ -12,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+// will need for data
 import {
   Card,
   CardDescription,
@@ -21,6 +23,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { DashChart } from "@/components/dashchart";
+import { LogoutButton } from "@/components/LogoutButton";
 
 export default async function AdminDashboard() {
   const a = await auth();
@@ -42,7 +45,7 @@ export default async function AdminDashboard() {
             </Menubar>
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">{a?.user.name}</span>
-              <Button>Logout</Button>
+              <LogoutButton/>
             </div>
           </header>
 
