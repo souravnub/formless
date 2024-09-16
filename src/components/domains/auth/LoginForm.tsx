@@ -4,14 +4,17 @@ import React, { FormEvent, useState } from "react";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
+
+import {auth} from "@/lib/auth";
 
 const LoginForm = () => {
     const { toast } = useToast();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const { data: session } = useSession();
 
     async function handleLoginFormAction(e: FormEvent) {
         e.preventDefault();
@@ -38,11 +41,17 @@ const LoginForm = () => {
                 variant: "destructive",
                 title: "Invalid Credentials",
                 description:
-                    "The credentails provided were in-correct. Please Try with valid credentials",
+                    "The credentials provided were incorrect. Please Try with valid credentials",
             });
         }
 
-        router.push("/");
+        if (session?.user.role === "ADMIN") {
+            return router.push("/admin/");
+        } else if (session?.user.role === "SUPERVISOR") {
+            return router.push("/supervisor/");
+        } else if (session?.user.role === "USER") {
+            return router.push("/user/");
+        }
     }
 
     return (

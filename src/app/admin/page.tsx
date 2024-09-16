@@ -22,10 +22,10 @@ import {
   CardFooter,
   CardContent,
 } from "@/components/ui/card";
+import { DashChart } from "@/components/dashchart";
 import { LogoutButton } from "@/components/LogoutButton";
-import { UserTable } from "@/components/userTable";
 
-export default async function UserDashboard() {
+export default async function AdminDashboard() {
   const a = await auth();
   return (
     <main className="flex flex-col min-h-screen">
@@ -37,8 +37,10 @@ export default async function UserDashboard() {
             <Menubar>
               <MenubarMenu>
                 <MenubarTrigger>Overview</MenubarTrigger>
+                <MenubarTrigger>Users</MenubarTrigger>
                 <MenubarTrigger>Forms</MenubarTrigger>
                 <MenubarTrigger>Submissions</MenubarTrigger>
+                <MenubarTrigger>Reports</MenubarTrigger>
               </MenubarMenu>
             </Menubar>
             <div className="flex items-center space-x-4">
@@ -51,12 +53,13 @@ export default async function UserDashboard() {
           <div className="flex-1 p-6 bg-gray-100">
             <div className="container mx-auto">
               <h2 className="text-2xl font-bold mb-4">
-                Welcome {a?.user.name}! Here's what's on the menu for today.
+                Welcome {a?.user.name} what would you like to do today?
               </h2>
               <Tabs defaultValue="overview" className="">
                 <TabsList>
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="users">Forms</TabsTrigger>
+                  <TabsTrigger value="users">Users</TabsTrigger>
+                  <TabsTrigger value="forms">Forms</TabsTrigger>
                   <TabsTrigger value="submissions">Submissions</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview">
@@ -69,52 +72,65 @@ export default async function UserDashboard() {
                       <div className="flex flex-row">
                         <Card className="m-2 min-w-[300px]">
                           <CardHeader>
-                            <CardTitle>Form X Name</CardTitle>
+                            <CardTitle>Submissions</CardTitle>
                           </CardHeader>
                           <CardContent>
                             <p>
-                              Form X has not been Submitted yet. Please submit
+                              Currently X/Y users have not submitted forms today
                             </p>
                           </CardContent>
                           <CardFooter>
-                            <Button>Go To Form</Button>
+                            <Button>View Submissions</Button>
                           </CardFooter>
                         </Card>
 
                         <Card className="m-2 min-w-[300px]">
                           <CardHeader>
-                            <CardTitle>Form Y Name</CardTitle>
+                            <CardTitle>Form Usage</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <p>Form Y has been submitted at (Timestamp)</p>
+                            <p>The most used form this month is X</p>
                           </CardContent>
                           <CardFooter>
-                            <Button>View/Edit Submission</Button>
+                            <Button>View Form</Button>
                           </CardFooter>
                         </Card>
                         {/* Form Issues*/}
                         <Card className="m-2 min-w-[300px]">
                           <CardHeader>
-                            <CardTitle>Form Issue</CardTitle>
+                            <CardTitle>Form Issues</CardTitle>
                           </CardHeader>
                           <CardContent>
                             <p>
-                              There is an issue with Form Z. Please review your submission.
+                              The form with the most revisions and resubmissions
+                              is X
                             </p>
                           </CardContent>
                           <CardFooter>
-                            <Button>View Submission</Button>
+                            <Button>View Form</Button>
+                          </CardFooter>
+                        </Card>
+                        {/* User Account Requests*/}
+                        <Card className="m-2 min-w-[300px]">
+                          <CardHeader>
+                            <CardTitle>User Request </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p>There are X requests to create an account</p>
+                          </CardContent>
+                          <CardFooter>
+                            <Button>View Requests</Button>
                           </CardFooter>
                         </Card>
                       </div>
-                      {/*Forms for Today*/}
+                      {/* Form Metrics Chart*/}
                       <div className="flex flex-row">
                         <Card className="flex-grow">
                           <CardHeader>
-                            <CardTitle>Forms Due Today</CardTitle>
+                            <CardTitle>Form Metrics</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <UserTable />
+                            <DashChart />
                           </CardContent>
                         </Card>
                       </div>
