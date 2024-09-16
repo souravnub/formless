@@ -2,7 +2,9 @@
 
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
+import { $Enums } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { CreateUserInput, SearchUsersRes } from "./types";
 
 const fieldsWithoutPassword = {
     email: true,
@@ -116,7 +118,7 @@ export const getUser = async (userId: string) => {
     }
 };
 
-export const searchUsers = async (query: string) => {
+export const searchUsers = async (query: string): Promise<SearchUsersRes> => {
     const session = await auth();
 
     if (!session || session.user.role !== "ADMIN") {
@@ -142,10 +144,3 @@ export const searchUsers = async (query: string) => {
         };
     }
 };
-
-interface CreateUserInput {
-    name: string;
-    email: string;
-    role: "USER" | "SUPERVISOR";
-    password: string;
-}
