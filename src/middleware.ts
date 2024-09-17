@@ -22,6 +22,15 @@ export default auth((req) => {
             pathElements.includes("supervisor") ||
             pathElements.includes("user");
 
+        // trying to access homepage then redirect to respective dashboard
+        if (req.nextUrl.pathname === "/") {
+            const dashboardRoute = new URL(
+                `/${userRole.toLowerCase()}`,
+                req.nextUrl.origin
+            );
+            return Response.redirect(dashboardRoute);
+        }
+
         // trying to access a protected route && accessing a page which shouldn't be accessed by the current role :: redirect to a not found page
         if (
             isProtectedRoute &&
