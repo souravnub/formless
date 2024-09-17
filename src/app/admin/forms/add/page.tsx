@@ -8,35 +8,36 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { PlusIcon } from "@radix-ui/react-icons";
-import React, { FormEvent, useEffect, useState } from "react";
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { FormEvent, useState } from "react";
 
 import Form from "@rjsf/semantic-ui";
-import { RJSFSchema } from "@rjsf/utils";
+import { StrictRJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 
 const AddFormPage = () => {
-    const [fieldsState, setFieldsState] = useState<RJSFSchema>({
-        properties: {},
-    });
+    const [formTitle, setFormTitle] = useState("");
+    const [formDescription, setFormDescription] = useState("");
+
+    const [propertiesArr, setPropertiesArr] = useState<
+        StrictRJSFSchema["properties"][]
+    >([]);
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
 
     function handleCreateInputText(e: FormEvent) {
@@ -44,29 +45,17 @@ const AddFormPage = () => {
         setIsInputDialogOpen(false);
 
         const formData = new FormData(e.target as HTMLFormElement);
+
         const inputData = Object.fromEntries(formData);
+        const data: StrictRJSFSchema["properties"] = {};
+        data[inputData.title as string] = {
+            type: "string",
+            title: inputData.title as string,
+            default: inputData.defaultValue as string,
+        };
 
-        setFieldsState((prev) => {
-            const newState: RJSFSchema = {
-                ...prev,
-                properties: {
-                    ...prev.properties,
-                },
-            };
-            if (newState.properties) {
-                newState.properties[inputData.title as string] = {
-                    default: (inputData.defaultValue as string) || "",
-                    type: "string",
-                };
-                console.log("newState", newState);
-                return { ...newState };
-            }
-        });
+        setPropertiesArr((prev) => [...prev, data]);
     }
-
-    useEffect(() => {
-        console.log(fieldsState);
-    }, [fieldsState]);
 
     return (
         <div className="container">
@@ -85,12 +74,7 @@ const AddFormPage = () => {
                         <Label htmlFor="title">Title</Label>
                         <Input
                             id="title"
-                            onChange={(e) =>
-                                setFieldsState((prev) => ({
-                                    ...prev,
-                                    title: e.target.value,
-                                }))
-                            }
+                            onChange={(e) => setFormTitle(e.target.value)}
                         />
                     </div>
 
@@ -98,12 +82,7 @@ const AddFormPage = () => {
                         <Label htmlFor="desc">Description</Label>
                         <Textarea
                             id="desc"
-                            onChange={(e) =>
-                                setFieldsState((prev) => ({
-                                    ...prev,
-                                    description: e.target.value,
-                                }))
-                            }
+                            onChange={(e) => setFormDescription(e.target.value)}
                         />
                     </div>
 
@@ -117,18 +96,44 @@ const AddFormPage = () => {
                         </CardHeader>
 
                         <CardContent>
-                            {fieldsState.properties &&
-                                Object.keys(fieldsState.properties).map(
-                                    (prop) => {
-                                        return (
-                                            <span>{JSON.stringify(prop)}</span>
-                                        );
-                                    }
-                                )}
+                            <div className="flex flex-col gap-2">
+                                {propertiesArr.map((prop, idx) => {
+                                    return (
+                                        <div className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
+                                            <span>
+                                                {prop &&
+                                                    JSON.stringify(
+                                                        (
+                                                            Object.values(
+                                                                prop
+                                                            )[0] as StrictRJSFSchema
+                                                        ).title
+                                                    )}
+                                            </span>
+                                            <Button
+                                                type="button"
+                                                variant={"destructive"}
+                                                className="p-2 px-3 h-auto"
+                                                onClick={() =>
+                                                    setPropertiesArr((prev) =>
+                                                        prev.filter(
+                                                            (
+                                                                currProp,
+                                                                currIdx
+                                                            ) => currIdx !== idx
+                                                        )
+                                                    )
+                                                }>
+                                                <TrashIcon />
+                                            </Button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button className="px-8">
+                                    <Button className="px-8 mt-4">
                                         <PlusIcon />
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -152,7 +157,15 @@ const AddFormPage = () => {
 
                 <div className="border-l pl-5">
                     <h2 className="text-lg ">Form Preview</h2>
-                    <Form schema={fieldsState} validator={validator} />
+                    <Form
+                        schema={{
+                            title: formTitle,
+                            description: formDescription,
+
+                            properties: Object.assign({}, ...propertiesArr), // to flatten array of obejcts into single object,
+                        }}
+                        validator={validator}
+                    />
                 </div>
             </div>
 
