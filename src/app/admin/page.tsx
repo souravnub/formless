@@ -11,10 +11,9 @@ import {
 
 export default async function AdminDashboard() {
     return (
-        <div className="bg-accent/60 p-2">
+        <div className=" p-2">
             <div className="container mx-auto space-y-2">
                 <CustomBreadcrumb
-                    className="my-4"
                     list={[
                         { name: "dashboard", href: "/admin" },
                         { name: "overview", href: "/admin" },
@@ -22,7 +21,7 @@ export default async function AdminDashboard() {
                 />
 
                 <div className="flex gap-2 flex-row flex-wrap">
-                    <Card className="flex-1 min-w-64">
+                    <Card className="flex-1 min-w-64 bg-accent/30">
                         <CardHeader>
                             <CardTitle>Submissions</CardTitle>
                         </CardHeader>
@@ -37,7 +36,7 @@ export default async function AdminDashboard() {
                         </CardFooter>
                     </Card>
 
-                    <Card className="flex-1 min-w-64">
+                    <Card className="flex-1 min-w-64 bg-accent/30">
                         <CardHeader>
                             <CardTitle>Form Usage</CardTitle>
                         </CardHeader>
@@ -49,7 +48,7 @@ export default async function AdminDashboard() {
                         </CardFooter>
                     </Card>
                     {/* Form Issues*/}
-                    <Card className="flex-1 min-w-64">
+                    <Card className="flex-1 min-w-64 bg-accent/30">
                         <CardHeader>
                             <CardTitle>Form Issues</CardTitle>
                         </CardHeader>
@@ -64,7 +63,7 @@ export default async function AdminDashboard() {
                         </CardFooter>
                     </Card>
                     {/* User Account Requests*/}
-                    <Card className="flex-1 min-w-64">
+                    <Card className="flex-1 min-w-64 bg-accent/30">
                         <CardHeader>
                             <CardTitle>User Request </CardTitle>
                         </CardHeader>
@@ -77,7 +76,7 @@ export default async function AdminDashboard() {
                     </Card>
                 </div>
                 {/* Form Metrics Chart*/}
-                <Card>
+                <Card className="bg-accent/30">
                     <CardHeader>
                         <CardTitle>Form Metrics</CardTitle>
                     </CardHeader>

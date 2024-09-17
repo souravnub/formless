@@ -10,33 +10,28 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { cn } from "@/lib/utils";
 
 type Breadcrumb = { href: string; name: string };
 type CustomBreadcrumbProps = { list: Breadcrumb[]; className?: string };
 
 const CustomBreadcrumb = ({ list, className }: CustomBreadcrumbProps) => {
     return (
-        <Breadcrumb className={className}>
+        <Breadcrumb className={cn(className, "my-3")}>
             <BreadcrumbList className="capitalize">
                 {list.map((crumb, idx) => (
-                    <>
+                    <BreadcrumbItem key={crumb.name}>
                         {idx === list.length - 1 ? (
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
-                            </BreadcrumbItem>
+                            <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
                         ) : (
                             <>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink href={crumb.href}>
-                                        {crumb.name}
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator>
-                                    <SlashIcon />
-                                </BreadcrumbSeparator>
+                                <BreadcrumbLink href={crumb.href}>
+                                    {crumb.name}
+                                </BreadcrumbLink>
+                                <SlashIcon />
                             </>
                         )}
-                    </>
+                    </BreadcrumbItem>
                 ))}
             </BreadcrumbList>
         </Breadcrumb>
