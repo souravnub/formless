@@ -30,29 +30,50 @@ import { FormEvent, useState } from "react";
 import Form from "@rjsf/semantic-ui";
 import { StrictRJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import "./formPreview.css";
 
 const AddFormPage = () => {
     const [formTitle, setFormTitle] = useState("");
     const [formDescription, setFormDescription] = useState("");
+    const [formRequiredFields, setFormRequiredFields] = useState<string[]>([]);
 
     const [propertiesArr, setPropertiesArr] = useState<
         StrictRJSFSchema["properties"][]
     >([]);
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
 
+    const { toast } = useToast();
+
     function handleCreateInputText(e: FormEvent) {
         e.preventDefault();
-        setIsInputDialogOpen(false);
 
         const formData = new FormData(e.target as HTMLFormElement);
 
         const inputData = Object.fromEntries(formData);
+
+        if (!inputData.title) {
+            return toast({
+                variant: "destructive",
+                description: "Title for the field is requierd",
+            });
+        }
+
+        setIsInputDialogOpen(false);
         const data: StrictRJSFSchema["properties"] = {};
         data[inputData.title as string] = {
             type: "string",
             title: inputData.title as string,
             default: inputData.defaultValue as string,
         };
+
+        if (inputData.required) {
+            setFormRequiredFields((prev) => [
+                ...prev,
+                inputData.title as string,
+            ]);
+        }
 
         setPropertiesArr((prev) => [...prev, data]);
     }
@@ -158,14 +179,16 @@ const AddFormPage = () => {
                 <div className="border-l pl-5">
                     <h2 className="text-lg ">Form Preview</h2>
                     <Form
+                        className="preview-form space-y-3"
                         schema={{
                             title: formTitle,
                             description: formDescription,
-
+                            required: formRequiredFields,
                             properties: Object.assign({}, ...propertiesArr), // to flatten array of obejcts into single object,
                         }}
-                        validator={validator}
-                    />
+                        validator={validator}>
+                        <Button>Submit</Button>
+                    </Form>
                 </div>
             </div>
 
@@ -195,6 +218,10 @@ const AddFormPage = () => {
                                     id="defaultVal"
                                     className="col-span-3"
                                 />
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <Label htmlFor="required">Required</Label>
+                                <Checkbox name="required" id="required" />
                             </div>
                         </div>
 
