@@ -8,13 +8,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -27,26 +21,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { FormEvent, useState } from "react";
 
+import { useToast } from "@/hooks/use-toast";
 import Form from "@rjsf/semantic-ui";
 import { StrictRJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
 import "./formPreview.css";
+import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
+import { useJsonForm } from "@/hooks/use-json-form";
 
 const AddFormPage = () => {
-    const [formTitle, setFormTitle] = useState("");
-    const [formDescription, setFormDescription] = useState("");
-    const [formRequiredFields, setFormRequiredFields] = useState<string[]>([]);
+    const { toast } = useToast();
+    const { propertiesArr, addField, requiredFields, removeField } =
+        useJsonForm();
 
-    const [propertiesArr, setPropertiesArr] = useState<
-        StrictRJSFSchema["properties"][]
-    >([]);
+    const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({});
+
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
 
-    const { toast } = useToast();
-
-    function handleCreateInputText(e: FormEvent) {
+    function onCreateTextInput(e: FormEvent) {
         e.preventDefault();
 
         const formData = new FormData(e.target as HTMLFormElement);
@@ -61,21 +53,9 @@ const AddFormPage = () => {
         }
 
         setIsInputDialogOpen(false);
-        const data: StrictRJSFSchema["properties"] = {};
-        data[inputData.title as string] = {
-            type: "string",
-            title: inputData.title as string,
-            default: inputData.defaultValue as string,
-        };
 
-        if (inputData.required) {
-            setFormRequiredFields((prev) => [
-                ...prev,
-                inputData.title as string,
-            ]);
-        }
-
-        setPropertiesArr((prev) => [...prev, data]);
+        const isRequired = inputData.required ? true : false;
+        addField({ ...inputData, type: "string" }, isRequired);
     }
 
     return (
@@ -95,7 +75,12 @@ const AddFormPage = () => {
                         <Label htmlFor="title">Title</Label>
                         <Input
                             id="title"
-                            onChange={(e) => setFormTitle(e.target.value)}
+                            onChange={(e) =>
+                                setRJSFState((prev) => ({
+                                    ...prev,
+                                    title: e.target.value,
+                                }))
+                            }
                         />
                     </div>
 
@@ -103,7 +88,12 @@ const AddFormPage = () => {
                         <Label htmlFor="desc">Description</Label>
                         <Textarea
                             id="desc"
-                            onChange={(e) => setFormDescription(e.target.value)}
+                            onChange={(e) =>
+                                setRJSFState((prev) => ({
+                                    ...prev,
+                                    description: e.target.value,
+                                }))
+                            }
                         />
                     </div>
 
@@ -136,14 +126,7 @@ const AddFormPage = () => {
                                                 variant={"destructive"}
                                                 className="p-2 px-3 h-auto"
                                                 onClick={() =>
-                                                    setPropertiesArr((prev) =>
-                                                        prev.filter(
-                                                            (
-                                                                currProp,
-                                                                currIdx
-                                                            ) => currIdx !== idx
-                                                        )
-                                                    )
+                                                    removeField(idx)
                                                 }>
                                                 <TrashIcon />
                                             </Button>
@@ -169,7 +152,9 @@ const AddFormPage = () => {
                                     <DropdownMenuItem>
                                         Checkbox
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>Radio</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        Selectbox
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </CardContent>
@@ -181,10 +166,9 @@ const AddFormPage = () => {
                     <Form
                         className="preview-form space-y-3"
                         schema={{
-                            title: formTitle,
-                            description: formDescription,
-                            required: formRequiredFields,
-                            properties: Object.assign({}, ...propertiesArr), // to flatten array of obejcts into single object,
+                            ...RJSFState,
+                            required: requiredFields,
+                            properties: Object.assign({}, ...propertiesArr),
                         }}
                         validator={validator}>
                         <Button>Submit</Button>
@@ -192,45 +176,11 @@ const AddFormPage = () => {
                 </div>
             </div>
 
-            <Dialog
-                open={isInputDialogOpen}
-                onOpenChange={setIsInputDialogOpen}>
-                <DialogContent>
-                    <form onSubmit={handleCreateInputText}>
-                        <DialogHeader>
-                            <DialogTitle>Create a new text input</DialogTitle>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="textInputTitle">Title</Label>
-                                <Input
-                                    name="title"
-                                    id="textInputTitle"
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="defaultVal">
-                                    Default value
-                                </Label>
-                                <Input
-                                    name="defaultValue"
-                                    id="defaultVal"
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <Label htmlFor="required">Required</Label>
-                                <Checkbox name="required" id="required" />
-                            </div>
-                        </div>
-
-                        <DialogFooter>
-                            <Button>Create</Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            <AddTextInputDialog
+                isInputDialogOpen={isInputDialogOpen}
+                setIsInputDialogOpen={setIsInputDialogOpen}
+                onCreateTextInput={onCreateTextInput}
+            />
         </div>
     );
 };
