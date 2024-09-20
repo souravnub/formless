@@ -45,7 +45,7 @@ const submissions = [
     date: "September 18, 2024",
   },
 ];
-const UsersPage = () => {
+const SubmissionsPage = () => {
   return (
     <div className="container">
       <CustomBreadcrumb
@@ -125,4 +125,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default SubmissionsPage;
