@@ -30,6 +30,7 @@ import { FormEvent, useState } from "react";
 import Form from "@rjsf/semantic-ui";
 import { StrictRJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
+import { createForm } from "@/actions/forms";
 
 const AddFormPage = () => {
     const [formTitle, setFormTitle] = useState("");
@@ -55,6 +56,25 @@ const AddFormPage = () => {
         };
 
         setPropertiesArr((prev) => [...prev, data]);
+        
+    }
+
+    const handleSubmit = async () => {
+        
+        const formData = {
+            title: formTitle,
+            description: formDescription,
+            properties: propertiesArr.map((prop) => {
+                return {
+                    title: prop ? Object.keys(prop)[0] : "",
+                    type: prop ? (Object.values(prop)[0] as StrictRJSFSchema).type : "",
+                    default: prop ? (Object.values(prop)[0] as StrictRJSFSchema).default : "",
+                };
+            }),
+        };
+
+        const res = await createForm(formData);
+        console.log(res);
     }
 
     return (
@@ -166,6 +186,7 @@ const AddFormPage = () => {
                         }}
                         validator={validator}
                     />
+                    <Button className="mt-16" onClick={handleSubmit}>Create Form</Button>
                 </div>
             </div>
 
@@ -204,6 +225,7 @@ const AddFormPage = () => {
                     </form>
                 </DialogContent>
             </Dialog>
+            
         </div>
     );
 };
