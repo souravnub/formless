@@ -13,16 +13,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id                String          @id @default(cuid())
-  name              String
-  email             String         @unique
-  password          String
-  role              RoleType      @default(USER)
-
+  id             String           @id @default(cuid())
+  name           String
+  email          String           @unique
+  password       String
+  role           RoleType         @default(USER)
+  FormSubmission FormSubmission[]
 }
 
+model Form {
+  id          String           @id @default(cuid())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  title       String
+  description String
+  schema      Json
+  submissions FormSubmission[]
+}
+
+model FormSubmission {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  submissions Json
+  user        User     @relation(fields: [userId], references: [id])
+  form        Form     @relation(fields: [formId], references: [id])
+  formId      String
+  userId      String
+}
 
 enum RoleType {
   USER
