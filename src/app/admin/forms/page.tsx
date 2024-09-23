@@ -1,3 +1,5 @@
+"use client";
+
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,29 +12,64 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { getForms, deleteForms } from "@/actions/forms";
 
-const forms = [
-    {
-        id: 1,
-        name: "Fire Extenguisher form",
-        createdBy: "sourav",
-        submissionsCount: 4,
-    },
-    {
-        id: 2,
-        name: "PPE Safty form",
-        createdBy: "chris",
-        submissionsCount: 100,
-    },
-    {
-        id: 3,
-        name: "On Site Safety form",
-        createdBy: "elias",
-        submissionsCount: 50,
-    },
-];
 
-export default async function FormsPage() {
+
+// const forms = [
+//     {
+//         id: 1,
+//         name: "Fire Extenguisher form",
+//         createdBy: "sourav",
+//         submissionsCount: 4,
+//     },
+//     {
+//         id: 2,
+//         name: "PPE Safty form",
+//         createdBy: "chris",
+//         submissionsCount: 100,
+//     },
+//     {
+//         id: 3,
+//         name: "On Site Safety form",
+//         createdBy: "elias",
+//         submissionsCount: 50,
+//     },
+// ];
+
+export default function FormsPage() {
+    const [forms, setForms] = useState<any>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchForms = async () => {
+        const forms = await getForms();
+        setForms(forms);
+        setLoading(false);
+    };
+
+    const handleDelete = async (formId: string) => {
+        const confirmation = window.confirm("Are you sure you want to delete this form?"); // Can change this to a more stylish prompt
+
+        if(confirmation){
+            const res = await deleteForms(formId);
+            if (res.success) {
+                fetchForms();
+            } else {
+                alert(res.message);
+            }
+        } else{
+            console.log("cancelled");
+        }
+        
+        
+    }
+
+
+    useEffect(() => {
+        fetchForms();
+    }, []);
+    
     return (
         <div className="container">
             <CustomBreadcrumb
@@ -56,22 +93,22 @@ export default async function FormsPage() {
                 <TableHeader className="bg-accent/70">
                     <TableRow>
                         <TableHead className="pl-5">Name</TableHead>
-                        <TableHead>Created by</TableHead>
-                        <TableHead>Submissions</TableHead>
+                        <TableHead>Created at</TableHead>
+                        <TableHead>Description</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {forms.map(({ id, name, createdBy, submissionsCount }) => (
-                        <TableRow key={id} className="hover:bg-none!important">
+                    {forms.map((form: any) => (
+                        <TableRow key={form.id} className="hover:bg-none!important">
                             <TableCell className="font-medium pl-5">
-                                {name}
+                                {form.title}
                             </TableCell>
-                            <TableCell>{createdBy}</TableCell>
-                            <TableCell>{submissionsCount}</TableCell>
+                            <TableCell>{new Date(form.createdAt).toLocaleDateString()}</TableCell>
+                            <TableCell>{form.description}</TableCell>
                             <TableCell className="flex gap-2">
                                 <Button>Edit</Button>
-                                <Button variant={"destructive"}>Delete</Button>
+                                <Button variant={"destructive"} onClick={() => handleDelete(form.id)}>Delete</Button>
                             </TableCell>
                         </TableRow>
                     ))}
