@@ -28,6 +28,7 @@ import validator from "@rjsf/validator-ajv8";
 import "./formPreview.css";
 import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
 import { useJsonForm } from "@/hooks/use-json-form";
+import { createForm } from "@/actions/forms";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -57,6 +58,27 @@ const AddFormPage = () => {
         const isRequired = inputData.required ? true : false;
         addField({ ...inputData, type: "string" }, isRequired);
     }
+
+    const handleSubmit = async () => {
+        const formData = {
+            title: RJSFState.title,
+            description: RJSFState.description,
+            properties: propertiesArr.map((prop) => {
+                return {
+                    title: prop ? Object.keys(prop)[0] : "",
+                    type: prop
+                        ? (Object.values(prop)[0] as StrictRJSFSchema).type
+                        : "",
+                    default: prop
+                        ? (Object.values(prop)[0] as StrictRJSFSchema).default
+                        : "",
+                };
+            }),
+        };
+
+        const res = await createForm(formData);
+        console.log(res);
+    };
 
     return (
         <div className="container">
@@ -166,13 +188,16 @@ const AddFormPage = () => {
                     <Form
                         className="preview-form space-y-3"
                         schema={{
-                            ...RJSFState,
-                            required: requiredFields,
-                            properties: Object.assign({}, ...propertiesArr),
+                            title: RJSFState.title,
+                            description: RJSFState.description,
+
+                            properties: Object.assign({}, ...propertiesArr), // to flatten array of obejcts into single object,
                         }}
-                        validator={validator}>
-                        <Button>Submit</Button>
-                    </Form>
+                        validator={validator}
+                    />
+                    <Button className="mt-16" onClick={handleSubmit}>
+                        Create Form
+                    </Button>
                 </div>
             </div>
 
