@@ -30,6 +30,7 @@ import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDial
 import { useJsonForm } from "@/hooks/use-json-form";
 import { createForm } from "@/actions/forms";
 import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
+import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -41,6 +42,7 @@ const AddFormPage = () => {
 
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
+    const [isCheckboxDialogOpen, setIsCheckboxDialogOpen] = useState(false);
 
     function onCreateRadioButtons(
         e: FormEvent,
@@ -53,6 +55,19 @@ const AddFormPage = () => {
             return schema;
         });
         addField({ title, enum: radioButtons });
+    }
+
+    function onCreateCheckbox(
+        e: FormEvent,
+        { title, checkboxes }: { title: string; checkboxes: string[] }
+    ) {
+        e.preventDefault();
+        setRJSFUISchema((prev) => {
+            const schema = prev;
+            schema[title] = { "ui:widget": "CheckboxesWidget" };
+            return schema;
+        });
+        addField({ title, enum: checkboxes });
     }
 
     function onCreateTextInput(e: FormEvent) {
@@ -210,8 +225,11 @@ const AddFormPage = () => {
                                         }>
                                         Radio Buttons
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        Selectbox
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            setIsCheckboxDialogOpen(true)
+                                        }>
+                                        Checkboxes
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -248,6 +266,12 @@ const AddFormPage = () => {
                 isDialogOpen={isRadioDialogOpen}
                 setIsDialogOpen={setIsRadioDialogOpen}
                 onSubmit={onCreateRadioButtons}
+            />
+
+            <AddCheckboxDialog
+                isDialogOpen={isCheckboxDialogOpen}
+                setIsDialogOpen={setIsCheckboxDialogOpen}
+                onSubmit={onCreateCheckbox}
             />
         </div>
     );
