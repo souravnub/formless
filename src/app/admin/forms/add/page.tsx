@@ -29,6 +29,7 @@ import "./formPreview.css";
 import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
 import { useJsonForm } from "@/hooks/use-json-form";
 import { createForm } from "@/actions/forms";
+import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -38,6 +39,11 @@ const AddFormPage = () => {
     const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({});
 
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
+    const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
+
+    function onCreateRadioButtons(e: FormEvent) {
+        e.preventDefault();
+    }
 
     function onCreateTextInput(e: FormEvent) {
         e.preventDefault();
@@ -187,8 +193,11 @@ const AddFormPage = () => {
                                         }>
                                         Text Input
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        Checkbox
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            setIsRadioDialogOpen(true)
+                                        }>
+                                        Radio Buttons
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
                                         Selectbox
@@ -221,6 +230,12 @@ const AddFormPage = () => {
                 isInputDialogOpen={isInputDialogOpen}
                 setIsInputDialogOpen={setIsInputDialogOpen}
                 onCreateTextInput={onCreateTextInput}
+            />
+
+            <AddRadioButtonsDialog
+                isDialogOpen={isRadioDialogOpen}
+                setIsDialogOpen={setIsRadioDialogOpen}
+                onSubmit={onCreateRadioButtons}
             />
         </div>
     );
