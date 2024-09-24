@@ -22,8 +22,8 @@ import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { FormEvent, useState } from "react";
 
 import { useToast } from "@/hooks/use-toast";
-import Form from "@rjsf/semantic-ui";
-import { StrictRJSFSchema } from "@rjsf/utils";
+import Form from "@rjsf/core";
+import { StrictRJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import "./formPreview.css";
 import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
@@ -37,12 +37,22 @@ const AddFormPage = () => {
         useJsonForm();
 
     const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({});
+    const [RJSFUISchema, setRJSFUISchema] = useState<UiSchema>({});
 
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
 
-    function onCreateRadioButtons(e: FormEvent) {
+    function onCreateRadioButtons(
+        e: FormEvent,
+        { title, radioButtons }: { title: string; radioButtons: string[] }
+    ) {
         e.preventDefault();
+        setRJSFUISchema((prev) => {
+            const schema = prev;
+            schema[title] = { "ui:widget": "RadioWidget" };
+            return schema;
+        });
+        addField({ title, enum: radioButtons });
     }
 
     function onCreateTextInput(e: FormEvent) {
@@ -212,10 +222,11 @@ const AddFormPage = () => {
                     <h2 className="text-lg ">Form Preview</h2>
                     <Form
                         className="preview-form space-y-3"
+                        uiSchema={RJSFUISchema}
                         schema={{
                             title: RJSFState.title,
                             description: RJSFState.description,
-
+                            required: requiredFields,
                             properties: Object.assign({}, ...propertiesArr), // to flatten array of obejcts into single object,
                         }}
                         validator={validator}

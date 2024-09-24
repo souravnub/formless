@@ -16,7 +16,10 @@ import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 type DialogProps = {
     isDialogOpen: boolean;
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-    onSubmit: (e: FormEvent) => void;
+    onSubmit: (
+        e: FormEvent,
+        data: { title: string; radioButtons: string[] }
+    ) => void;
 };
 
 const AddRadioButtonsDialog = ({
@@ -26,6 +29,7 @@ const AddRadioButtonsDialog = ({
 }: DialogProps) => {
     const { toast } = useToast();
     const [input, setInput] = useState("");
+    const [title, setTitle] = useState("");
     const [radioButtons, setRadioButtons] = useState<string[]>([]);
 
     function onAddRadioButton() {
@@ -47,20 +51,40 @@ const AddRadioButtonsDialog = ({
         setInput("");
     }
 
+    function handleSubmit(e: FormEvent) {
+        if (title.trim().length == 0) {
+            return toast({
+                description: "title is required",
+                variant: "destructive",
+            });
+        }
+        if (radioButtons.length === 0) {
+            return toast({
+                description: "Their should be atleast 1 radio button option",
+                variant: "destructive",
+            });
+        }
+        setIsDialogOpen(false);
+        setRadioButtons([]);
+        setTitle("");
+        onSubmit(e, { title, radioButtons });
+    }
+
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
-                <form onSubmit={onSubmit}>
+                <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Create new Radio Button Group</DialogTitle>
                     </DialogHeader>
 
                     <div className="space-y-5 my-4">
                         <div>
-                            <Label htmlFor="textInputTitle">Title</Label>
+                            <Label htmlFor="title">Title</Label>
                             <Input
-                                name="title"
-                                id="textInputTitle"
+                                onChange={(e) => setTitle(e.target.value)}
+                                value={title}
+                                id="title"
                                 className="col-span-3"
                             />
                         </div>
@@ -78,6 +102,7 @@ const AddRadioButtonsDialog = ({
                                             <div className="bg-accent rounded-md p-2 text-sm flex items-center gap-5 w-fit">
                                                 {btn}
                                                 <button
+                                                    type="button"
                                                     onClick={() =>
                                                         setRadioButtons(
                                                             (prev) =>
@@ -108,6 +133,7 @@ const AddRadioButtonsDialog = ({
                                 />
 
                                 <Button
+                                    type="button"
                                     className="block h-auto p-1 px-3"
                                     variant={"outline"}
                                     onClick={onAddRadioButton}>
