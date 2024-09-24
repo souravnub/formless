@@ -63,21 +63,37 @@ const AddFormPage = () => {
         const formData = {
             title: RJSFState.title,
             description: RJSFState.description,
-            properties: propertiesArr.map((prop) => {
-                return {
-                    title: prop ? Object.keys(prop)[0] : "",
-                    type: prop
-                        ? (Object.values(prop)[0] as StrictRJSFSchema).type
-                        : "",
-                    default: prop
-                        ? (Object.values(prop)[0] as StrictRJSFSchema).default
-                        : "",
-                };
-            }),
+            properties: Object.assign({}, ...propertiesArr),
         };
 
+        if (!formData.title) {
+            return toast({
+                variant: "destructive",
+                description: "Form title is required",
+            });
+        }
+        if (!formData.description) {
+            return toast({
+                variant: "destructive",
+                description: "Form description is required",
+            });
+        }
+
+        if (propertiesArr.length === 0) {
+            return toast({
+                variant: "destructive",
+                description: "There should be atleast 1 field in the form",
+            });
+        }
+
         const res = await createForm(formData);
-        console.log(res);
+
+        if (res && !res.success) {
+            toast({
+                description: res.message,
+                variant: "destructive",
+            });
+        }
     };
 
     return (

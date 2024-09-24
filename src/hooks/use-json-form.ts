@@ -7,8 +7,8 @@ export function useJsonForm() {
     const [requiredFields, setRequiredFields] = useState<string[]>([]);
     const [propertiesArr, setPropertiesArr] = useState<RJSFProperties[]>([]);
 
-    function addField(data: StrictRJSFSchema, isReuqired: boolean = false) {
-        if (isReuqired) {
+    function addField(data: StrictRJSFSchema, isRequired: boolean = false) {
+        if (isRequired) {
             setRequiredFields((prev) => [...prev, data.title as string]);
         }
 

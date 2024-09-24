@@ -41,7 +41,7 @@ const AddTextInputDialog = ({
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="defaultVal">Default value</Label>
                             <Input
-                                name="defaultValue"
+                                name="default"
                                 id="defaultVal"
                                 className="col-span-3"
                             />
