@@ -77,9 +77,10 @@ const AddFormPage = () => {
 
     const handleSubmit = async () => {
         const formData = {
-            title: RJSFState.title,
-            description: RJSFState.description,
+            title: RJSFState.title as string,
+            description: RJSFState.description as string,
             properties: Object.assign({}, ...propertiesArr),
+            uiSchema: RJSFUISchema,
         };
 
         if (!formData.title) {

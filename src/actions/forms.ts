@@ -2,17 +2,25 @@
 
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
+import { UiSchema } from "@rjsf/utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export const createForm = async (formData: any) => {
+interface CreateFormProps {
+    title: string;
+    description: string;
+    properties: any;
+    uiSchema?: UiSchema;
+}
+
+export const createForm = async (formData: CreateFormProps) => {
     const session = await auth();
 
     if (!session || session.user.role !== "ADMIN") {
         return { success: false, message: "Not authorized" };
     }
 
-    const { title, description, properties } = formData;
+    const { title, description, properties, uiSchema } = formData;
 
     try {
         await prisma.form.create({
@@ -23,6 +31,7 @@ export const createForm = async (formData: any) => {
                     type: "object",
                     properties,
                 },
+                uiSchema,
             },
         });
         revalidatePath("/admin/forms");
@@ -57,13 +66,3 @@ export const getForms = async () => {
     const forms = await prisma.form.findMany();
     return forms;
 };
-
-// interface CreateFormInput {
-//     title: string;
-//     description: string;
-//     properties: {
-//         title: string;
-//         type: string;
-//         default: string;
-//     }[];
-// }

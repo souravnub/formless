@@ -29,6 +29,7 @@ model Form {
   title       String
   description String
   schema      Json
+  uiSchema Json?
   submissions FormSubmission[]
 }
 
