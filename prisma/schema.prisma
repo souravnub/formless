@@ -19,12 +19,15 @@ model User {
   email          String           @unique
   password       String
   role           RoleType         @default(USER)
+  FormsCreated   Form[]
   FormSubmission FormSubmission[]
 }
 
 model Form {
   id          String           @id @default(cuid())
   createdAt   DateTime         @default(now())
+  createdBy   String 
+  user        User             @relation(fields: [createdBy], references: [id])
   updatedAt   DateTime         @updatedAt
   title       String
   description String

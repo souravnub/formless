@@ -15,8 +15,7 @@ interface CreateFormProps {
 
 export const createForm = async (formData: CreateFormProps) => {
     const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || session.user.role !== "ADMIN" || !session.user.id) {
         return { success: false, message: "Not authorized" };
     }
 
@@ -26,6 +25,7 @@ export const createForm = async (formData: CreateFormProps) => {
         await prisma.form.create({
             data: {
                 title,
+                createdBy: session.user.id,
                 description,
                 schema: {
                     type: "object",
