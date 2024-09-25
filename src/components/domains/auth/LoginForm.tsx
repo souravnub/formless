@@ -6,9 +6,11 @@ import { Button } from "../../ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
     const { toast } = useToast();
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
     async function handleLoginFormAction(e: FormEvent) {
@@ -28,6 +30,7 @@ const LoginForm = () => {
         const res = await signIn("credentials", {
             email,
             password,
+            redirect: false,
         });
         setIsLoading(false);
         if (res?.error) {
@@ -38,6 +41,7 @@ const LoginForm = () => {
                     "The credentials provided were incorrect. Please Try with valid credentials",
             });
         }
+        router.push("/");
     }
 
     return (

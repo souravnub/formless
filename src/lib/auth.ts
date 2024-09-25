@@ -48,4 +48,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return session;
         },
     },
+    pages: {
+        signIn: "/login",
+    },
+    secret: process.env.AUTH_SECRET,
 });
