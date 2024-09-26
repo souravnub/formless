@@ -11,6 +11,7 @@ interface CreateFormProps {
     description: string;
     properties: any;
     uiSchema?: UiSchema;
+    requiredFields: string[];
 }
 
 export const createForm = async (formData: CreateFormProps) => {
@@ -19,7 +20,8 @@ export const createForm = async (formData: CreateFormProps) => {
         return { success: false, message: "Not authorized" };
     }
 
-    const { title, description, properties, uiSchema } = formData;
+    const { title, description, properties, uiSchema, requiredFields } =
+        formData;
 
     try {
         await prisma.form.create({
@@ -29,6 +31,7 @@ export const createForm = async (formData: CreateFormProps) => {
                 description,
                 schema: {
                     type: "object",
+                    required: requiredFields,
                     properties,
                 },
                 uiSchema,
