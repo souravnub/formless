@@ -56,7 +56,7 @@ export async function UserTable() {
 
     return (
         <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted/70">
                 <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Status</TableHead>
@@ -73,7 +73,7 @@ export async function UserTable() {
                         ? true
                         : false;
                     return (
-                        <TableRow key={form.id}>
+                        <TableRow key={form.id} className="hover:bg-muted/40">
                             <TableCell className="font-medium flex gap-2 items-center">
                                 <div className=" rounded-sm bg-accent p-2">
                                     <FileText className=" size-4" />

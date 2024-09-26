@@ -1,151 +1,129 @@
-
-import React, { FormEvent, useState } from "react";
 // will need for later
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { auth } from "@/lib/auth";
 // will need for data
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-  CardContent,
-} from "@/components/ui/card";
 import { LogoutButton } from "@/components/LogoutButton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { UserTable } from "@/components/userTable";
+import {
+    ArrowUpRight,
+    FilePlus2,
+    FileWarning,
+    Layers,
+    ListFilter,
+    Plus,
+    Search,
+} from "lucide-react";
+import Link from "next/link";
 
 export default async function UserDashboard() {
-  const a = await auth();
-  return (
-    <main className="flex flex-col min-h-screen">
-      {/* Top bar */}
-      <div className="flex h-screen bg-white">
-        <div className="flex-1 flex flex-col">
-          <header className="shadow p-4 flex justify-between items-center">
-            <div className="text-lg font-semibold">Dashboard</div>
-            <Menubar>
-              <MenubarMenu>
-                <MenubarTrigger>Overview</MenubarTrigger>
-                <MenubarTrigger>Forms</MenubarTrigger>
-                <MenubarTrigger>Submissions</MenubarTrigger>
-              </MenubarMenu>
-            </Menubar>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">{a?.user.name}</span>
-              <LogoutButton/>
+    const a = await auth();
+    return (
+        <main>
+            {/* Top bar */}
+            <header className="bg-accent/60 py-3">
+                <div className="container flex justify-between items-center">
+                    <div className="text-lg font-semibold">Dashboard</div>
+                    <Menubar>
+                        <MenubarMenu>
+                            <MenubarTrigger>Overview</MenubarTrigger>
+                            <MenubarTrigger>Forms</MenubarTrigger>
+                            <MenubarTrigger>Submissions</MenubarTrigger>
+                        </MenubarMenu>
+                    </Menubar>
+                    <div className="flex items-center space-x-4">
+                        <span className="text-gray-700">{a?.user.name}</span>
+                        <LogoutButton />
+                    </div>
+                </div>
+            </header>
+
+            {/* Main content container */}
+
+            <div className="container mx-auto p-4">
+                <h1 className="text-xl font-semibold mb-5">Overview</h1>
+                <div className="flex gap-5">
+                    <Link href={"/submissions/new"} className="flex-1">
+                        <Card className="relative hover:bg-accent rounded-xl">
+                            <CardHeader className="pb-4">
+                                <div className="bg-primary p-2 rounded-md w-fit">
+                                    <FilePlus2 className="text-secondary size-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <CardTitle>New Submission</CardTitle>
+                            </CardContent>
+                            <Plus className="absolute right-3 top-3 text-muted-foreground" />
+                        </Card>
+                    </Link>
+                    <Link href={"/submissions"} className="flex-1">
+                        <Card className="relative hover:bg-accent rounded-xl">
+                            <CardHeader className="pb-4">
+                                <div className="bg-primary p-2 rounded-md w-fit">
+                                    <Layers className="text-secondary size-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <CardTitle>View Submission</CardTitle>
+                            </CardContent>
+                            <ArrowUpRight className="absolute right-3 top-3 text-muted-foreground" />
+                        </Card>
+                    </Link>
+
+                    <Link href={"/submissions?type=issues"} className="flex-1">
+                        <Card className="relative hover:bg-accent rounded-xl">
+                            <CardHeader className="pb-4">
+                                <div className="bg-primary p-2 rounded-md w-fit">
+                                    <FileWarning className="text-secondary size-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <CardTitle>Reported Submissions</CardTitle>
+                            </CardContent>
+                            <ArrowUpRight className="absolute right-3 top-3 text-muted-foreground" />
+                        </Card>
+                    </Link>
+                </div>
+                {/*Forms for Today*/}
+                <div className="mt-8">
+                    <h1 className="font-semibold text-lg mb-2">
+                        Forms due today
+                    </h1>
+
+                    <div className="space-y-4">
+                        <div className="flex gap-2">
+                            <Tabs defaultValue="all">
+                                <TabsList>
+                                    <TabsTrigger value="all">
+                                        View All
+                                    </TabsTrigger>
+                                    <TabsTrigger value="Completed">
+                                        Completed
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+
+                            <div className="relative ml-auto flex-1 md:grow-0">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    type="search"
+                                    placeholder="Search"
+                                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                                />
+                            </div>
+                            <Button variant={"outline"}>
+                                <ListFilter className="text-muted-foreground size-4 mr-1" />{" "}
+                                Filters
+                            </Button>
+                        </div>
+
+                        <UserTable />
+                    </div>
+                </div>
             </div>
-          </header>
-
-          {/* Main content container */}
-          <div className="flex-1 p-6 bg-gray-100">
-            <div className="container mx-auto">
-              <h2 className="text-2xl font-bold mb-4">
-                Welcome {a?.user.name}! Here's what's on the menu for today.
-              </h2>
-              <Tabs defaultValue="overview" className="">
-                <TabsList>
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="users">Forms</TabsTrigger>
-                  <TabsTrigger value="submissions">Submissions</TabsTrigger>
-                </TabsList>
-                <TabsContent value="overview">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Overview</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      {/* Overview Cards */}
-                      <div className="flex flex-row">
-                        <Card className="m-2 min-w-[300px]">
-                          <CardHeader>
-                            <CardTitle>Form X Name</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p>
-                              Form X has not been Submitted yet. Please submit
-                            </p>
-                          </CardContent>
-                          <CardFooter>
-                            <Button>Go To Form</Button>
-                          </CardFooter>
-                        </Card>
-
-                        <Card className="m-2 min-w-[300px]">
-                          <CardHeader>
-                            <CardTitle>Form Y Name</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p>Form Y has been submitted at (Timestamp)</p>
-                          </CardContent>
-                          <CardFooter>
-                            <Button>View/Edit Submission</Button>
-                          </CardFooter>
-                        </Card>
-                        {/* Form Issues*/}
-                        <Card className="m-2 min-w-[300px]">
-                          <CardHeader>
-                            <CardTitle>Form Issue</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p>
-                              There is an issue with Form Z. Please review your submission.
-                            </p>
-                          </CardContent>
-                          <CardFooter>
-                            <Button>View Submission</Button>
-                          </CardFooter>
-                        </Card>
-                      </div>
-                      {/*Forms for Today*/}
-                      <div className="flex flex-row">
-                        <Card className="flex-grow">
-                          <CardHeader>
-                            <CardTitle>Forms Due Today</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <UserTable />
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                <TabsContent value="users">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>User Overview</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Supervisor Accounts</CardTitle>
-                        </CardHeader>
-                      </Card>
-
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Employee Accounts</CardTitle>
-                        </CardHeader>
-                      </Card>
-                      </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+        </main>
+    );
 }
