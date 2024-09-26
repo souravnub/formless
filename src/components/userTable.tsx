@@ -1,20 +1,26 @@
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
-  } from "@/components/ui/table"
-  import { Button } from "@/components/ui/button"
-  const forms = [
+} from "@/components/ui/table";
+
+import { Badge } from "@/components/ui/badge";
+
+import { Button } from "@/components/ui/button";
+import prisma from "@/db";
+import { auth } from "@/lib/auth";
+import { Check, FileText, Target } from "lucide-react";
+import { format } from "date-fns";
+import Link from "next/link";
+const forms = [
     {
-      formName: "PPE Checklist",
-      formCategory: "Health & Safety",
-      dueDate: "2024-09-16",
-      submission: "Submitted",
+        formName: "PPE Checklist",
+        formCategory: "Health & Safety",
+        dueDate: "2024-09-16",
+        submission: "Submitted",
     },
     {
         formName: "Equipment Inspection",
@@ -34,34 +40,91 @@ import {
         dueDate: "N/A",
         submission: "Open",
     },
-  ]
-  
-  export function UserTable() {
+];
+
+export async function UserTable() {
+    const session = await auth();
+    // QUESTION: is have user's password in here safe? It is server-side so it might be
+    const forms = await prisma.form.findMany({
+        include: { user: true },
+    });
+    const submissions = await prisma.formSubmission.findMany({
+        where: {
+            userId: session?.user.id,
+        },
+    });
+
     return (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead >Form Name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Due Date</TableHead>
-            <TableHead >Submission Status</TableHead>
-            <TableHead >Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {forms.map((form) => (
-            <TableRow key={form.formName}>
-              <TableCell className="font-medium">{form.formName}</TableCell>
-              <TableCell>{form.formCategory}</TableCell>
-              <TableCell>{form.dueDate}</TableCell>
-              <TableCell>{form.submission}</TableCell>
-              <TableCell>
-              <Button className="w-[100px] bg-orange-500 text-white">{form.submission === "Submitted" ? "Edit" : "Create"}</Button>
-                </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )
-  }
-  
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created By</TableHead>
+                    <TableHead>Created On</TableHead>
+                    <TableHead>Actions</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {forms.map((form) => {
+                    const isAlreadySubmitted = submissions.find(
+                        (submission) => submission.formId === form.id
+                    )
+                        ? true
+                        : false;
+                    return (
+                        <TableRow key={form.id}>
+                            <TableCell className="font-medium flex gap-2 items-center">
+                                <div className=" rounded-sm bg-accent p-2">
+                                    <FileText className=" size-4" />
+                                </div>
+                                {form.title}
+                            </TableCell>
+                            <TableCell>
+                                <Badge className="p-2" variant={"outline"}>
+                                    {isAlreadySubmitted ? (
+                                        <span className="text-green-600">
+                                            <Check className="size-3" />
+                                            Complete
+                                        </span>
+                                    ) : (
+                                        <span className="text-teal-500 flex items-center gap-1">
+                                            <Target className="size-3" />
+                                            Active
+                                        </span>
+                                    )}
+                                </Badge>
+                            </TableCell>
+
+                            <TableCell>
+                                <span className="block font-semibold">
+                                    {form.user.name}
+                                </span>
+                                <Button
+                                    variant={"link"}
+                                    asChild
+                                    className="font-normal p-0 h-auto">
+                                    <Link href={`mailto:${form.user.email}`}>
+                                        {form.user.email}
+                                    </Link>
+                                </Button>
+                            </TableCell>
+
+                            <TableCell>
+                                {format(form.createdAt, "dd MMM yyyy")}
+                            </TableCell>
+                            <TableCell>
+                                <Button>
+                                    <Link
+                                        href={`/user/forms/${form.id}/submissions/new`}>
+                                        {isAlreadySubmitted ? "View" : "Submit"}
+                                    </Link>
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    );
+                })}
+            </TableBody>
+        </Table>
+    );
+}
