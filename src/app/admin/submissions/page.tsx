@@ -27,29 +27,6 @@ import {useState, useEffect} from "react";
 import {getSubmissions} from "@/actions/submissions"
 import {getUser} from "@/actions/users"
 import {getForm} from "@/actions/forms"
-// const submissions = [
-//   {
-//     id: 1,
-//     name: "Chris Duke",
-//     email: "cduke@kbm.ca",
-//     formName: "Fire Extinguisher Form",
-//     date: "September 20, 2024",
-//   },
-//   {
-//     id: 2,
-//     name: "Sourav Kumar",
-//     email: "skumar@kbm.ca",
-//     formName: "PPE Safety Form",
-//     date: "September 19, 2024",
-//   },
-//   {
-//     id: 3,
-//     name: "Elias Irons",
-//     email: "eirons@kbm.ca",
-//     formName: "On Site Safety Form",
-//     date: "September 18, 2024",
-//   },
-// ];
 export default function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<any>([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +85,8 @@ export default function SubmissionsPage() {
                 <TableHead className="pl-5">User's Name</TableHead>
                 <TableHead>Contact Info</TableHead>
                 <TableHead>Form Name</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Date Submitted</TableHead>
+                <TableHead>Last Edited</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -118,6 +96,7 @@ export default function SubmissionsPage() {
                   <TableCell className="font-medium pl-5">{submission.userName}</TableCell>
                   <TableCell>{submission.userEmail}</TableCell>
                   <TableCell>{submission.formName}</TableCell>
+                  <TableCell>{new Date(submission.updatedAt).toLocaleDateString()}</TableCell>
                   <TableCell>{new Date(submission.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell className="flex gap-2">
                     <Button>
