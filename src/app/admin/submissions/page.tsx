@@ -26,7 +26,7 @@ import { DateFilterSelect } from "@/components/filterSelect";
 import {useState, useEffect} from "react";
 import {getSubmissions} from "@/actions/submissions"
 import {getUser} from "@/actions/users"
-import {getForms} from "@/actions/forms"
+import {getForm} from "@/actions/forms"
 // const submissions = [
 //   {
 //     id: 1,
@@ -53,16 +53,27 @@ import {getForms} from "@/actions/forms"
 export default function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<any>([]);
   const [loading, setLoading] = useState(true);
+
   const fetchSubmissions = async () => {
     const submissions = await getSubmissions();
-    setSubmissions(submissions);
+    const updatedSubmissions = await Promise.all(
+      submissions.map(async(submission:any) => {
+        const user = await getUser(submission.userId);
+        const form = await getForm(submission.formId);
+        return { 
+          ...submission,
+          userName : user.data?.name,
+          userEmail : user.data?.email,
+          formName : form?.title
+        };
+  })
+    );
+    setSubmissions(updatedSubmissions);
     setLoading(false);
   }
-
   useEffect(() => {
     fetchSubmissions();
   }, [])
-
 
   return (
     <div className="container">
@@ -104,9 +115,9 @@ export default function SubmissionsPage() {
             <TableBody>
               {submissions.map((submission:any) => (
                 <TableRow key={submission.id} className="hover:bg-none!important">
-                  <TableCell className="font-medium pl-5">{submission.userId}</TableCell>
-                  <TableCell>{submission.userId}</TableCell>
-                  <TableCell>{submission.formId}</TableCell>
+                  <TableCell className="font-medium pl-5">{submission.userName}</TableCell>
+                  <TableCell>{submission.userEmail}</TableCell>
+                  <TableCell>{submission.formName}</TableCell>
                   <TableCell>{new Date(submission.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell className="flex gap-2">
                     <Button>

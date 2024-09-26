@@ -66,3 +66,12 @@ export const getForms = async () => {
     const forms = await prisma.form.findMany();
     return forms;
 };
+
+export const getForm = async (formId: string) => {
+    const form = await prisma.form.findUnique({
+        where: {
+            id: formId,
+        },
+    });
+    return form;
+};
