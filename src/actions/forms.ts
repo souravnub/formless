@@ -70,6 +70,16 @@ export const getForms = async () => {
     return forms;
 };
 
+
+export const getForm = async (formId: string) => {
+    const form = await prisma.form.findUnique({
+        where: {
+            id: formId,
+        },
+    });
+    return form;
+};
+
 export const submitForm = async (formId: string, formValues: any) => {
     const session = await auth();
 
