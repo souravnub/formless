@@ -11,6 +11,7 @@ interface CreateFormProps {
     description: string;
     properties: any;
     uiSchema?: UiSchema;
+    requiredFields: string[];
 }
 
 export const createForm = async (formData: CreateFormProps) => {
@@ -19,7 +20,8 @@ export const createForm = async (formData: CreateFormProps) => {
         return { success: false, message: "Not authorized" };
     }
 
-    const { title, description, properties, uiSchema } = formData;
+    const { title, description, properties, uiSchema, requiredFields } =
+        formData;
 
     try {
         await prisma.form.create({
@@ -29,6 +31,7 @@ export const createForm = async (formData: CreateFormProps) => {
                 description,
                 schema: {
                     type: "object",
+                    required: requiredFields,
                     properties,
                 },
                 uiSchema,
@@ -67,6 +70,7 @@ export const getForms = async () => {
     return forms;
 };
 
+
 export const getForm = async (formId: string) => {
     const form = await prisma.form.findUnique({
         where: {
@@ -74,4 +78,25 @@ export const getForm = async (formId: string) => {
         },
     });
     return form;
+};
+
+export const submitForm = async (formId: string, formValues: any) => {
+    const session = await auth();
+
+    if (!session || !session.user.id) {
+        return { success: false, message: "Not authorized" };
+    }
+    try {
+        await prisma.formSubmission.create({
+            data: {
+                submissions: formValues,
+                formId,
+                userId: session?.user.id,
+            },
+        });
+        revalidatePath("/user");
+        return { success: true, message: "form submitted successfully!" };
+    } catch (err) {
+        return { success: false, message: "Error while submitting form" };
+    }
 };

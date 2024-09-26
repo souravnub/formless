@@ -13,6 +13,7 @@ export function useJsonForm() {
         }
 
         const newInpData: RJSFProperties = {};
+        delete data["required"];
         newInpData[data.title as string] = data;
 
         setPropertiesArr((prev) => [...prev, newInpData]);
