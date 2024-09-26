@@ -1,0 +1,28 @@
+.form input[type="text"] {
+    @apply block rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.form input[type="radio"] {
+    @apply aspect-square h-4 w-4 rounded-full border border-primary text-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.form #root {
+    @apply space-y-3;
+}
+
+.form .field-radio-group,
+.form .checkboxes {
+    @apply space-y-1;
+}
+
+.form .radio > label > span,
+.form .checkbox > label > span {
+    @apply flex items-center gap-1;
+}
+
+.form .control-label {
+    @apply font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 inline-block;
+}
+.form label {
+    @apply text-sm;
+}
