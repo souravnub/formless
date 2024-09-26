@@ -69,3 +69,24 @@ export const getForms = async () => {
     const forms = await prisma.form.findMany();
     return forms;
 };
+
+export const submitForm = async (formId: string, formValues: any) => {
+    const session = await auth();
+
+    if (!session || !session.user.id) {
+        return { success: false, message: "Not authorized" };
+    }
+    try {
+        await prisma.formSubmission.create({
+            data: {
+                submissions: formValues,
+                formId,
+                userId: session?.user.id,
+            },
+        });
+        revalidatePath("/user");
+        return { success: true, message: "form submitted successfully!" };
+    } catch (err) {
+        return { success: false, message: "Error while submitting form" };
+    }
+};

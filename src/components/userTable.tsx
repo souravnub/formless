@@ -67,11 +67,9 @@ export async function UserTable() {
             </TableHeader>
             <TableBody>
                 {forms.map((form) => {
-                    const isAlreadySubmitted = submissions.find(
+                    const foundSubmission = submissions.find(
                         (submission) => submission.formId === form.id
-                    )
-                        ? true
-                        : false;
+                    );
                     return (
                         <TableRow key={form.id} className="hover:bg-muted/40">
                             <TableCell className="font-medium flex gap-2 items-center">
@@ -82,8 +80,8 @@ export async function UserTable() {
                             </TableCell>
                             <TableCell>
                                 <Badge className="p-2" variant={"outline"}>
-                                    {isAlreadySubmitted ? (
-                                        <span className="text-green-600">
+                                    {foundSubmission ? (
+                                        <span className="flex items-center gap-1 text-green-600">
                                             <Check className="size-3" />
                                             Complete
                                         </span>
@@ -115,10 +113,17 @@ export async function UserTable() {
                             </TableCell>
                             <TableCell>
                                 <Button>
-                                    <Link
-                                        href={`/user/forms/${form.id}/submissions/new`}>
-                                        {isAlreadySubmitted ? "View" : "Submit"}
-                                    </Link>
+                                    {foundSubmission ? (
+                                        <Link
+                                            href={`/user/submissions/${foundSubmission.id}`}>
+                                            View
+                                        </Link>
+                                    ) : (
+                                        <Link
+                                            href={`/user/forms/${form.id}/submissions/new`}>
+                                            Submit
+                                        </Link>
+                                    )}
                                 </Button>
                             </TableCell>
                         </TableRow>
