@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { Button } from "@/components/ui/button";
@@ -22,30 +23,47 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DatePickerWithRange } from "@/components/DatePicker";
 import { DateFilterSelect } from "@/components/filterSelect";
-const submissions = [
-  {
-    id: 1,
-    name: "Chris Duke",
-    email: "cduke@kbm.ca",
-    formName: "Fire Extinguisher Form",
-    date: "September 20, 2024",
-  },
-  {
-    id: 2,
-    name: "Sourav Kumar",
-    email: "skumar@kbm.ca",
-    formName: "PPE Safety Form",
-    date: "September 19, 2024",
-  },
-  {
-    id: 3,
-    name: "Elias Irons",
-    email: "eirons@kbm.ca",
-    formName: "On Site Safety Form",
-    date: "September 18, 2024",
-  },
-];
-const SubmissionsPage = () => {
+import {useState, useEffect} from "react";
+import {getSubmissions} from "@/actions/submissions"
+import {getUser} from "@/actions/users"
+import {getForms} from "@/actions/forms"
+// const submissions = [
+//   {
+//     id: 1,
+//     name: "Chris Duke",
+//     email: "cduke@kbm.ca",
+//     formName: "Fire Extinguisher Form",
+//     date: "September 20, 2024",
+//   },
+//   {
+//     id: 2,
+//     name: "Sourav Kumar",
+//     email: "skumar@kbm.ca",
+//     formName: "PPE Safety Form",
+//     date: "September 19, 2024",
+//   },
+//   {
+//     id: 3,
+//     name: "Elias Irons",
+//     email: "eirons@kbm.ca",
+//     formName: "On Site Safety Form",
+//     date: "September 18, 2024",
+//   },
+// ];
+export default function SubmissionsPage() {
+  const [submissions, setSubmissions] = useState<any>([]);
+  const [loading, setLoading] = useState(true);
+  const fetchSubmissions = async () => {
+    const submissions = await getSubmissions();
+    setSubmissions(submissions);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, [])
+
+
   return (
     <div className="container">
       <CustomBreadcrumb
@@ -84,12 +102,12 @@ const SubmissionsPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {submissions.map(({ id, name, email, formName, date }) => (
-                <TableRow key={id} className="hover:bg-none!important">
-                  <TableCell className="font-medium pl-5">{name}</TableCell>
-                  <TableCell>{email}</TableCell>
-                  <TableCell>{formName}</TableCell>
-                  <TableCell>{date}</TableCell>
+              {submissions.map((submission:any) => (
+                <TableRow key={submission.id} className="hover:bg-none!important">
+                  <TableCell className="font-medium pl-5">{submission.userId}</TableCell>
+                  <TableCell>{submission.userId}</TableCell>
+                  <TableCell>{submission.formId}</TableCell>
+                  <TableCell>{new Date(submission.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell className="flex gap-2">
                     <Button>
                       <Link href={"/admin/submissions/edit"}>Edit</Link>
@@ -124,5 +142,3 @@ const SubmissionsPage = () => {
     </div>
   );
 };
-
-export default SubmissionsPage;
