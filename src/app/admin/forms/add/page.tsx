@@ -94,6 +94,7 @@ const AddFormPage = () => {
         const formData = {
             title: RJSFState.title as string,
             description: RJSFState.description as string,
+            requiredFields,
             properties: Object.assign({}, ...propertiesArr),
             uiSchema: RJSFUISchema,
         };
