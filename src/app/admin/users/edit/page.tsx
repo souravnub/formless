@@ -102,7 +102,6 @@ const EditUserPage = () => {
                           name={user.name}
                           email={user.email}
                           role={user.role}
-                          onEdit={() => mutate()}
                           closeDialog={() => setOpenDialog(null)}
                         />
                       </DialogContent>

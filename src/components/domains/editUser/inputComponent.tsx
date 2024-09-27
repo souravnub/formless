@@ -12,8 +12,9 @@ interface InputComponentProps {
   id: string;
   name: string;
   email: string;
+
   role: "ADMIN" | "SUPERVISOR" | "USER";
-  onEdit: () => void;
+  refresh: () => void;
   closeDialog: () => void;
 }
 
@@ -21,8 +22,9 @@ const InputComponent: React.FC<InputComponentProps> = ({
   id,
   name,
   email,
+
   role,
-  onEdit,
+  refresh,
   closeDialog,
 }) => {
   const [data, setData] = useState<string[]>([name, email, "password", role]);
@@ -46,7 +48,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
       role: data[3] as "SUPERVISOR" | "USER",
     });
     if (res.success) {
-      onEdit();
+      refresh();
       closeDialog();
     }
   };
