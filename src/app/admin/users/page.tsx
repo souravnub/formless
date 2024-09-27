@@ -14,7 +14,7 @@ import {
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { getUsers } from "@/actions/users";
+import { getUsers, deleteUser } from "@/actions/users";
 import InputComponent from "@/components/domains/editUser/inputComponent";
 import {
   Dialog,
@@ -137,6 +137,7 @@ const UsersPage = () => {
                                 <Button
                                   variant={"destructive"}
                                   onClick={() => {
+                                    deleteUser(id);
                                     setOpenDelete(null);
                                   }}
                                 >
@@ -227,6 +228,7 @@ const UsersPage = () => {
                               <Button
                                 variant={"destructive"}
                                 onClick={() => {
+                                  deleteUser(id);
                                   setOpenDelete(null);
                                 }}
                               >
