@@ -23,7 +23,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/router";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -35,6 +34,7 @@ interface User {
 
 const UsersPage = () => {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
+  const [openDelete, setOpenDelete] = useState<string | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -109,9 +109,42 @@ const UsersPage = () => {
                               />
                             </DialogContent>
                           </Dialog>
-                          <Button variant={"destructive"}>
-                            <Link href={"/admin/users/delete"}>Delete</Link>
-                          </Button>
+                          <Dialog
+                            open={openDelete === id}
+                            onOpenChange={(open) => {
+                              if (!open) setOpenDelete(null);
+                            }}
+                          >
+                            <DialogTrigger
+                              onClick={() => setOpenDelete(id)}
+                              className="w-full"
+                            >
+                              Delete
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Edit User</DialogTitle>
+                              </DialogHeader>
+                              <div>
+                                <h1 className="text-4xl font-bold">
+                                  Are you sure you want to delete this user?
+                                </h1>
+                                <ul>
+                                  <li>Name: {name}</li>
+                                  <li>Email: {email}</li>
+                                  <li>Role: {role}</li>
+                                </ul>
+                                <Button
+                                  variant={"destructive"}
+                                  onClick={() => {
+                                    setOpenDelete(null);
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </TableCell>
                       </TableRow>
                     )
@@ -166,9 +199,42 @@ const UsersPage = () => {
                             />
                           </DialogContent>
                         </Dialog>
-                        <Button variant={"destructive"}>
-                          <Link href={"/admin/users/delete"}>Delete</Link>
-                        </Button>
+                        <Dialog
+                          open={openDelete === id}
+                          onOpenChange={(open) => {
+                            if (!open) setOpenDelete(null);
+                          }}
+                        >
+                          <DialogTrigger
+                            onClick={() => setOpenDelete(id)}
+                            className="w-full"
+                          >
+                            Delete
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Edit User</DialogTitle>
+                            </DialogHeader>
+                            <div>
+                              <h1 className="text-4xl font-bold">
+                                Are you sure you want to delete this user?
+                              </h1>
+                              <ul>
+                                <li>Name: {name}</li>
+                                <li>Email: {email}</li>
+                                <li>Role: {role}</li>
+                              </ul>
+                              <Button
+                                variant={"destructive"}
+                                onClick={() => {
+                                  setOpenDelete(null);
+                                }}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </TableCell>
                     </TableRow>
                   )
@@ -182,6 +248,3 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
-
-//references
-// chatgpt prompt for line: Error: Invariant: static generation store missing in revalidatePath @/admin/users
