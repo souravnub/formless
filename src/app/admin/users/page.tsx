@@ -45,7 +45,7 @@ const UsersPage = () => {
     fetchData();
   }, []);
 
-  const router = useRouter();
+  const refresh = () => {};
 
   return (
     <div className="container">
@@ -73,6 +73,7 @@ const UsersPage = () => {
                 <TableHead className="pl-5">Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -86,7 +87,7 @@ const UsersPage = () => {
                         </TableCell>
                         <TableCell>{email}</TableCell>
                         <TableCell>{role}</TableCell>
-                        <TableCell className="flex gap-2">
+                        <TableCell className="flex gap-2 justify-end">
                           <Dialog
                             open={openDialog === id}
                             onOpenChange={(open) => {
@@ -95,9 +96,9 @@ const UsersPage = () => {
                           >
                             <DialogTrigger
                               onClick={() => setOpenDialog(id)}
-                              className="w-full"
+                              className=""
                             >
-                              Edit
+                              <Button>Edit</Button>
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
@@ -107,7 +108,7 @@ const UsersPage = () => {
                                 id={id}
                                 name={name}
                                 email={email}
-                                refresh={() => router.push("/admin/users")}
+                                refresh={() => refresh()}
                                 role={role}
                                 closeDialog={() => setOpenDialog(null)}
                               />
@@ -121,9 +122,9 @@ const UsersPage = () => {
                           >
                             <DialogTrigger
                               onClick={() => setOpenDelete(id)}
-                              className="w-full"
+                              className=""
                             >
-                              Delete
+                              <Button variant={"destructive"}>Delete</Button>
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
@@ -168,6 +169,7 @@ const UsersPage = () => {
                 <TableHead className="pl-5">Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -178,18 +180,15 @@ const UsersPage = () => {
                       <TableCell className="font-medium pl-5">{name}</TableCell>
                       <TableCell>{email}</TableCell>
                       <TableCell>{role}</TableCell>
-                      <TableCell className="flex gap-2">
+                      <TableCell className="flex gap-2 justify-end ">
                         <Dialog
                           open={openDialog === id}
                           onOpenChange={(open) => {
                             if (!open) setOpenDialog(null);
                           }}
                         >
-                          <DialogTrigger
-                            onClick={() => setOpenDialog(id)}
-                            className="w-full"
-                          >
-                            Edit
+                          <DialogTrigger onClick={() => setOpenDialog(id)}>
+                            <Button>Edit</Button>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
@@ -199,7 +198,7 @@ const UsersPage = () => {
                               id={id}
                               name={name}
                               email={email}
-                              refresh={() => router.push("/admin/users")}
+                              refresh={() => refresh()}
                               role={role}
                               closeDialog={() => setOpenDialog(null)}
                             />
@@ -213,18 +212,20 @@ const UsersPage = () => {
                         >
                           <DialogTrigger
                             onClick={() => setOpenDelete(id)}
-                            className="w-full"
+                            className=""
                           >
-                            Delete
+                            <Button variant={"destructive"}>Delete</Button>
                           </DialogTrigger>
+
                           <DialogContent>
                             <DialogHeader>
-                              <DialogTitle>Edit User</DialogTitle>
+                              <DialogTitle>
+                                <h1 className="text-4xl font-bold">
+                                  Are you sure you want to delete this user?
+                                </h1>
+                              </DialogTitle>
                             </DialogHeader>
                             <div>
-                              <h1 className="text-4xl font-bold">
-                                Are you sure you want to delete this user?
-                              </h1>
                               <ul>
                                 <li>Name: {name}</li>
                                 <li>Email: {email}</li>
