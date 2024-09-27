@@ -7,13 +7,13 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useRouter } from "next/router";
 
 interface InputComponentProps {
   id: string;
   name: string;
   email: string;
   role: "ADMIN" | "SUPERVISOR" | "USER";
-  onEdit: () => void;
   closeDialog: () => void;
 }
 
@@ -22,11 +22,10 @@ const InputComponent: React.FC<InputComponentProps> = ({
   name,
   email,
   role,
-  onEdit,
   closeDialog,
 }) => {
   const [data, setData] = useState<string[]>([name, email, "password", role]);
-
+  const router = useRouter();
   const handleInput = async (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -46,7 +45,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
       role: data[3] as "SUPERVISOR" | "USER",
     });
     if (res.success) {
-      onEdit();
+      router.push("/admin/users");
       closeDialog();
     }
   };

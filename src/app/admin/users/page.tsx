@@ -23,48 +23,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { revalidatePath } from "next/cache";
-// const supervisors = [
-//   {
-//     id: 1,
-//     name: "Elias Irons",
-//     email: "eirons@kbm.ca",
-//     activity: "Active 5 minutes ago",
-//   },
-//   {
-//     id: 2,
-//     name: "Sourav Kumar",
-//     email: "skumar@kbm.ca",
-//     activity: "Active 2 Hours ago",
-//   },
-// ];
-// const employees = [
-//   {
-//     id: 1,
-//     name: "Chris Duke",
-//     email: "cduke@kbm.ca",
-//     activity: "Active 20 minutes ago",
-//   },
-//   {
-//     id: 2,
-//     name: "Amrinder Singh Khangura",
-//     email: "akhangura@kbm.ca",
-//     activity: "Active 7 Hours ago",
-//   },
-// ];
+import { useRouter } from "next/router";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
-
 interface User {
   id: string;
   name: string;
   email: string;
   role: RoleType;
 }
-
-const fetcher = async () => {
-  return (await getUsers()).data;
-};
 
 const UsersPage = () => {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
@@ -76,6 +43,11 @@ const UsersPage = () => {
     };
     fetchData();
   }, []);
+
+  const router = useRouter();
+  const refresh = () => {
+    router.replace(router.asPath);
+  };
 
   return (
     <div className="container">
@@ -139,7 +111,6 @@ const UsersPage = () => {
                                 name={name}
                                 email={email}
                                 role={role}
-                                onEdit={() => revalidatePath("/admin/users")}
                                 closeDialog={() => setOpenDialog(null)}
                               />
                             </DialogContent>
@@ -196,3 +167,6 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
+
+//references
+// chatgpt prompt for line: Error: Invariant: static generation store missing in revalidatePath @/admin/users
