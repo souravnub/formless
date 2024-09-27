@@ -25,7 +25,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
   closeDialog,
 }) => {
   const [data, setData] = useState<string[]>([name, email, "password", role]);
-  const router = useRouter();
+
   const handleInput = async (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -45,7 +45,6 @@ const InputComponent: React.FC<InputComponentProps> = ({
       role: data[3] as "SUPERVISOR" | "USER",
     });
     if (res.success) {
-      router.push("/admin/users");
       closeDialog();
     }
   };

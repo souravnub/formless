@@ -44,11 +44,6 @@ const UsersPage = () => {
     fetchData();
   }, []);
 
-  const router = useRouter();
-  const refresh = () => {
-    router.replace(router.asPath);
-  };
-
   return (
     <div className="container">
       <CustomBreadcrumb
@@ -75,7 +70,6 @@ const UsersPage = () => {
                 <TableHead className="pl-5">Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
-                {/* <TableHead>Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -136,7 +130,6 @@ const UsersPage = () => {
                 <TableHead className="pl-5">Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
-                {/* <TableHead>Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
