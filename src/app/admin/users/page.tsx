@@ -24,6 +24,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/router";
+import { set } from "date-fns";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -37,13 +38,14 @@ const UsersPage = () => {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [openDelete, setOpenDelete] = useState<string | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [x, setX] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       const data = await getUsers();
       data.data && setUsers(data.data);
     };
     fetchData();
-  }, []);
+  }, [x]);
 
   const refresh = () => {};
 
@@ -108,8 +110,8 @@ const UsersPage = () => {
                                 id={id}
                                 name={name}
                                 email={email}
-                                refresh={() => refresh()}
                                 role={role}
+                                refresh={() => setX(x + 1)}
                                 closeDialog={() => setOpenDialog(null)}
                               />
                             </DialogContent>
@@ -128,26 +130,36 @@ const UsersPage = () => {
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
-                                <DialogTitle>Edit User</DialogTitle>
+                                <DialogTitle>
+                                  <h1 className="text-4xl font-bold">
+                                    Are you sure you want to delete this user?
+                                  </h1>
+                                </DialogTitle>
                               </DialogHeader>
-                              <div>
-                                <h1 className="text-4xl font-bold">
-                                  Are you sure you want to delete this user?
-                                </h1>
-                                <ul>
-                                  <li>Name: {name}</li>
-                                  <li>Email: {email}</li>
-                                  <li>Role: {role}</li>
+                              <div className="">
+                                <ul className="mb-5">
+                                  <li>
+                                    <b>Name:</b> {name}
+                                  </li>
+                                  <li>
+                                    <b>Email:</b> {email}
+                                  </li>
+                                  <li>
+                                    <b>Role:</b> {role}
+                                  </li>
                                 </ul>
-                                <Button
-                                  variant={"destructive"}
-                                  onClick={() => {
-                                    deleteUser(id);
-                                    setOpenDelete(null);
-                                  }}
-                                >
-                                  Delete
-                                </Button>
+                                <div className="self-end i ">
+                                  <Button
+                                    variant={"destructive"}
+                                    onClick={() => {
+                                      deleteUser(id);
+                                      setOpenDelete(null);
+                                      setX(x + 1);
+                                    }}
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
                               </div>
                             </DialogContent>
                           </Dialog>
@@ -198,7 +210,7 @@ const UsersPage = () => {
                               id={id}
                               name={name}
                               email={email}
-                              refresh={() => refresh()}
+                              refresh={() => setX(x + 1)}
                               role={role}
                               closeDialog={() => setOpenDialog(null)}
                             />
@@ -225,21 +237,30 @@ const UsersPage = () => {
                                 </h1>
                               </DialogTitle>
                             </DialogHeader>
-                            <div>
-                              <ul>
-                                <li>Name: {name}</li>
-                                <li>Email: {email}</li>
-                                <li>Role: {role}</li>
+                            <div className="">
+                              <ul className="mb-5">
+                                <li>
+                                  <b>Name:</b> {name}
+                                </li>
+                                <li>
+                                  <b>Email:</b> {email}
+                                </li>
+                                <li>
+                                  <b>Role:</b> {role}
+                                </li>
                               </ul>
-                              <Button
-                                variant={"destructive"}
-                                onClick={() => {
-                                  deleteUser(id);
-                                  setOpenDelete(null);
-                                }}
-                              >
-                                Delete
-                              </Button>
+                              <div className="self-end i ">
+                                <Button
+                                  variant={"destructive"}
+                                  onClick={() => {
+                                    deleteUser(id);
+                                    setOpenDelete(null);
+                                    setX(x + 1);
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
                             </div>
                           </DialogContent>
                         </Dialog>
