@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/router";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -43,6 +44,8 @@ const UsersPage = () => {
     };
     fetchData();
   }, []);
+
+  const router = useRouter();
 
   return (
     <div className="container">
@@ -104,6 +107,7 @@ const UsersPage = () => {
                                 id={id}
                                 name={name}
                                 email={email}
+                                refresh={() => router.push("/admin/users")}
                                 role={role}
                                 closeDialog={() => setOpenDialog(null)}
                               />
@@ -195,6 +199,7 @@ const UsersPage = () => {
                               id={id}
                               name={name}
                               email={email}
+                              refresh={() => router.push("/admin/users")}
                               role={role}
                               closeDialog={() => setOpenDialog(null)}
                             />
