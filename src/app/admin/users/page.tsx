@@ -141,9 +141,31 @@ const UsersPage = () => {
                       <TableCell>{email}</TableCell>
                       <TableCell>{role}</TableCell>
                       <TableCell className="flex gap-2">
-                        <Button>
-                          <Link href={"/admin/users/edit"}>Edit</Link>
-                        </Button>
+                        <Dialog
+                          open={openDialog === id}
+                          onOpenChange={(open) => {
+                            if (!open) setOpenDialog(null);
+                          }}
+                        >
+                          <DialogTrigger
+                            onClick={() => setOpenDialog(id)}
+                            className="w-full"
+                          >
+                            Edit
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Edit User</DialogTitle>
+                            </DialogHeader>
+                            <InputComponent
+                              id={id}
+                              name={name}
+                              email={email}
+                              role={role}
+                              closeDialog={() => setOpenDialog(null)}
+                            />
+                          </DialogContent>
+                        </Dialog>
                         <Button variant={"destructive"}>
                           <Link href={"/admin/users/delete"}>Delete</Link>
                         </Button>

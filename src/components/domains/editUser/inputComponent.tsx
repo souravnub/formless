@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useRouter } from "next/router";
 
 interface InputComponentProps {
   id: string;
