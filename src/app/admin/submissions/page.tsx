@@ -63,11 +63,6 @@ export default function SubmissionsPage() {
                         <DatePickerWithRange />
                     </div>
                 </div>
-
-                {/* Q. Do We Need an add submissions Button for Admins?--> */}
-                {/* <Button asChild className="flex gap-2">
-                    <Link href={"/admin/submissions/add"}>Add Submission</Link>
-                </Button> */}
             </div>
             <Card className="mb-2">
                 <CardHeader>Submissions</CardHeader>
@@ -110,15 +105,13 @@ export default function SubmissionsPage() {
                                         ).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="flex gap-2">
-                                        <Button>
+                                        <Button asChild>
                                             <Link
-                                                href={
-                                                    "/admin/submissions/edit"
-                                                }>
-                                                Edit
+                                                href={`/admin/submissions/${submission.id}`}>
+                                                View
                                             </Link>
                                         </Button>
-                                        <Button variant={"destructive"}>
+                                        <Button asChild variant={"destructive"}>
                                             <Link
                                                 href={
                                                     "/admin/submissions/delete"
