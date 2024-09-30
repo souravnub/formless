@@ -111,6 +111,12 @@ export default function SubmissionsPage() {
                                                 View
                                             </Link>
                                         </Button>
+                                        <Button asChild variant={"default"}>
+                                            <Link
+                                                href={`/admin/submissions/${submission.id}/pdf`}>
+                                                Pdf
+                                            </Link>
+                                        </Button>
                                         <Button asChild variant={"destructive"}>
                                             <Link
                                                 href={

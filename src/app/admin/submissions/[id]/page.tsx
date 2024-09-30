@@ -52,6 +52,11 @@ const SingleSubmissionPage = async ({ params }: { params: { id: string } }) => {
                     );
                 })}
             </ul>
+            <Button asChild className="mt-5">
+                <Link href={`/admin/submissions/${submission.id}/pdf`}>
+                    View Pdf
+                </Link>
+            </Button>
         </div>
     );
 };
