@@ -2,7 +2,6 @@
 import { getSubmissions } from "@/actions/submissions";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { DatePickerWithRange } from "@/components/DatePicker";
-import { DateFilterSelect } from "@/components/filterSelect";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -82,7 +81,7 @@ export default function SubmissionsPage() {
                             </Link>
                         </Button>
                     )}
-                    <DateFilterSelect />
+                    {/* we can use shadcn data-table to enable filtering and sorting */}
                     <DatePickerWithRange
                         currentDateRange={currentDateRange}
                         onChange={setCurrentDateRange}
@@ -110,7 +109,6 @@ export default function SubmissionsPage() {
                         <TableHead>Contact Info</TableHead>
                         <TableHead>Form Name</TableHead>
                         <TableHead>Date Submitted</TableHead>
-                        <TableHead>Last Edited</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -147,11 +145,6 @@ export default function SubmissionsPage() {
                             </TableCell>
                             <TableCell>{submission.user.email}</TableCell>
                             <TableCell>{submission.form.title}</TableCell>
-                            <TableCell>
-                                {new Date(
-                                    submission.updatedAt
-                                ).toLocaleDateString()}
-                            </TableCell>
                             <TableCell>
                                 {new Date(
                                     submission.createdAt
