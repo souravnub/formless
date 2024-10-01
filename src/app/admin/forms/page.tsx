@@ -14,6 +14,13 @@ import {
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getForms, deleteForms } from "@/actions/forms";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // const forms = [
 //     {
@@ -46,26 +53,28 @@ export default function FormsPage() {
     setLoading(false);
   };
 
-  const handleDelete = async (formId: string) => {
-    const confirmation = window.confirm(
-      "Are you sure you want to delete this form?"
-    ); // Can change this to a more stylish prompt
+  //   const handleDelete = async (formId: string) => {
+  //     const confirmation = window.confirm(
+  //       "Are you sure you want to delete this form?"
+  //     ); // Can change this to a more stylish prompt
 
-    if (confirmation) {
-      const res = await deleteForms(formId);
-      if (res.success) {
-        fetchForms();
-      } else {
-        alert(res.message);
-      }
-    } else {
-      console.log("cancelled");
-    }
-  };
+  //     if (confirmation) {
+  //       const res = await deleteForms(formId);
+  //       if (res.success) {
+  //         fetchForms();
+  //       } else {
+  //         alert(res.message);
+  //       }
+  //     } else {
+  //       console.log("cancelled");
+  //     }
+  //   };
 
   useEffect(() => {
     fetchForms();
   }, []);
+
+  const [openDelete, setOpenDelete] = useState<string | null>(null);
 
   return (
     <div className="container">
@@ -102,13 +111,50 @@ export default function FormsPage() {
               </TableCell>
               <TableCell>{form.description}</TableCell>
               <TableCell className="flex gap-2">
-                {/* <Button>Edit</Button> */}
-                <Button
-                  variant={"destructive"}
-                  onClick={() => handleDelete(form.id)}
+                <Dialog
+                  open={openDelete === form.id}
+                  onOpenChange={(open) => {
+                    if (!open) setOpenDelete(null);
+                  }}
                 >
-                  Delete
-                </Button>
+                  <DialogTrigger
+                    onClick={() => setOpenDelete(form.id)}
+                    className=""
+                  >
+                    <Button variant={"destructive"}>Delete</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        <h1 className="text-4xl font-bold">
+                          Are you sure you want to delete this user?
+                        </h1>
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="">
+                      <ul className="mb-5">
+                        <li>
+                          <b>Title:</b> {form.title}
+                        </li>
+                        <li>
+                          <b>Description:</b> {form.description}
+                        </li>
+                      </ul>
+                      <div className="self-end i ">
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => {
+                            deleteForms(form.id);
+                            fetchForms();
+                            setOpenDelete(null);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </TableCell>
             </TableRow>
           ))}
