@@ -102,7 +102,7 @@ const UsersPage = () => {
                             >
                               <Button>Edit</Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="min-w-[50%]">
                               <DialogHeader>
                                 <DialogTitle>Edit User</DialogTitle>
                               </DialogHeader>
@@ -202,7 +202,7 @@ const UsersPage = () => {
                           <DialogTrigger onClick={() => setOpenDialog(id)}>
                             <Button>Edit</Button>
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className="min-w-[50%]">
                             <DialogHeader>
                               <DialogTitle>Edit User</DialogTitle>
                             </DialogHeader>
