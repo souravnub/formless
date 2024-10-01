@@ -1,4 +1,5 @@
 "use client";
+import { getForms } from "@/actions/forms";
 import { getSubmissions } from "@/actions/submissions";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { DatePickerWithRange } from "@/components/DatePicker";
@@ -14,6 +15,15 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     Table,
     TableBody,
     TableCell,
@@ -22,6 +32,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Prisma } from "@prisma/client";
+import { Cross1Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -35,27 +46,33 @@ export default function SubmissionsPage() {
     const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>(
         []
     );
+    const [formFilter, setFormFilter] = useState<string | undefined>(undefined);
+    const [currentForms, setCurrentForms] = useState<
+        { title: string; id: string }[]
+    >([]);
     const [currentDateRange, setCurrentDateRange] = useState<
         DateRange | undefined
     >(undefined);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getSubmissions().then((res) => {
-            setSubmissions(res);
-            setLoading(false);
+        getForms().then((res) => {
+            const forms = res.map((form) => ({
+                id: form.id,
+                title: form.title,
+            }));
+            setCurrentForms(forms);
         });
     }, []);
 
     useEffect(() => {
-        if (currentDateRange?.to && currentDateRange.from) {
-            getSubmissions(currentDateRange).then((res) => {
+        getSubmissions({ dateRange: currentDateRange, formFilter }).then(
+            (res) => {
                 setSubmissions(res);
                 setLoading(false);
-            });
-            return;
-        }
-    }, [currentDateRange]);
+            }
+        );
+    }, [currentDateRange, formFilter]);
 
     return (
         <div className="container">
@@ -70,7 +87,7 @@ export default function SubmissionsPage() {
                 <h1 className="text-xl font-medium items-center">
                     Manage Submissions
                 </h1>
-                <div className="flex space-x-4">
+                <div className="flex gap-4 items-center">
                     {selectedSubmissions.length > 0 && (
                         <Button>
                             <Link
@@ -81,6 +98,35 @@ export default function SubmissionsPage() {
                             </Link>
                         </Button>
                     )}
+                    <Select
+                        value={formFilter || ""}
+                        onValueChange={(val) => setFormFilter(val)}>
+                        <SelectTrigger className="flex gap-2">
+                            <SelectValue placeholder="Select a Form" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel className="flex items-center justify-between">
+                                    Forms
+                                    {formFilter && (
+                                        <Button
+                                            onClick={() =>
+                                                setFormFilter(undefined)
+                                            }
+                                            variant={"destructive"}
+                                            className="h-fit p-1 rounded-full ">
+                                            <Cross1Icon className="size-3" />
+                                        </Button>
+                                    )}
+                                </SelectLabel>
+                                {currentForms.map((form) => (
+                                    <SelectItem key={form.id} value={form.id}>
+                                        {form.title}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                     {/* we can use shadcn data-table to enable filtering and sorting */}
                     <DatePickerWithRange
                         currentDateRange={currentDateRange}
