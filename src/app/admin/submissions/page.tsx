@@ -25,6 +25,7 @@ import {
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
 
 type Submissions = Prisma.FormSubmissionGetPayload<{
     include: { user: true; form: true };
@@ -35,17 +36,27 @@ export default function SubmissionsPage() {
     const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>(
         []
     );
+    const [currentDateRange, setCurrentDateRange] = useState<
+        DateRange | undefined
+    >(undefined);
     const [loading, setLoading] = useState(true);
 
-    const fetchSubmissions = async () => {
-        const submissions = await getSubmissions();
-        setSubmissions(submissions);
-        setLoading(false);
-    };
+    useEffect(() => {
+        getSubmissions().then((res) => {
+            setSubmissions(res);
+            setLoading(false);
+        });
+    }, []);
 
     useEffect(() => {
-        fetchSubmissions();
-    }, []);
+        if (currentDateRange?.to && currentDateRange.from) {
+            getSubmissions(currentDateRange).then((res) => {
+                setSubmissions(res);
+                setLoading(false);
+            });
+            return;
+        }
+    }, [currentDateRange]);
 
     return (
         <div className="container">
@@ -72,7 +83,10 @@ export default function SubmissionsPage() {
                         </Button>
                     )}
                     <DateFilterSelect />
-                    <DatePickerWithRange />
+                    <DatePickerWithRange
+                        currentDateRange={currentDateRange}
+                        onChange={setCurrentDateRange}
+                    />
                 </div>
             </div>
             <Table className="border">
