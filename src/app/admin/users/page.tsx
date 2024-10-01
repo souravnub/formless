@@ -23,8 +23,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/router";
-import { set } from "date-fns";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -102,7 +100,7 @@ const UsersPage = () => {
                             >
                               <Button>Edit</Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="min-w-[50%]">
                               <DialogHeader>
                                 <DialogTitle>Edit User</DialogTitle>
                               </DialogHeader>
@@ -202,7 +200,7 @@ const UsersPage = () => {
                           <DialogTrigger onClick={() => setOpenDialog(id)}>
                             <Button>Edit</Button>
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className="min-w-[50%]">
                             <DialogHeader>
                               <DialogTitle>Edit User</DialogTitle>
                             </DialogHeader>
