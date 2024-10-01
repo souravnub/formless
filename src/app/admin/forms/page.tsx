@@ -22,27 +22,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-// const forms = [
-//     {
-//         id: 1,
-//         name: "Fire Extenguisher form",
-//         createdBy: "sourav",
-//         submissionsCount: 4,
-//     },
-//     {
-//         id: 2,
-//         name: "PPE Safty form",
-//         createdBy: "chris",
-//         submissionsCount: 100,
-//     },
-//     {
-//         id: 3,
-//         name: "On Site Safety form",
-//         createdBy: "elias",
-//         submissionsCount: 50,
-//     },
-// ];
-
 export default function FormsPage() {
   const [forms, setForms] = useState<any>([]);
   const [loading, setLoading] = useState(true);
@@ -52,23 +31,6 @@ export default function FormsPage() {
     setForms(forms);
     setLoading(false);
   };
-
-  //   const handleDelete = async (formId: string) => {
-  //     const confirmation = window.confirm(
-  //       "Are you sure you want to delete this form?"
-  //     ); // Can change this to a more stylish prompt
-
-  //     if (confirmation) {
-  //       const res = await deleteForms(formId);
-  //       if (res.success) {
-  //         fetchForms();
-  //       } else {
-  //         alert(res.message);
-  //       }
-  //     } else {
-  //       console.log("cancelled");
-  //     }
-  //   };
 
   useEffect(() => {
     fetchForms();
