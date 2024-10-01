@@ -78,7 +78,20 @@ export default function SubmissionsPage() {
             <Table className="border">
                 <TableHeader className="bg-accent/70">
                     <TableRow>
-                        <TableHead className="w-10"></TableHead>
+                        <TableHead className="w-10">
+                            <Checkbox
+                                onCheckedChange={(isChecked) => {
+                                    if (isChecked) {
+                                        setSelectedSubmissions(
+                                            submissions.map(
+                                                (submission) => submission.id
+                                            )
+                                        );
+                                    } else {
+                                        setSelectedSubmissions([]);
+                                    }
+                                }}></Checkbox>
+                        </TableHead>
                         <TableHead className="pl-5">User's Name</TableHead>
                         <TableHead>Contact Info</TableHead>
                         <TableHead>Form Name</TableHead>
@@ -94,8 +107,11 @@ export default function SubmissionsPage() {
                             className="hover:bg-none!important">
                             <TableCell>
                                 <Checkbox
-                                    onCheckedChange={(checked) => {
-                                        if (checked) {
+                                    checked={selectedSubmissions.includes(
+                                        submission.id
+                                    )}
+                                    onCheckedChange={(isChecked) => {
+                                        if (isChecked) {
                                             setSelectedSubmissions((prev) => [
                                                 ...prev,
                                                 submission.id,
