@@ -32,8 +32,8 @@ const LoginForm = () => {
             password,
             redirect: false,
         });
-        setIsLoading(false);
         if (res?.error) {
+            setIsLoading(false);
             return toast({
                 variant: "destructive",
                 title: "Invalid Credentials",
