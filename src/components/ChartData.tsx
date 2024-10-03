@@ -1,3 +1,7 @@
+// Prompts Used
+// Show the conversion of MST to CST
+// Provide how to compare JSON objects in React
+
 import React, { useState, useEffect } from "react";
 import { getSubmissionsCount } from "@/actions/submissions";
 import { getUserCountByRole } from "@/actions/users";
@@ -48,15 +52,18 @@ const ChartDataFetcher = ({ onDataFetch }: { onDataFetch: (data: ChartDataType[]
           aSubmissions: submissionCount, // Actual submissions
         }));
 
-        setChartData(data);
-        onDataFetch(data); // Pass the generated data back to the parent
-      } catch (error) {
-        console.error("Error fetching chart data:", error);
-      }
-    };
+        if (JSON.stringify(data) !== JSON.stringify(chartData)) {
+            setChartData(data);
+            onDataFetch(data); // Pass the generated data back to the parent
+          }
+        } catch (error) {
+          console.error("Error fetching chart data:", error);
+        }
+      };
+  
 
     fetchData();
-  }, [onDataFetch]);
+  }, [onDataFetch,chartData]);
 
   return null;
 };
