@@ -1,5 +1,7 @@
+"use client"
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { DashChart } from "@/components/dashchart";
+import DashSubmissionsStat from "@/components/DashSubmissionsStat";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -26,10 +28,7 @@ export default async function AdminDashboard() {
                             <CardTitle>Submissions</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>
-                                Currently X/Y users have not submitted forms
-                                today
-                            </p>
+                            <DashSubmissionsStat />
                         </CardContent>
                         <CardFooter>
                             <Button>View Submissions</Button>
