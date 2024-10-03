@@ -22,6 +22,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export default function FormsPage() {
     const [forms, setForms] = useState<any>([]);
@@ -87,6 +88,7 @@ export default function FormsPage() {
                                         if (!open) setOpenDelete(null);
                                     }}>
                                     <DialogTrigger
+                                        asChild
                                         onClick={() => setOpenDelete(form.id)}
                                         className="">
                                         <Button variant={"destructive"}>
@@ -95,11 +97,9 @@ export default function FormsPage() {
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                            <DialogTitle>
-                                                <h1 className="text-4xl font-bold">
-                                                    Are you sure you want to
-                                                    delete this user?
-                                                </h1>
+                                            <DialogTitle className="text-4xl font-bold">
+                                                Are you sure you want to delete
+                                                this user?
                                             </DialogTitle>
                                         </DialogHeader>
                                         <div className="">

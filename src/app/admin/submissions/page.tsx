@@ -1,10 +1,19 @@
 "use client";
 import { getForms } from "@/actions/forms";
-import { getSubmissions } from "@/actions/submissions";
+import { deleteSubmission, getSubmissions } from "@/actions/submissions";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { DatePickerWithRange } from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import {
     Pagination,
     PaginationContent,
@@ -31,6 +40,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
 import { Prisma } from "@prisma/client";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -54,6 +64,7 @@ export default function SubmissionsPage() {
         DateRange | undefined
     >(undefined);
     const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
 
     useEffect(() => {
         getForms().then((res) => {
@@ -65,13 +76,17 @@ export default function SubmissionsPage() {
         });
     }, []);
 
-    useEffect(() => {
+    function fetchAndSetSubmissions() {
         getSubmissions({ dateRange: currentDateRange, formFilter }).then(
             (res) => {
                 setSubmissions(res);
                 setLoading(false);
             }
         );
+    }
+
+    useEffect(() => {
+        fetchAndSetSubmissions();
     }, [currentDateRange, formFilter]);
 
     return (
@@ -209,11 +224,56 @@ export default function SubmissionsPage() {
                                         Pdf
                                     </Link>
                                 </Button>
-                                <Button asChild variant={"destructive"}>
-                                    <Link href={"/admin/submissions/delete"}>
-                                        Delete
-                                    </Link>
-                                </Button>
+
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant={"destructive"}>
+                                            Delete
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                Delete Submission
+                                            </DialogTitle>
+                                            <DialogDescription>
+                                                Are you sure you want to delete
+                                                submission?
+                                            </DialogDescription>
+                                            <span>
+                                                SubmissionId : {submission.id},
+                                            </span>
+                                            <span>
+                                                Submission made by:{" "}
+                                                {submission.user.name}
+                                            </span>
+                                            <span>
+                                                user email:{" "}
+                                                {submission.user.email}
+                                            </span>
+                                        </DialogHeader>
+                                        <DialogFooter>
+                                            <Button
+                                                variant={"destructive"}
+                                                onClick={async () => {
+                                                    const res =
+                                                        await deleteSubmission(
+                                                            submission.id
+                                                        );
+                                                    fetchAndSetSubmissions();
+                                                    toast({
+                                                        description:
+                                                            res.message,
+                                                        variant: res.success
+                                                            ? "default"
+                                                            : "destructive",
+                                                    });
+                                                }}>
+                                                Delete
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                             </TableCell>
                         </TableRow>
                     ))}
