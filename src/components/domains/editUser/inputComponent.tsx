@@ -22,7 +22,6 @@ const InputComponent: React.FC<InputComponentProps> = ({
   id,
   name,
   email,
-
   role,
   refresh,
   closeDialog,

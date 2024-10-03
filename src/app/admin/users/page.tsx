@@ -11,8 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getUsers, deleteUser } from "@/actions/users";
 import InputComponent from "@/components/domains/editUser/inputComponent";
@@ -23,6 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import AddUserInputComponent from "@/components/domains/addUser/addUserInputComponent";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -35,8 +34,11 @@ interface User {
 const UsersPage = () => {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [openDelete, setOpenDelete] = useState<string | null>(null);
+  const [openAdd, setOpenAdd] = useState<string | null>(null);
+
   const [users, setUsers] = useState<User[]>([]);
   const [x, setX] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getUsers();
@@ -44,8 +46,6 @@ const UsersPage = () => {
     };
     fetchData();
   }, [x]);
-
-  const refresh = () => {};
 
   return (
     <div className="container">
@@ -59,9 +59,28 @@ const UsersPage = () => {
       <div className="flex justify-between my-5">
         <h1 className="text-xl font-medium items-center">Manage Users</h1>
 
-        <Button asChild className="flex gap-2">
-          <Link href={"/admin/users/add"}>Add User</Link>
-        </Button>
+        <Dialog
+          open={openAdd === "1"}
+          onOpenChange={(open) => {
+            if (!open) setOpenAdd(null);
+          }}
+        >
+          <DialogTrigger
+            className="border-2 border-black px-3 py-1 rounded-md"
+            onClick={() => setOpenAdd("1")}
+          >
+            Add User
+          </DialogTrigger>
+          <DialogContent className="min-w-[50%]">
+            <DialogHeader>
+              <DialogTitle>Add User</DialogTitle>
+            </DialogHeader>
+            <AddUserInputComponent
+              refresh={() => setX(x + 1)}
+              closeDialog={() => setOpenAdd(null)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       <Card className="mb-2">
         <CardHeader>Supervisors</CardHeader>
@@ -94,10 +113,7 @@ const UsersPage = () => {
                               if (!open) setOpenDialog(null);
                             }}
                           >
-                            <DialogTrigger
-                              onClick={() => setOpenDialog(id)}
-                              className=""
-                            >
+                            <DialogTrigger onClick={() => setOpenDialog(id)}>
                               <Button>Edit</Button>
                             </DialogTrigger>
                             <DialogContent className="min-w-[50%]">
@@ -120,10 +136,7 @@ const UsersPage = () => {
                               if (!open) setOpenDelete(null);
                             }}
                           >
-                            <DialogTrigger
-                              onClick={() => setOpenDelete(id)}
-                              className=""
-                            >
+                            <DialogTrigger onClick={() => setOpenDelete(id)}>
                               <Button variant={"destructive"}>Delete</Button>
                             </DialogTrigger>
                             <DialogContent>
