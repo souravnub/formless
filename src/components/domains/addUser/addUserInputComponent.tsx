@@ -7,7 +7,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import React, { FormEvent, useState } from "react";
 
-const AddUserPage = () => {
+interface AddUserInputComponentProps {
+  refresh: () => void;
+  closeDialog: () => void;
+}
+
+const AddUserInputComponent = ({
+  refresh,
+  closeDialog,
+}: AddUserInputComponentProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("USER");
@@ -34,7 +42,8 @@ const AddUserPage = () => {
       password,
     });
     setIsLoading(false);
-
+    refresh();
+    closeDialog();
     toast({
       variant: !res.success ? "destructive" : "default",
       description: res.message,
@@ -101,4 +110,4 @@ const AddUserPage = () => {
   );
 };
 
-export default AddUserPage;
+export default AddUserInputComponent;
