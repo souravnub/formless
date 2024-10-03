@@ -70,7 +70,12 @@ const AddFormPage = () => {
             schema[title] = { "ui:widget": "CheckboxesWidget" };
             return schema;
         });
-        addField({ title, enum: checkboxes });
+        addField({
+            title,
+            type: "array",
+            uniqueItems: true,
+            items: { enum: checkboxes },
+        });
     }
 
     function onCreateTextInput(e: FormEvent) {
@@ -174,13 +179,12 @@ const AddFormPage = () => {
 
                     <div>
                         <Label htmlFor="desc">Role: </Label>
-                        <select 
+                        <select
                             id="role"
                             className="border p-2 rounded"
                             onChange={(e) =>
                                 setFormRole(e.target.value as RoleType)
-                            }
-                            >
+                            }>
                             <option value="SUPERVISOR">Supervisor</option>
                             <option value="USER">User</option>
                         </select>
