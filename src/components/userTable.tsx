@@ -48,7 +48,7 @@ export async function UserTable() {
     // QUESTION: is have user's password in here safe? It is server-side so it might be
     const forms = await prisma.form.findMany({
         include: { user: true },
-        //Admins can see all forms, users & supervisors can only see forms they are supposed to have access to
+        
         where: session?.user.role === "ADMIN" ? {} : { role: session?.user.role },
     });
     const submissions = await prisma.formSubmission.findMany({
