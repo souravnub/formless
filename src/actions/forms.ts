@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { UiSchema } from "@rjsf/utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
 import { RoleType } from ".prisma/client";
 
 interface CreateFormProps {
@@ -64,6 +65,15 @@ export const deleteForms = async (formId: string) => {
         });
         return { success: true, message: "Form deleted!" };
     } catch (err) {
+        console.log(err);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code === "P2003") {
+                return {
+                    success: false,
+                    message: "Submissions on this form should be deleted first",
+                };
+            }
+        }
         return { success: false, message: "Error while deleting form in DB" };
     }
 };
@@ -72,11 +82,11 @@ export const getForms = async () => {
     const session = await auth();
     const forms = await prisma.form.findMany({
         //Admins can see all forms, users can only see forms they have access to
-        where: session?.user.role === "ADMIN" ? {} : { role: session?.user.role },
+        where:
+            session?.user.role === "ADMIN" ? {} : { role: session?.user.role },
     });
     return forms;
 };
-
 
 export const getForm = async (formId: string) => {
     const form = await prisma.form.findUnique({
