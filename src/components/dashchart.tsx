@@ -10,7 +10,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-
+import ChartDataFetcher from "./ChartData"
+import { set } from "date-fns"
+import { useState } from "react"
 const chartData = [
   { month: "January", rSubmissions: 186, aSubmissions: 80 },
   { month: "February", rSubmissions: 305, aSubmissions: 200 },
@@ -30,10 +32,20 @@ const chartConfig = {
     color: "#D15617",
   },
 } satisfies ChartConfig
-
+type chartDataType = {
+  month: string
+  rSubmissions: number
+  aSubmissions: number
+}
 export function DashChart() {
+  const [chartData, setChartData] = useState<chartDataType[]>([])
+  const handleDataFetch = (data: chartDataType[]) => {
+      setChartData(data)
+  }
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <div>
+      <ChartDataFetcher onDataFetch={handleDataFetch} />
+      <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
       <BarChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
@@ -55,5 +67,7 @@ export function DashChart() {
         <Bar dataKey="aSubmissions" fill="var(--color-aSubmissions)" radius={4} />
       </BarChart>
     </ChartContainer>
+    </div>
+    
   )
 }

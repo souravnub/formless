@@ -1,3 +1,4 @@
+import { RoleType } from '@prisma/client';
 "use server";
 
 import prisma from "@/db";
@@ -145,4 +146,24 @@ interface CreateUserInput {
   email: string;
   role: "USER" | "SUPERVISOR";
   password: string;
+}
+
+export const getUserCountByRole = async (role: RoleType) => {
+  const session = await auth();
+
+  if (!session || session.user.role !== "ADMIN") {
+    return { success: false, message: "Not authorized" };
+  }
+
+  try {
+    const userCount = await prisma.user.count({
+      where: {role}
+    });
+    return { success: true, data: userCount };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Error while fetching count from DB",
+    };
+  }
 }

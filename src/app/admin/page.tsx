@@ -1,6 +1,10 @@
+"use client"
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { DashChart } from "@/components/dashchart";
+import DashSubmissionsStat from "@/components/DashSubmissionsStat";
 import { Button } from "@/components/ui/button";
+import DashUsageStats from "@/components/DashUsageStats";
+import DashFormIssues from "@/components/DashFormIssues";
 import {
     Card,
     CardContent,
@@ -8,6 +12,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export default async function AdminDashboard() {
     return (
@@ -26,13 +31,12 @@ export default async function AdminDashboard() {
                             <CardTitle>Submissions</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>
-                                Currently X/Y users have not submitted forms
-                                today
-                            </p>
+                            <DashSubmissionsStat />
                         </CardContent>
                         <CardFooter>
-                            <Button>View Submissions</Button>
+                            <Button>
+                                <Link href="/admin/submissions">View Submissions</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
 
@@ -41,10 +45,12 @@ export default async function AdminDashboard() {
                             <CardTitle>Form Usage</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>The most used form this month is X</p>
+                            <DashUsageStats />
                         </CardContent>
                         <CardFooter>
-                            <Button>View Form</Button>
+                            <Button>
+                                <Link href="/admin/forms">View Form</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
                     {/* Form Issues*/}
@@ -53,13 +59,12 @@ export default async function AdminDashboard() {
                             <CardTitle>Form Issues</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>
-                                The form with the most revisions and
-                                resubmissions is X
-                            </p>
+                            <DashFormIssues />
                         </CardContent>
                         <CardFooter>
-                            <Button>View Form</Button>
+                            <Button>
+                            <Link href="/admin/forms">View Form</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
                     {/* User Account Requests*/}
