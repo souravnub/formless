@@ -18,6 +18,7 @@ const DashSubmissionsStat = () => {
     useEffect(() => {
         const today = new Date();
         const timezoneOffset = today.getTimezoneOffset();
+        //Handle MST to UTC Conversion for Database Query
         const startOfToday = new Date (today.setHours(0,0,0,0) + timezoneOffset * 60000);
         const endOfToday = new Date (today.setHours(23, 59, 59, 999)+ timezoneOffset * 60000);
         getSubmissionsCount({
