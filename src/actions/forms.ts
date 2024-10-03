@@ -5,12 +5,14 @@ import { auth } from "@/lib/auth";
 import { UiSchema } from "@rjsf/utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { RoleType } from ".prisma/client";
 
 interface CreateFormProps {
     title: string;
     description: string;
     properties: any;
     uiSchema?: UiSchema;
+    role: RoleType;
     requiredFields: string[];
 }
 
@@ -20,7 +22,7 @@ export const createForm = async (formData: CreateFormProps) => {
         return { success: false, message: "Not authorized" };
     }
 
-    const { title, description, properties, uiSchema, requiredFields } =
+    const { title, description, properties, uiSchema, role, requiredFields } =
         formData;
 
     try {
@@ -35,6 +37,7 @@ export const createForm = async (formData: CreateFormProps) => {
                     properties,
                 },
                 uiSchema,
+                role,
             },
         });
         revalidatePath("/admin/forms");
@@ -66,7 +69,11 @@ export const deleteForms = async (formId: string) => {
 };
 
 export const getForms = async () => {
-    const forms = await prisma.form.findMany();
+    const session = await auth();
+    const forms = await prisma.form.findMany({
+        //Admins can see all forms, users can only see forms they have access to
+        where: session?.user.role === "ADMIN" ? {} : { role: session?.user.role },
+    });
     return forms;
 };
 
