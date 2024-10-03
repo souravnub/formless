@@ -4,6 +4,7 @@ import { DashChart } from "@/components/dashchart";
 import DashSubmissionsStat from "@/components/DashSubmissionsStat";
 import { Button } from "@/components/ui/button";
 import DashUsageStats from "@/components/DashUsageStats";
+import DashFormIssues from "@/components/DashFormIssues";
 import {
     Card,
     CardContent,
@@ -53,10 +54,7 @@ export default async function AdminDashboard() {
                             <CardTitle>Form Issues</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>
-                                The form with the most revisions and
-                                resubmissions is X
-                            </p>
+                            <DashFormIssues />
                         </CardContent>
                         <CardFooter>
                             <Button>View Form</Button>
