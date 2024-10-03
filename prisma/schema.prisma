@@ -34,6 +34,7 @@ model Form {
   schema      Json
   uiSchema Json?
   submissions FormSubmission[]
+  role       RoleType         
 }
 
 model FormSubmission {

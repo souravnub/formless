@@ -31,6 +31,7 @@ import { useJsonForm } from "@/hooks/use-json-form";
 import { createForm } from "@/actions/forms";
 import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
 import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
+import { RoleType } from ".prisma/client";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -43,6 +44,8 @@ const AddFormPage = () => {
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
     const [isCheckboxDialogOpen, setIsCheckboxDialogOpen] = useState(false);
+
+    const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
 
     function onCreateRadioButtons(
         e: FormEvent,
@@ -97,6 +100,7 @@ const AddFormPage = () => {
             requiredFields,
             properties: Object.assign({}, ...propertiesArr),
             uiSchema: RJSFUISchema,
+            role: formRole,
         };
 
         if (!formData.title) {
@@ -166,6 +170,20 @@ const AddFormPage = () => {
                                 }))
                             }
                         />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="desc">Role: </Label>
+                        <select 
+                            id="role"
+                            className="border p-2 rounded"
+                            onChange={(e) =>
+                                setFormRole(e.target.value as RoleType)
+                            }
+                            >
+                            <option value="SUPERVISOR">Supervisor</option>
+                            <option value="USER">User</option>
+                        </select>
                     </div>
 
                     <Card>
