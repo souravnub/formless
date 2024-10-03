@@ -63,6 +63,7 @@ const AddUserInputComponent = ({
           id="name"
           name="name"
           required
+          autoComplete="off"
         />
       </div>
 
@@ -75,6 +76,7 @@ const AddUserInputComponent = ({
           name="email"
           type="email"
           required
+          autoComplete="off"
         />
       </div>
 
@@ -86,6 +88,7 @@ const AddUserInputComponent = ({
           id="pass"
           name="password"
           required
+          autoComplete="off"
         />
       </div>
 
