@@ -3,6 +3,7 @@ import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { DashChart } from "@/components/dashchart";
 import DashSubmissionsStat from "@/components/DashSubmissionsStat";
 import { Button } from "@/components/ui/button";
+import DashUsageStats from "@/components/DashUsageStats";
 import {
     Card,
     CardContent,
@@ -40,7 +41,7 @@ export default async function AdminDashboard() {
                             <CardTitle>Form Usage</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>The most used form this month is X</p>
+                            <DashUsageStats />
                         </CardContent>
                         <CardFooter>
                             <Button>View Form</Button>
