@@ -12,6 +12,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export default async function AdminDashboard() {
     return (
@@ -33,7 +34,9 @@ export default async function AdminDashboard() {
                             <DashSubmissionsStat />
                         </CardContent>
                         <CardFooter>
-                            <Button>View Submissions</Button>
+                            <Button>
+                                <Link href="/admin/submissions">View Submissions</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
 
@@ -45,7 +48,9 @@ export default async function AdminDashboard() {
                             <DashUsageStats />
                         </CardContent>
                         <CardFooter>
-                            <Button>View Form</Button>
+                            <Button>
+                                <Link href="/admin/forms">View Form</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
                     {/* Form Issues*/}
@@ -57,7 +62,9 @@ export default async function AdminDashboard() {
                             <DashFormIssues />
                         </CardContent>
                         <CardFooter>
-                            <Button>View Form</Button>
+                            <Button>
+                            <Link href="/admin/forms">View Form</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
                     {/* User Account Requests*/}
