@@ -148,7 +148,7 @@ interface CreateUserInput {
   password: string;
 }
 
-export const getUsersByRole = async (role: RoleType) => {
+export const getUserCountByRole = async (role: RoleType) => {
   const session = await auth();
 
   if (!session || session.user.role !== "ADMIN") {
