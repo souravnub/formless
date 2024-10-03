@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/db";
+import { dateRangeOptions } from "@rjsf/utils";
 import { DateRange } from "react-day-picker";
 
 type GetSubmissonsProps = {
@@ -29,3 +30,22 @@ export const getSubmissions = async ({
     });
     return submissions;
 };
+
+export const getSubmissionsCount = async ({
+    dateRange,
+    formFilter,
+}: GetSubmissonsProps) => {
+    const count = await prisma.formSubmission.count({
+        where: {
+            createdAt: {
+                lte: dateRange?.to,
+                gte: dateRange?.from,
+            },
+            form: {
+                id: formFilter,
+            },
+        },
+    });
+    return count;
+};
+
