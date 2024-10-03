@@ -32,14 +32,15 @@ export const getSubmissions = async ({
 };
 
 export const getSubmissionsCount = async ({
+    dateRange,
     formFilter,
 }: GetSubmissonsProps) => {
     const count = await prisma.formSubmission.count({
         where: {
-            // createdAt: {
-            //     lte: dateRange?.to,
-            //     gte: dateRange?.from,
-            // },
+            createdAt: {
+                lte: dateRange?.to,
+                gte: dateRange?.from,
+            },
             form: {
                 title: formFilter,
             },
