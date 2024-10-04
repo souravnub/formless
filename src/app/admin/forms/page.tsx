@@ -17,6 +17,7 @@ import { getForms, deleteForms } from "@/actions/forms";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -89,11 +90,11 @@ export default function FormsPage() {
                     <DialogHeader>
                       <DialogTitle>
                         <h1 className="text-4xl font-bold">
-                          Are you sure you want to delete this user?
+                          Are you sure you want to delete this form?
                         </h1>
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="">
+                    <DialogDescription>
                       <ul className="mb-5">
                         <li>
                           <b>Title:</b> {form.title}
@@ -102,19 +103,18 @@ export default function FormsPage() {
                           <b>Description:</b> {form.description}
                         </li>
                       </ul>
-                      <div className="self-end i ">
-                        <Button
-                          variant={"destructive"}
-                          onClick={() => {
-                            deleteForms(form.id);
-                            fetchForms();
-                            setOpenDelete(null);
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
+
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => {
+                          deleteForms(form.id);
+                          fetchForms();
+                          setOpenDelete(null);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </DialogDescription>
                   </DialogContent>
                 </Dialog>
               </TableCell>

@@ -68,8 +68,9 @@ const UsersPage = () => {
           <DialogTrigger
             className="border-2 border-black px-3 py-1 rounded-md"
             onClick={() => setOpenAdd("1")}
+            asChild
           >
-            Add User
+            <Button>Add User</Button>
           </DialogTrigger>
           <DialogContent className="min-w-[50%]">
             <DialogHeader>
