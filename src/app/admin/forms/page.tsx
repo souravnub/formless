@@ -17,12 +17,12 @@ import { getForms, deleteForms } from "@/actions/forms";
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { DialogDescription } from "@radix-ui/react-dialog";
 
 export default function FormsPage() {
     const [forms, setForms] = useState<any>([]);
