@@ -2,9 +2,10 @@
 // Show the conversion of MST to CST
 // Provide how to compare JSON objects in React
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getSubmissionsCount } from "@/actions/submissions";
 import { getUserCountByRole } from "@/actions/users";
+import { set } from "date-fns";
 
 interface ChartDataType {
   month: string;
@@ -13,10 +14,9 @@ interface ChartDataType {
 }
 
 const ChartDataFetcher = ({ onDataFetch }: { onDataFetch: (data: ChartDataType[]) => void }) => {
+  const [count, setCount] = useState(0);
   const [chartData, setChartData] = useState<ChartDataType[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
       try {
         const totalUsersRes = await getUserCountByRole("USER");
         const totalUsers = totalUsersRes.success ? totalUsersRes.data ?? 0:0;
@@ -29,7 +29,6 @@ const ChartDataFetcher = ({ onDataFetch }: { onDataFetch: (data: ChartDataType[]
           startOfMonth.setMilliseconds(startOfMonth.getMilliseconds() + timezoneOffset);
           const endOfMonth = new Date(today.getFullYear(), month + 1, 0, 23, 59, 59, 999); // Last day of the month
           endOfMonth.setMilliseconds(endOfMonth.getMilliseconds() + timezoneOffset);
-
           try {
             const res = await getSubmissionsCount({
               //dateRange: { from: startOfMonth, to: endOfMonth },
@@ -54,18 +53,18 @@ const ChartDataFetcher = ({ onDataFetch }: { onDataFetch: (data: ChartDataType[]
 
         if (JSON.stringify(data) !== JSON.stringify(chartData)) {
             setChartData(data);
-            onDataFetch(data); // Pass the generated data back to the parent
+            onDataFetch(data);
+            setCount(count + 1);
           }
+          console.log(count);
         } catch (error) {
           console.error("Error fetching chart data:", error);
         }
-      };
-  
+    }, []);
 
-    fetchData();
-  }, [onDataFetch,chartData]);
-
-  return null;
-};
-
+    useEffect(() => {
+      fetchData();
+    }, []);
+return null;
+}
 export default ChartDataFetcher;
