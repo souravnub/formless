@@ -1,4 +1,3 @@
-"use client"
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
@@ -13,15 +12,6 @@ import {
 import ChartDataFetcher from "./ChartData"
 import { set } from "date-fns"
 import { useState } from "react"
-const chartData = [
-  { month: "January", rSubmissions: 186, aSubmissions: 80 },
-  { month: "February", rSubmissions: 305, aSubmissions: 200 },
-  { month: "March", rSubmissions: 237, aSubmissions: 120 },
-  { month: "April", rSubmissions: 73, aSubmissions: 190 },
-  { month: "May", rSubmissions: 209, aSubmissions: 130 },
-  { month: "June", rSubmissions: 214, aSubmissions: 140 },
-]
-
 const chartConfig = {
   rSubmissions: {
     label: "Required Submissions",
@@ -32,7 +22,7 @@ const chartConfig = {
     color: "#D15617",
   },
 } satisfies ChartConfig
-type chartDataType = {
+interface chartDataType {
   month: string
   rSubmissions: number
   aSubmissions: number
