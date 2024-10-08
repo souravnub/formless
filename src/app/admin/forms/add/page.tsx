@@ -25,13 +25,14 @@ import { useToast } from "@/hooks/use-toast";
 import Form from "@rjsf/core";
 import { StrictRJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import "./formPreview.css";
+import "@/components/domains/createForm/form.css";
 import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
 import { useJsonForm } from "@/hooks/use-json-form";
 import { createForm } from "@/actions/forms";
 import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
 import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
 import { RoleType } from ".prisma/client";
+import AddDecisionFieldsDialog from "@/components/domains/createForm/AddDescisionDialog";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -44,6 +45,8 @@ const AddFormPage = () => {
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
     const [isCheckboxDialogOpen, setIsCheckboxDialogOpen] = useState(false);
+    const [isDecisionFieldDialogOpen, setIsDesicionFieldDialogOpen] =
+        useState(false);
 
     const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
 
@@ -96,6 +99,33 @@ const AddFormPage = () => {
 
         const isRequired = inputData.required ? true : false;
         addField({ ...inputData, type: "string" }, isRequired);
+    }
+
+    function onCreateDecisionFields(
+        e: FormEvent,
+        { title, fields }: { title: string; fields: string[] }
+    ) {
+        e.preventDefault();
+        const properties: StrictRJSFSchema[] = fields.map((field) => ({
+            [field]: {
+                title: field,
+                enum: ["Yes", "No", "NA"],
+            },
+        }));
+        setRJSFUISchema((prev) => {
+            const schema = prev;
+            const subSchema: Record<string, Record<string, string>> = {};
+            fields.forEach((field) => {
+                subSchema[field] = { "ui:widget": "RadioWidget" };
+            });
+            schema[title] = subSchema;
+            return schema;
+        });
+
+        addField({
+            title,
+            properties: Object.assign({}, ...properties),
+        });
     }
 
     const handleSubmit = async () => {
@@ -254,6 +284,13 @@ const AddFormPage = () => {
                                         }>
                                         Checkboxes
                                     </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            setIsDesicionFieldDialogOpen(true)
+                                        }>
+                                        Decision Fields
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </CardContent>
@@ -263,8 +300,11 @@ const AddFormPage = () => {
                 <div className="border-l pl-5">
                     <h2 className="text-lg ">Form Preview</h2>
                     <Form
-                        className="preview-form space-y-3"
+                        className="form space-y-3"
                         uiSchema={RJSFUISchema}
+                        onSubmit={(data) => {
+                            console.log(data.formData);
+                        }}
                         schema={{
                             title: RJSFState.title,
                             description: RJSFState.description,
@@ -295,6 +335,12 @@ const AddFormPage = () => {
                 isDialogOpen={isCheckboxDialogOpen}
                 setIsDialogOpen={setIsCheckboxDialogOpen}
                 onSubmit={onCreateCheckbox}
+            />
+
+            <AddDecisionFieldsDialog
+                isDialogOpen={isDecisionFieldDialogOpen}
+                setIsDialogOpen={setIsDesicionFieldDialogOpen}
+                onSubmit={onCreateDecisionFields}
             />
         </div>
     );

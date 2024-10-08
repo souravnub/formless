@@ -2,7 +2,7 @@
 import Form, { IChangeEvent } from "@rjsf/core";
 import React, { useState } from "react";
 import validator from "@rjsf/validator-ajv8";
-import "./form.css";
+import "../createForm/form.css";
 import {
     Card,
     CardContent,
