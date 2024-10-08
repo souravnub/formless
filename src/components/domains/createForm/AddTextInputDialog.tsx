@@ -1,4 +1,11 @@
-import React, { Dispatch, FormEvent, SetStateAction } from "react";
+"use client";
+import React, {
+    Dispatch,
+    FormEvent,
+    SetStateAction,
+    useRef,
+    useState,
+} from "react";
 import {
     Dialog,
     DialogContent,
@@ -10,11 +17,16 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 type DialogProps = {
     isInputDialogOpen: boolean;
     setIsInputDialogOpen: Dispatch<SetStateAction<boolean>>;
-    onCreateTextInput: (e: FormEvent) => void;
+    onCreateTextInput: (data: {
+        title: string;
+        defaultVal: string;
+        required: boolean;
+    }) => void;
 };
 
 const AddTextInputDialog = ({
@@ -22,10 +34,34 @@ const AddTextInputDialog = ({
     setIsInputDialogOpen,
     onCreateTextInput,
 }: DialogProps) => {
+    const formRef = useRef<HTMLFormElement>(null);
+    const { toast } = useToast();
+    function handleSubmit(e: FormEvent) {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+
+        const { title, defaultVal, required } = Object.fromEntries(formData);
+
+        if (!title) {
+            return toast({
+                variant: "destructive",
+                description: "Title for the field is requierd",
+            });
+        }
+
+        onCreateTextInput({
+            title: title as string,
+            defaultVal: defaultVal as string,
+            required: required ? true : false,
+        });
+
+        formRef.current?.reset();
+        setIsInputDialogOpen(false);
+    }
     return (
         <Dialog open={isInputDialogOpen} onOpenChange={setIsInputDialogOpen}>
             <DialogContent>
-                <form onSubmit={onCreateTextInput}>
+                <form onSubmit={handleSubmit} ref={formRef}>
                     <DialogHeader>
                         <DialogTitle>Create a new text input</DialogTitle>
                     </DialogHeader>
@@ -41,7 +77,7 @@ const AddTextInputDialog = ({
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="defaultVal">Default value</Label>
                             <Input
-                                name="default"
+                                name="defaultVal"
                                 id="defaultVal"
                                 className="col-span-3"
                             />

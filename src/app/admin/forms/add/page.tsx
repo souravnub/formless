@@ -81,24 +81,16 @@ const AddFormPage = () => {
         });
     }
 
-    function onCreateTextInput(e: FormEvent) {
-        e.preventDefault();
-
-        const formData = new FormData(e.target as HTMLFormElement);
-
-        const inputData = Object.fromEntries(formData);
-
-        if (!inputData.title) {
-            return toast({
-                variant: "destructive",
-                description: "Title for the field is requierd",
-            });
-        }
-
-        setIsInputDialogOpen(false);
-
-        const isRequired = inputData.required ? true : false;
-        addField({ ...inputData, type: "string" }, isRequired);
+    function onCreateTextInput(data: {
+        title: string;
+        required: boolean;
+        defaultVal: string;
+    }) {
+        const isRequired = data.required ? true : false;
+        addField(
+            { title: data.title, default: data.defaultVal, type: "string" },
+            isRequired
+        );
     }
 
     function onCreateDecisionFields(
