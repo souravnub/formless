@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-export default async function AdminDashboard() {
+export default function AdminDashboard() {
     return (
         <div className=" p-2">
             <div className="container mx-auto space-y-2">
@@ -92,4 +92,5 @@ export default async function AdminDashboard() {
             </div>
         </div>
     );
+
 }
