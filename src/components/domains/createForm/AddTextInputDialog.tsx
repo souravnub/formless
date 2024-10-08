@@ -26,6 +26,7 @@ type DialogProps = {
         title: string;
         defaultVal: string;
         required: boolean;
+        isMutableList: boolean;
     }) => void;
 };
 
@@ -35,6 +36,7 @@ const AddTextInputDialog = ({
     onCreateTextInput,
 }: DialogProps) => {
     const formRef = useRef<HTMLFormElement>(null);
+    const [isMutableList, setIsMutableList] = useState(false);
     const { toast } = useToast();
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -53,6 +55,7 @@ const AddTextInputDialog = ({
             title: title as string,
             defaultVal: defaultVal as string,
             required: required ? true : false,
+            isMutableList,
         });
 
         formRef.current?.reset();
@@ -82,9 +85,33 @@ const AddTextInputDialog = ({
                                 className="col-span-3"
                             />
                         </div>
+                        <div>
+                            <div className="flex items-center gap-4">
+                                <Label htmlFor="required">Required</Label>
+                                <Checkbox
+                                    name="required"
+                                    id="required"
+                                    disabled={isMutableList}
+                                />
+                            </div>
+                            {isMutableList && (
+                                <p className="text-sm text-muted-foreground">
+                                    Note: required will have no effect if the
+                                    input field is of type List.
+                                </p>
+                            )}
+                        </div>
+
                         <div className="flex items-center gap-4">
-                            <Label htmlFor="required">Required</Label>
-                            <Checkbox name="required" id="required" />
+                            <Label htmlFor="mutable">is List?</Label>
+                            <Checkbox
+                                name="mutable"
+                                id="mutable"
+                                defaultChecked={isMutableList}
+                                onCheckedChange={(isChecked) =>
+                                    setIsMutableList(isChecked ? true : false)
+                                }
+                            />
                         </div>
                     </div>
 

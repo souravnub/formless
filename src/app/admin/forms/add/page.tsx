@@ -21,18 +21,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { FormEvent, useState } from "react";
 
+import { RoleType } from ".prisma/client";
+import { createForm } from "@/actions/forms";
+import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
+import AddDecisionFieldsDialog from "@/components/domains/createForm/AddDescisionDialog";
+import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
+import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
+import "@/components/domains/createForm/form.css";
+import { useJsonForm } from "@/hooks/use-json-form";
 import { useToast } from "@/hooks/use-toast";
 import Form from "@rjsf/core";
 import { StrictRJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import "@/components/domains/createForm/form.css";
-import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
-import { useJsonForm } from "@/hooks/use-json-form";
-import { createForm } from "@/actions/forms";
-import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
-import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
-import { RoleType } from ".prisma/client";
-import AddDecisionFieldsDialog from "@/components/domains/createForm/AddDescisionDialog";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -85,12 +85,24 @@ const AddFormPage = () => {
         title: string;
         required: boolean;
         defaultVal: string;
+        isMutableList: boolean;
     }) {
         const isRequired = data.required ? true : false;
-        addField(
-            { title: data.title, default: data.defaultVal, type: "string" },
-            isRequired
-        );
+        if (!data.isMutableList) {
+            addField(
+                { title: data.title, default: data.defaultVal, type: "string" },
+                isRequired
+            );
+        } else {
+            addField({
+                title: data.title,
+                type: "array",
+                items: {
+                    type: "string",
+                    default: data.defaultVal,
+                },
+            });
+        }
     }
 
     function onCreateDecisionFields(

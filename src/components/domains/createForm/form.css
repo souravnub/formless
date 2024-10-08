@@ -26,3 +26,40 @@
 .form label {
     @apply text-sm;
 }
+
+i.glyphicon {
+    display: none;
+}
+
+.btn-add::after,
+.array-item-remove::after {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input px-4 py-2 w-full;
+}
+
+.array-item {
+    @apply flex items-end;
+}
+.array-item-list {
+    @apply space-y-1;
+}
+
+.btn-group,
+.array-item-toolbox {
+    display: inline-block !important;
+}
+
+.array-item-move-up {
+    @apply hidden;
+}
+.array-item-move-down {
+    @apply hidden;
+}
+
+.btn-add::after {
+    content: "Add";
+    @apply mt-4 bg-background shadow-sm hover:bg-accent hover:text-accent-foreground;
+}
+.array-item-remove::after {
+    content: "Remove";
+    @apply py-1 px-2 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90;
+}
