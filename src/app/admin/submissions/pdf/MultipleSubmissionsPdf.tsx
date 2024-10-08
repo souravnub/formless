@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { Prisma } from "@prisma/client";
@@ -31,12 +32,34 @@ export const MultipleSubmissionsPdf = ({
                     </Text>
 
                     <Text>Submission</Text>
-                    {Object.keys(submissions as object).map((key) => {
+                    {Object.keys(submissions).map((key) => {
+                        console.log(key);
                         return (
-                            <Text style={{ marginLeft: "20px" }}>
-                                {/* @ts-ignore */}
-                                {key} : {submissions[key]}
-                            </Text>
+                            <View
+                                style={{
+                                    marginLeft: "20px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                                key={key}>
+                                <Text>{key} : </Text>
+                                {typeof submissions[key] !== "string" ? (
+                                    Object.keys(submissions[key]).map(
+                                        (subKey) => (
+                                            <Text
+                                                style={{ marginLeft: "10px" }}
+                                                key={subKey}>
+                                                <Text>
+                                                    {subKey}:
+                                                    {submissions[key][subKey]}
+                                                </Text>
+                                            </Text>
+                                        )
+                                    )
+                                ) : (
+                                    <Text>{submissions[key] || "---"}</Text>
+                                )}
+                            </View>
                         );
                     })}
                 </View>

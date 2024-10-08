@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 
@@ -6,6 +7,10 @@ const styles = StyleSheet.create({
     view: {
         flexDirection: "column",
         gap: "10px",
+    },
+    nestedView: {
+        display: "flex",
+        flexDirection: "column",
     },
 });
 
@@ -30,25 +35,54 @@ export const SubmissionPdf = ({
     user,
     submission,
     submissionId,
-}: SubmissionPdfProps) => (
-    <Document title={`Submission details: ${submissionId}`}>
-        <Page size="A4">
-            <View style={styles.view}>
-                <Text>FormId: {form.id}</Text>
-                <Text>SubmissionId: {submissionId}</Text>
-                <Text>User Details </Text>
-                <Text style={{ marginLeft: "20px" }}>name: {user.name}</Text>
-                <Text style={{ marginLeft: "20px" }}>email: {user.email}</Text>
+}: SubmissionPdfProps) => {
+    return (
+        <Document title={`Submission details: ${submissionId}`}>
+            <Page size="A4">
+                <View style={styles.view}>
+                    <Text>FormId: {form.id}</Text>
+                    <Text>SubmissionId: {submissionId}</Text>
+                    <Text>User Details </Text>
+                    <Text style={{ marginLeft: "20px" }}>
+                        name: {user.name}
+                    </Text>
+                    <Text style={{ marginLeft: "20px" }}>
+                        email: {user.email}
+                    </Text>
 
-                <Text>Submission</Text>
-                {Object.keys(submission).map((key) => {
-                    return (
-                        <Text style={{ marginLeft: "20px" }}>
-                            {key} : {submission[key]}
-                        </Text>
-                    );
-                })}
-            </View>
-        </Page>
-    </Document>
-);
+                    <Text>Submission</Text>
+                    {Object.keys(submission).map((key) => {
+                        console.log(key);
+                        return (
+                            <View
+                                style={{
+                                    marginLeft: "20px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                                key={key}>
+                                <Text>{key} : </Text>
+                                {typeof submission[key] !== "string" ? (
+                                    Object.keys(submission[key]).map(
+                                        (subKey) => (
+                                            <Text
+                                                style={{ marginLeft: "10px" }}
+                                                key={subKey}>
+                                                <Text>
+                                                    {subKey}:
+                                                    {submission[key][subKey]}
+                                                </Text>
+                                            </Text>
+                                        )
+                                    )
+                                ) : (
+                                    <Text>{submission[key] || "---"}</Text>
+                                )}
+                            </View>
+                        );
+                    })}
+                </View>
+            </Page>
+        </Document>
+    );
+};

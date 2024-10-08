@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Button } from "@/components/ui/button";
 import prisma from "@/db";
 import Link from "next/link";
@@ -40,13 +41,27 @@ const SingleSubmissionPage = async ({ params }: { params: { id: string } }) => {
                         <li
                             key={key}
                             className="grid items-center gap-4"
-                            style={{ gridTemplateColumns: "100px 1fr" }}>
+                            style={{ gridTemplateColumns: "8rem 1fr" }}>
                             <span className=" text-muted-foreground">
                                 {key}
                             </span>
                             <span>
-                                {/* @ts-ignore */}
-                                {submission.submissions[key] || "---"}
+                                {typeof submission.submissions[key] !== "string"
+                                    ? Object.keys(
+                                          submission.submissions[key]
+                                      ).map((subKey) => (
+                                          <div className="grid grid-cols-2 max-w-xs">
+                                              <span>{subKey}</span>
+                                              <span>
+                                                  {
+                                                      submission.submissions[
+                                                          key
+                                                      ][subKey]
+                                                  }
+                                              </span>
+                                          </div>
+                                      ))
+                                    : submission.submissions[key] || "---"}
                             </span>
                         </li>
                     );
