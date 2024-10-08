@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import PdfRecursiveDisplay from "@/components/PdfRecursiveDisplay";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -51,35 +52,7 @@ export const SubmissionPdf = ({
                     </Text>
 
                     <Text>Submission</Text>
-                    {Object.keys(submission).map((key) => {
-                        return (
-                            <View
-                                style={{
-                                    marginLeft: "20px",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}
-                                key={key}>
-                                <Text>{key} : </Text>
-                                {typeof submission[key] !== "string" ? (
-                                    Object.keys(submission[key]).map(
-                                        (subKey) => (
-                                            <Text
-                                                style={{ marginLeft: "10px" }}
-                                                key={subKey}>
-                                                <Text>
-                                                    {subKey}:
-                                                    {submission[key][subKey]}
-                                                </Text>
-                                            </Text>
-                                        )
-                                    )
-                                ) : (
-                                    <Text>{submission[key] || "---"}</Text>
-                                )}
-                            </View>
-                        );
-                    })}
+                    <PdfRecursiveDisplay data={submission} />
                 </View>
             </Page>
         </Document>

@@ -2,6 +2,7 @@
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { Prisma } from "@prisma/client";
+import PdfRecursiveDisplay from "@/components/PdfRecursiveDisplay";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -32,35 +33,7 @@ export const MultipleSubmissionsPdf = ({
                     </Text>
 
                     <Text>Submission</Text>
-                    {Object.keys(submissions).map((key) => {
-                        return (
-                            <View
-                                style={{
-                                    marginLeft: "20px",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}
-                                key={key}>
-                                <Text>{key} : </Text>
-                                {typeof submissions[key] !== "string" ? (
-                                    Object.keys(submissions[key]).map(
-                                        (subKey) => (
-                                            <Text
-                                                style={{ marginLeft: "10px" }}
-                                                key={subKey}>
-                                                <Text>
-                                                    {subKey}:
-                                                    {submissions[key][subKey]}
-                                                </Text>
-                                            </Text>
-                                        )
-                                    )
-                                ) : (
-                                    <Text>{submissions[key] || "---"}</Text>
-                                )}
-                            </View>
-                        );
-                    })}
+                    <PdfRecursiveDisplay data={submissions} />
                 </View>
             </Page>
         ))}

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import RecursiveDisplay from "@/components/RecursiveDisplay";
 import { Button } from "@/components/ui/button";
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
@@ -29,35 +30,7 @@ const SingleSubmissionPage = async ({ params }: { params: { id: string } }) => {
                 </Button>
             </h1>
             Response:
-            <ul className="grid gap-5 pl-4 pt-1">
-                {Object.keys(submission.submissions as object).map((key) => {
-                    return (
-                        <li key={key}>
-                            <span className="block text-muted-foreground">
-                                {key}
-                            </span>
-                            <span>
-                                {typeof submission.submissions[key] !== "string"
-                                    ? Object.keys(
-                                          submission.submissions[key]
-                                      ).map((subKey) => (
-                                          <div key={subKey}>
-                                              <span>{subKey}</span>
-                                              <span className="font-bold ml-2 ">
-                                                  {
-                                                      submission.submissions[
-                                                          key
-                                                      ][subKey]
-                                                  }
-                                              </span>
-                                          </div>
-                                      ))
-                                    : submission.submissions[key] || "---"}
-                            </span>
-                        </li>
-                    );
-                })}
-            </ul>
+            <RecursiveDisplay data={submission.submissions} />
         </div>
     );
 };
