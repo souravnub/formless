@@ -16,7 +16,7 @@ import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 type DialogProps = {
     isDialogOpen: boolean;
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-    onSubmit: (e: FormEvent, data: { title: string; fields: string[] }) => void;
+    onSubmit: (data: { title: string; fields: string[] }) => void;
 };
 
 const AddDecisionFieldsDialog = ({
@@ -49,6 +49,7 @@ const AddDecisionFieldsDialog = ({
     }
 
     function handleSubmit(e: FormEvent) {
+        e.preventDefault();
         if (title.trim().length == 0) {
             return toast({
                 description: "title is required",
@@ -64,7 +65,7 @@ const AddDecisionFieldsDialog = ({
         setIsDialogOpen(false);
         setFields([]);
         setTitle("");
-        onSubmit(e, { title, fields });
+        onSubmit({ title, fields });
     }
 
     return (

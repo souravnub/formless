@@ -33,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import Form from "@rjsf/core";
 import { StrictRJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
+import AddDecisionCommentDialog from "@/components/domains/createForm/AddDecisionComment";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -46,6 +47,8 @@ const AddFormPage = () => {
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
     const [isCheckboxDialogOpen, setIsCheckboxDialogOpen] = useState(false);
     const [isDecisionFieldDialogOpen, setIsDesicionFieldDialogOpen] =
+        useState(false);
+    const [isDecisionCommentDialogOpen, setIsDecisionCommentDialogOpen] =
         useState(false);
 
     const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
@@ -105,11 +108,13 @@ const AddFormPage = () => {
         }
     }
 
-    function onCreateDecisionFields(
-        e: FormEvent,
-        { title, fields }: { title: string; fields: string[] }
-    ) {
-        e.preventDefault();
+    function onCreateDecisionFields({
+        title,
+        fields,
+    }: {
+        title: string;
+        fields: string[];
+    }) {
         const properties: StrictRJSFSchema[] = fields.map((field) => ({
             [field]: {
                 title: field,
@@ -121,6 +126,48 @@ const AddFormPage = () => {
             const subSchema: Record<string, Record<string, string>> = {};
             fields.forEach((field) => {
                 subSchema[field] = { "ui:widget": "RadioWidget" };
+            });
+            schema[title] = subSchema;
+            return schema;
+        });
+
+        addField({
+            title,
+            properties: Object.assign({}, ...properties),
+        });
+    }
+
+    function onCreateDecisionComment({
+        title,
+        fields,
+    }: {
+        title: string;
+        fields: string[];
+    }) {
+        const properties: StrictRJSFSchema[] = fields.map((field) => ({
+            [field]: {
+                properties: {
+                    response: {
+                        enum: ["Yes", "No", "NA"],
+                    },
+                    comments: {
+                        type: "string",
+                    },
+                },
+            },
+        }));
+
+        setRJSFUISchema((prev) => {
+            const schema = prev;
+            const subSchema: Record<
+                string,
+                Record<string, Record<string, string>>
+            > = {};
+            fields.forEach((field) => {
+                subSchema[field] = {
+                    response: { "ui:widget": "RadioWidget" },
+                    comments: { "ui:widget": "textarea" },
+                };
             });
             schema[title] = subSchema;
             return schema;
@@ -254,9 +301,9 @@ const AddFormPage = () => {
                                                 type="button"
                                                 variant={"destructive"}
                                                 className="p-2 px-3 h-auto"
-                                                onClick={() =>
-                                                    removeField(idx)
-                                                }>
+                                                onClick={() => {
+                                                    removeField(idx);
+                                                }}>
                                                 <TrashIcon />
                                             </Button>
                                         </div>
@@ -296,6 +343,13 @@ const AddFormPage = () => {
                                             setIsDesicionFieldDialogOpen(true)
                                         }>
                                         Decision Fields
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            setIsDecisionCommentDialogOpen(true)
+                                        }>
+                                        Decision & Comment
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -347,6 +401,12 @@ const AddFormPage = () => {
                 isDialogOpen={isDecisionFieldDialogOpen}
                 setIsDialogOpen={setIsDesicionFieldDialogOpen}
                 onSubmit={onCreateDecisionFields}
+            />
+
+            <AddDecisionCommentDialog
+                isDialogOpen={isDecisionCommentDialogOpen}
+                setIsDialogOpen={setIsDecisionCommentDialogOpen}
+                onSubmit={onCreateDecisionComment}
             />
         </div>
     );
