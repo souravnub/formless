@@ -233,7 +233,9 @@ const AddFormPage = () => {
                             <div className="flex flex-col gap-2">
                                 {propertiesArr.map((prop, idx) => {
                                     return (
-                                        <div className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
+                                        <div
+                                            key={idx}
+                                            className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
                                             <span>
                                                 {prop &&
                                                     JSON.stringify(

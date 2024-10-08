@@ -52,7 +52,6 @@ export const SubmissionPdf = ({
 
                     <Text>Submission</Text>
                     {Object.keys(submission).map((key) => {
-                        console.log(key);
                         return (
                             <View
                                 style={{

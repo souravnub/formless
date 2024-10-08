@@ -20,7 +20,7 @@ export const MultipleSubmissionsPdf = ({
 }) => (
     <Document title={`Multiple submissions records`}>
         {submissions.map(({ user, submissions, id }) => (
-            <Page size="A4">
+            <Page size="A4" key={id}>
                 <View style={styles.view}>
                     <Text>SubmissionId: {id}</Text>
                     <Text>User Details </Text>
@@ -33,7 +33,6 @@ export const MultipleSubmissionsPdf = ({
 
                     <Text>Submission</Text>
                     {Object.keys(submissions).map((key) => {
-                        console.log(key);
                         return (
                             <View
                                 style={{

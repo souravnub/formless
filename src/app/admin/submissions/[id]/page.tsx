@@ -35,14 +35,11 @@ const SingleSubmissionPage = async ({ params }: { params: { id: string } }) => {
                 </Button>
             </p>
             Response:
-            <ul className="grid gap-3 pl-4 pt-1">
+            <ul className="grid gap-5 pl-4 pt-1">
                 {Object.keys(submission.submissions as object).map((key) => {
                     return (
-                        <li
-                            key={key}
-                            className="grid items-center gap-4"
-                            style={{ gridTemplateColumns: "8rem 1fr" }}>
-                            <span className=" text-muted-foreground">
+                        <li key={key}>
+                            <span className="block text-muted-foreground">
                                 {key}
                             </span>
                             <span>
@@ -50,9 +47,9 @@ const SingleSubmissionPage = async ({ params }: { params: { id: string } }) => {
                                     ? Object.keys(
                                           submission.submissions[key]
                                       ).map((subKey) => (
-                                          <div className="grid grid-cols-2 max-w-xs">
+                                          <div key={subKey}>
                                               <span>{subKey}</span>
-                                              <span>
+                                              <span className="font-bold ml-2 ">
                                                   {
                                                       submission.submissions[
                                                           key

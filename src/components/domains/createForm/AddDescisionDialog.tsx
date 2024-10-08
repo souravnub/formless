@@ -96,7 +96,9 @@ const AddDecisionFieldsDialog = ({
                                 ) : (
                                     fields.map((field, idx) => {
                                         return (
-                                            <div className="bg-accent rounded-md p-2 text-sm flex items-center gap-5 w-fit">
+                                            <div
+                                                key={field}
+                                                className="bg-accent rounded-md p-2 text-sm flex items-center gap-5 w-fit">
                                                 {field}
                                                 <button
                                                     type="button"

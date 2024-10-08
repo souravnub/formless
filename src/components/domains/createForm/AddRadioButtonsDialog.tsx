@@ -99,7 +99,9 @@ const AddRadioButtonsDialog = ({
                                 ) : (
                                     radioButtons.map((btn, idx) => {
                                         return (
-                                            <div className="bg-accent rounded-md p-2 text-sm flex items-center gap-5 w-fit">
+                                            <div
+                                                key={btn}
+                                                className="bg-accent rounded-md p-2 text-sm flex items-center gap-5 w-fit">
                                                 {btn}
                                                 <button
                                                     type="button"
