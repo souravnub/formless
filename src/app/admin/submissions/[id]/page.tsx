@@ -1,3 +1,5 @@
+// @ts-nocheck
+import RecursiveDisplay from "@/components/RecursiveDisplay";
 import { Button } from "@/components/ui/button";
 import prisma from "@/db";
 import Link from "next/link";
@@ -34,24 +36,7 @@ const SingleSubmissionPage = async ({ params }: { params: { id: string } }) => {
                 </Button>
             </p>
             Response:
-            <ul className="grid gap-3 pl-4 pt-1">
-                {Object.keys(submission.submissions as object).map((key) => {
-                    return (
-                        <li
-                            key={key}
-                            className="grid items-center gap-4"
-                            style={{ gridTemplateColumns: "100px 1fr" }}>
-                            <span className=" text-muted-foreground">
-                                {key}
-                            </span>
-                            <span>
-                                {/* @ts-ignore */}
-                                {submission.submissions[key] || "---"}
-                            </span>
-                        </li>
-                    );
-                })}
-            </ul>
+            <RecursiveDisplay data={submission.submissions} />
             <Button asChild className="mt-5">
                 <Link href={`/admin/submissions/${submission.id}/pdf`}>
                     View Pdf

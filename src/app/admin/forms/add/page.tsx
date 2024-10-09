@@ -21,17 +21,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { FormEvent, useState } from "react";
 
+import { RoleType } from ".prisma/client";
+import { createForm } from "@/actions/forms";
+import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
+import AddDecisionFieldsDialog from "@/components/domains/createForm/AddDescisionDialog";
+import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
+import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
+import "@/components/domains/createForm/form.css";
+import { useJsonForm } from "@/hooks/use-json-form";
 import { useToast } from "@/hooks/use-toast";
 import Form from "@rjsf/core";
 import { StrictRJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import "./formPreview.css";
-import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
-import { useJsonForm } from "@/hooks/use-json-form";
-import { createForm } from "@/actions/forms";
-import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
-import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
-import { RoleType } from ".prisma/client";
+import AddDecisionCommentDialog from "@/components/domains/createForm/AddDecisionComment";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -44,6 +46,10 @@ const AddFormPage = () => {
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
     const [isCheckboxDialogOpen, setIsCheckboxDialogOpen] = useState(false);
+    const [isDecisionFieldDialogOpen, setIsDesicionFieldDialogOpen] =
+        useState(false);
+    const [isDecisionCommentDialogOpen, setIsDecisionCommentDialogOpen] =
+        useState(false);
 
     const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
 
@@ -70,27 +76,107 @@ const AddFormPage = () => {
             schema[title] = { "ui:widget": "CheckboxesWidget" };
             return schema;
         });
-        addField({ title, enum: checkboxes });
+        addField({
+            title,
+            type: "array",
+            uniqueItems: true,
+            items: { enum: checkboxes },
+        });
     }
 
-    function onCreateTextInput(e: FormEvent) {
-        e.preventDefault();
-
-        const formData = new FormData(e.target as HTMLFormElement);
-
-        const inputData = Object.fromEntries(formData);
-
-        if (!inputData.title) {
-            return toast({
-                variant: "destructive",
-                description: "Title for the field is requierd",
+    function onCreateTextInput(data: {
+        title: string;
+        required: boolean;
+        defaultVal: string;
+        isMutableList: boolean;
+    }) {
+        const isRequired = data.required ? true : false;
+        if (!data.isMutableList) {
+            addField(
+                { title: data.title, default: data.defaultVal, type: "string" },
+                isRequired
+            );
+        } else {
+            addField({
+                title: data.title,
+                type: "array",
+                items: {
+                    type: "string",
+                    default: data.defaultVal,
+                },
             });
         }
+    }
 
-        setIsInputDialogOpen(false);
+    function onCreateDecisionFields({
+        title,
+        fields,
+    }: {
+        title: string;
+        fields: string[];
+    }) {
+        const properties: StrictRJSFSchema[] = fields.map((field) => ({
+            [field]: {
+                title: field,
+                enum: ["Yes", "No", "NA"],
+            },
+        }));
+        setRJSFUISchema((prev) => {
+            const schema = prev;
+            const subSchema: Record<string, Record<string, string>> = {};
+            fields.forEach((field) => {
+                subSchema[field] = { "ui:widget": "RadioWidget" };
+            });
+            schema[title] = subSchema;
+            return schema;
+        });
 
-        const isRequired = inputData.required ? true : false;
-        addField({ ...inputData, type: "string" }, isRequired);
+        addField({
+            title,
+            properties: Object.assign({}, ...properties),
+        });
+    }
+
+    function onCreateDecisionComment({
+        title,
+        fields,
+    }: {
+        title: string;
+        fields: string[];
+    }) {
+        const properties: StrictRJSFSchema[] = fields.map((field) => ({
+            [field]: {
+                properties: {
+                    response: {
+                        enum: ["Yes", "No", "NA"],
+                    },
+                    comments: {
+                        type: "string",
+                    },
+                },
+            },
+        }));
+
+        setRJSFUISchema((prev) => {
+            const schema = prev;
+            const subSchema: Record<
+                string,
+                Record<string, Record<string, string>>
+            > = {};
+            fields.forEach((field) => {
+                subSchema[field] = {
+                    response: { "ui:widget": "RadioWidget" },
+                    comments: { "ui:widget": "textarea" },
+                };
+            });
+            schema[title] = subSchema;
+            return schema;
+        });
+
+        addField({
+            title,
+            properties: Object.assign({}, ...properties),
+        });
     }
 
     const handleSubmit = async () => {
@@ -174,13 +260,12 @@ const AddFormPage = () => {
 
                     <div>
                         <Label htmlFor="desc">Role: </Label>
-                        <select 
+                        <select
                             id="role"
                             className="border p-2 rounded"
                             onChange={(e) =>
                                 setFormRole(e.target.value as RoleType)
-                            }
-                            >
+                            }>
                             <option value="SUPERVISOR">Supervisor</option>
                             <option value="USER">User</option>
                         </select>
@@ -199,7 +284,9 @@ const AddFormPage = () => {
                             <div className="flex flex-col gap-2">
                                 {propertiesArr.map((prop, idx) => {
                                     return (
-                                        <div className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
+                                        <div
+                                            key={idx}
+                                            className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
                                             <span>
                                                 {prop &&
                                                     JSON.stringify(
@@ -214,9 +301,9 @@ const AddFormPage = () => {
                                                 type="button"
                                                 variant={"destructive"}
                                                 className="p-2 px-3 h-auto"
-                                                onClick={() =>
-                                                    removeField(idx)
-                                                }>
+                                                onClick={() => {
+                                                    removeField(idx);
+                                                }}>
                                                 <TrashIcon />
                                             </Button>
                                         </div>
@@ -250,6 +337,20 @@ const AddFormPage = () => {
                                         }>
                                         Checkboxes
                                     </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            setIsDesicionFieldDialogOpen(true)
+                                        }>
+                                        Decision Fields
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            setIsDecisionCommentDialogOpen(true)
+                                        }>
+                                        Decision & Comment
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </CardContent>
@@ -259,8 +360,11 @@ const AddFormPage = () => {
                 <div className="border-l pl-5">
                     <h2 className="text-lg ">Form Preview</h2>
                     <Form
-                        className="preview-form space-y-3"
+                        className="form space-y-3"
                         uiSchema={RJSFUISchema}
+                        onSubmit={(data) => {
+                            console.log(data.formData);
+                        }}
                         schema={{
                             title: RJSFState.title,
                             description: RJSFState.description,
@@ -291,6 +395,18 @@ const AddFormPage = () => {
                 isDialogOpen={isCheckboxDialogOpen}
                 setIsDialogOpen={setIsCheckboxDialogOpen}
                 onSubmit={onCreateCheckbox}
+            />
+
+            <AddDecisionFieldsDialog
+                isDialogOpen={isDecisionFieldDialogOpen}
+                setIsDialogOpen={setIsDesicionFieldDialogOpen}
+                onSubmit={onCreateDecisionFields}
+            />
+
+            <AddDecisionCommentDialog
+                isDialogOpen={isDecisionCommentDialogOpen}
+                setIsDialogOpen={setIsDecisionCommentDialogOpen}
+                onSubmit={onCreateDecisionComment}
             />
         </div>
     );

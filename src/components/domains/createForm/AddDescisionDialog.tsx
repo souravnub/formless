@@ -16,13 +16,10 @@ import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 type DialogProps = {
     isDialogOpen: boolean;
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-    onSubmit: (
-        e: FormEvent,
-        data: { title: string; checkboxes: string[] }
-    ) => void;
+    onSubmit: (data: { title: string; fields: string[] }) => void;
 };
 
-const AddCheckboxDialog = ({
+const AddDecisionFieldsDialog = ({
     isDialogOpen,
     setIsDialogOpen,
     onSubmit,
@@ -30,9 +27,9 @@ const AddCheckboxDialog = ({
     const { toast } = useToast();
     const [input, setInput] = useState("");
     const [title, setTitle] = useState("");
-    const [checkboxes, setCheckboxes] = useState<string[]>([]);
+    const [fields, setFields] = useState<string[]>([]);
 
-    function onAddCheckbox() {
+    function onAddField() {
         const inputVal = input.trim();
 
         if (inputVal.length === 0) {
@@ -41,33 +38,34 @@ const AddCheckboxDialog = ({
                 variant: "destructive",
             });
         }
-        if (checkboxes.find((btn) => btn === inputVal)) {
+        if (fields.find((btn) => btn === inputVal)) {
             return toast({
                 description: "Value already exists!",
                 variant: "destructive",
             });
         }
-        setCheckboxes((prev) => [...prev, inputVal.trim()]);
+        setFields((prev) => [...prev, inputVal.trim()]);
         setInput("");
     }
 
     function handleSubmit(e: FormEvent) {
+        e.preventDefault();
         if (title.trim().length == 0) {
             return toast({
                 description: "title is required",
                 variant: "destructive",
             });
         }
-        if (checkboxes.length === 0) {
+        if (fields.length === 0) {
             return toast({
-                description: "Their should be atleast 1 checkbox option",
+                description: "Their should be atleast 1 field",
                 variant: "destructive",
             });
         }
         setIsDialogOpen(false);
-        setCheckboxes([]);
+        setFields([]);
         setTitle("");
-        onSubmit(e, { title, checkboxes });
+        onSubmit({ title, fields });
     }
 
     return (
@@ -75,7 +73,7 @@ const AddCheckboxDialog = ({
             <DialogContent>
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
-                        <DialogTitle>Create new Checkbox Group</DialogTitle>
+                        <DialogTitle>Create new Decision Group</DialogTitle>
                     </DialogHeader>
 
                     <div className="space-y-5 my-4">
@@ -90,25 +88,25 @@ const AddCheckboxDialog = ({
                         </div>
 
                         <div>
-                            <Label htmlFor="checkboxBtnInp">Checkboxes</Label>
+                            <Label htmlFor="radioBtnInp">Decision Fields</Label>
                             <div className="space-y-1 my-2">
-                                {checkboxes.length === 0 ? (
+                                {fields.length === 0 ? (
                                     <p className="text-sm text-red-500">
-                                        No Checkboxes Yet!
+                                        No Fields Yet!
                                     </p>
                                 ) : (
-                                    checkboxes.map((btn, idx) => {
+                                    fields.map((field, idx) => {
                                         return (
                                             <div
-                                                key={btn}
+                                                key={field}
                                                 className="bg-accent rounded-md p-2 text-sm flex items-center gap-5 w-fit">
-                                                {btn}
+                                                {field}
                                                 <button
                                                     type="button"
                                                     onClick={() =>
-                                                        setCheckboxes((prev) =>
+                                                        setFields((prev) =>
                                                             prev.filter(
-                                                                (btn, index) =>
+                                                                (_, index) =>
                                                                     index !==
                                                                     idx
                                                             )
@@ -125,7 +123,7 @@ const AddCheckboxDialog = ({
 
                             <div className="flex gap-2 mt-2">
                                 <Input
-                                    id="checkboxBtnInp"
+                                    id="radioBtnInp"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                 />
@@ -134,7 +132,7 @@ const AddCheckboxDialog = ({
                                     type="button"
                                     className="block h-auto p-1 px-3"
                                     variant={"outline"}
-                                    onClick={onAddCheckbox}>
+                                    onClick={onAddField}>
                                     <PlusIcon />
                                 </Button>
                             </div>
@@ -150,4 +148,4 @@ const AddCheckboxDialog = ({
     );
 };
 
-export default AddCheckboxDialog;
+export default AddDecisionFieldsDialog;

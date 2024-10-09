@@ -1,6 +1,8 @@
+// @ts-nocheck
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { Prisma } from "@prisma/client";
+import PdfRecursiveDisplay from "@/components/PdfRecursiveDisplay";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -19,7 +21,7 @@ export const MultipleSubmissionsPdf = ({
 }) => (
     <Document title={`Multiple submissions records`}>
         {submissions.map(({ user, submissions, id }) => (
-            <Page size="A4">
+            <Page size="A4" key={id}>
                 <View style={styles.view}>
                     <Text>SubmissionId: {id}</Text>
                     <Text>User Details </Text>
@@ -31,14 +33,7 @@ export const MultipleSubmissionsPdf = ({
                     </Text>
 
                     <Text>Submission</Text>
-                    {Object.keys(submissions as object).map((key) => {
-                        return (
-                            <Text style={{ marginLeft: "20px" }}>
-                                {/* @ts-ignore */}
-                                {key} : {submissions[key]}
-                            </Text>
-                        );
-                    })}
+                    <PdfRecursiveDisplay data={submissions} />
                 </View>
             </Page>
         ))}
