@@ -60,6 +60,12 @@ const LoginForm = () => {
             <Button type="submit" disabled={isLoading} className="px-8 w-min">
                 {isLoading ? "loading..." : "Login"}
             </Button>
+
+            <div className="flex justify-center">
+                <a href="/signup" className="text-primary hover:underline">
+                    Don't have an account? Sign up
+                </a>
+            </div>
         </form>
     );
 };
