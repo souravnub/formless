@@ -2,7 +2,6 @@
 // How to copy text to clipboard https://www.geeksforgeeks.org/how-to-copy-text-to-the-clipboard-in-next-js/ LINE 43
 
 "use client";
-
 import {
   Table,
   TableBody,
@@ -35,7 +34,6 @@ const CopyPastUserTable = () => {
       data.data && setUsers(data.data);
     };
     fetchData();
-    console.log("users", users);
   }, []);
 
   const copyToClipboard = (text: string) => {
@@ -51,6 +49,10 @@ const CopyPastUserTable = () => {
       });
     }
   };
+  const tc = (text: string) => {
+    return <TableCell onClick={() => copyToClipboard(text)}>{text}</TableCell>;
+  };
+
   return (
     <Card className="mb-2">
       <CardHeader>Users to copy and paste</CardHeader>
@@ -61,30 +63,16 @@ const CopyPastUserTable = () => {
             <TableRow>
               <TableHead className="pl-5">Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {users &&
               users.map(({ id, name, email, role }) => (
                 <TableRow key={id}>
-                  <TableCell>{name}</TableCell>
-                  <TableCell>{email}</TableCell>
-                  <TableCell>{role}</TableCell>
+                  {tc(name)}
+                  {tc(email)}
                 </TableRow>
               ))}
-            <TableRow>
-              <TableCell onClick={() => copyToClipboard("John Doe")}>
-                John Doe
-              </TableCell>
-              <TableCell onClick={() => copyToClipboard("John@john.ca")}>
-                John@john.ca
-              </TableCell>
-              <TableCell onClick={() => copyToClipboard("Role")}>
-                Role
-              </TableCell>
-            </TableRow>
           </TableBody>
         </Table>
       </CardContent>
