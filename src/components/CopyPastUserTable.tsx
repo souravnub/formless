@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { getUsers } from "@/actions/users";
+import { useToast } from "@/hooks/use-toast";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -28,6 +29,7 @@ const CopyPastUserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [x, setX] = useState(0);
   const [copiedText, setCopiedText] = useState("");
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,9 +41,18 @@ const CopyPastUserTable = () => {
   }, [x]);
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+    try {
+      navigator.clipboard.writeText(text);
+      toast({
+        description: "Copied text to clipboard",
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        description: "Failed to copy text to clipboard",
+      });
+    }
   };
-
   return (
     <Card className="mb-2">
       <CardHeader>Users to copy and paste</CardHeader>
