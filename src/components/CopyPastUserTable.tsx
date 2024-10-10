@@ -27,8 +27,6 @@ interface User {
 
 const CopyPastUserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [x, setX] = useState(0);
-  const [copiedText, setCopiedText] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -38,13 +36,13 @@ const CopyPastUserTable = () => {
     };
     fetchData();
     console.log("users", users);
-  }, [x]);
+  }, []);
 
   const copyToClipboard = (text: string) => {
     try {
       navigator.clipboard.writeText(text);
       toast({
-        description: "Copied text to clipboard",
+        description: `Copied "${text}" to clipboard`,
       });
     } catch (err) {
       toast({
@@ -79,6 +77,12 @@ const CopyPastUserTable = () => {
             <TableRow>
               <TableCell onClick={() => copyToClipboard("John Doe")}>
                 John Doe
+              </TableCell>
+              <TableCell onClick={() => copyToClipboard("John@john.ca")}>
+                John@john.ca
+              </TableCell>
+              <TableCell onClick={() => copyToClipboard("Role")}>
+                Role
               </TableCell>
             </TableRow>
           </TableBody>
