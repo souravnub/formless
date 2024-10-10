@@ -45,6 +45,7 @@ const UsersPage = () => {
       data.data && setUsers(data.data);
     };
     fetchData();
+    console.log("users", users);
   }, [x]);
 
   return (
