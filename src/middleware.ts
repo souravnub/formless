@@ -7,8 +7,19 @@ export default auth((req) => {
         return Response.redirect(newUrl);
     }
 
+    // if is not logged in and is at /login, then continue
+    if(!req.auth && req.nextUrl.pathname === "/signup") {
+        const newUrl = new URL("/signup", req.nextUrl.origin);
+        return Response.redirect(newUrl);
+    }
+
     // if is loggedIn and going to /login, then push back to the origin
     if (req.auth && req.nextUrl.pathname == "/login") {
+        return Response.redirect(req.nextUrl.origin);
+    }
+
+    // if is logged in and going to /signup, then push back to the origin
+    if(req.auth && req.nextUrl.pathname == "/signup") {
         return Response.redirect(req.nextUrl.origin);
     }
 
