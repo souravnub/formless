@@ -1,4 +1,5 @@
 "use client";
+import handleDownload  from "@/actions/handleDownload";
 import { getForms } from "@/actions/forms";
 import { deleteSubmission, getSubmissions } from "@/actions/submissions";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
@@ -224,7 +225,9 @@ export default function SubmissionsPage() {
                                         Pdf
                                     </Link>
                                 </Button>
-
+                                <Button onClick={() => handleDownload({submissionId:submission.id})}>
+                                    Doc
+                                </Button>
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <Button variant={"destructive"}>
