@@ -57,24 +57,26 @@ const CopyPastUserTable = () => {
     <Card className="mb-2">
       <CardHeader>Users to copy and paste</CardHeader>
       <CardContent>
-        <Table className="border">
-          <TableCaption>All Users</TableCaption>
-          <TableHeader className="bg-accent/70">
-            <TableRow>
-              <TableHead className="pl-5">Name</TableHead>
-              <TableHead>Email</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users &&
-              users.map(({ id, name, email, role }) => (
-                <TableRow key={id}>
-                  {tc(name)}
-                  {tc(email)}
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
+        <div className="overflow-y-auto max-h-[300px]">
+          <Table className="border">
+            <TableCaption>All Users</TableCaption>
+            <TableHeader className="bg-accent/70 sticky top-0 z-10 ">
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users &&
+                users.map(({ id, name, email }) => (
+                  <TableRow key={id}>
+                    {tc(name)}
+                    {tc(email)}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );

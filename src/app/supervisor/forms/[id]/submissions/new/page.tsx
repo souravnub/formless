@@ -18,9 +18,13 @@ const FormSubmissionPage = async ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <div>
-      <UserForm form={form} />
-      <CopyPastUserTable />
+    <div className="flex flex-row">
+      <div className="flex-1">
+        <UserForm form={form} />
+      </div>
+      <div className="min-w-[30%]">
+        <CopyPastUserTable />
+      </div>
     </div>
   );
 };
