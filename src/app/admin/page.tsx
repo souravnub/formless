@@ -76,7 +76,9 @@ export default function AdminDashboard() {
                             <p>There are X requests to create an account</p>
                         </CardContent>
                         <CardFooter>
-                            <Button>View Requests</Button>
+                            <Button>
+                                <Link href="/admin/requests">View Requests</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
                 </div>

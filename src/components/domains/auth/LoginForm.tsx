@@ -60,6 +60,15 @@ const LoginForm = () => {
             <Button type="submit" disabled={isLoading} className="px-8 w-min">
                 {isLoading ? "loading..." : "Login"}
             </Button>
+
+            <div>
+                <p className="text-sm text-center">
+                    Don't have an account?{" "}
+                    <a href="/signup" className="text-primary hover:underline">
+                        Sign up
+                    </a>
+                </p>
+            </div>
         </form>
     );
 };

@@ -48,6 +48,15 @@ model FormSubmission {
   userId      String
 }
 
+model UserRequest {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 enum RoleType {
   USER
   ADMIN
