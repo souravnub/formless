@@ -28,7 +28,6 @@ interface User {
 
 const CopyPastUserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,18 +38,9 @@ const CopyPastUserTable = () => {
   }, []);
 
   const copyToClipboard = (text: string) => {
-    try {
-      navigator.clipboard.writeText(text);
-      toast({
-        description: `Copied "${text}" to clipboard`,
-      });
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        description: "Failed to copy text to clipboard",
-      });
-    }
+    navigator.clipboard.writeText(text);
   };
+
   const tc = (text: string) => {
     return (
       <TableCell
