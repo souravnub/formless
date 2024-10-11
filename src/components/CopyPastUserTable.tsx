@@ -1,5 +1,5 @@
 //REFERENCES
-// How to copy text to clipboard https://www.geeksforgeeks.org/how-to-copy-text-to-the-clipboard-in-next-js/ LINE 43
+// How to copy text to clipboard https://www.geeksforgeeks.org/how-to-copy-text-to-the-clipboard-in-next-js/ LINE 41
 
 "use client";
 import {
