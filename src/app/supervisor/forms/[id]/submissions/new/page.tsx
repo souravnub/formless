@@ -1,3 +1,5 @@
+// CHATGPT prompt: Hot to make <CopyPastUserTable> sticky? LINEs 20-30
+
 import UserForm from "@/components/domains/user/form";
 import prisma from "@/db";
 import React from "react";
@@ -18,12 +20,14 @@ const FormSubmissionPage = async ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <div className="flex flex-row">
-      <div className="flex-1">
+    <div className="flex flex-row justify-center">
+      <div className="min-w-[50%]">
         <UserForm form={form} />
       </div>
-      <div className="min-w-[30%]">
-        <CopyPastUserTable />
+      <div className="min-w-[35%] mt-5">
+        <div className="sticky top-5">
+          <CopyPastUserTable />
+        </div>
       </div>
     </div>
   );
