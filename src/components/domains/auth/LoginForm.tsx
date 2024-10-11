@@ -61,10 +61,13 @@ const LoginForm = () => {
                 {isLoading ? "loading..." : "Login"}
             </Button>
 
-            <div className="flex justify-center">
-                <a href="/signup" className="text-primary hover:underline">
-                    Don't have an account? Sign up
-                </a>
+            <div>
+                <p className="text-sm text-center">
+                    Don't have an account?{" "}
+                    <a href="/signup" className="text-primary hover:underline">
+                        Sign up
+                    </a>
+                </p>
             </div>
         </form>
     );
