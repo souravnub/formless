@@ -42,7 +42,7 @@ export const createForm = async (formData: CreateFormProps) => {
             },
         });
         revalidatePath("/admin/forms");
-        // return { success: true, message: "Form created!" };
+        
     } catch (err) {
         console.log(err);
         return { success: false, message: "Error while creating form in DB" };

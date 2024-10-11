@@ -21,7 +21,7 @@ export const createRequest = async (formData: CreateRequestProps) => {
                 password,
             },
         });
-        //return { success: true, message: "Request created!" };
+        
     } catch (err) {
         console.log(err);
         return { success: false, message: "Error while creating request in DB" };
@@ -32,7 +32,7 @@ export const createRequest = async (formData: CreateRequestProps) => {
 export const deleteRequest = async (requestId: string) => {
     try {
         await prisma.userRequest.delete({ where: { id: requestId } });
-        //return { success: true, message: "Request deleted!" };
+        return { success: true, message: "Request deleted!" };
     } catch (err) {
         console.log(err);
         return { success: false, message: "Error while deleting request in DB" };
