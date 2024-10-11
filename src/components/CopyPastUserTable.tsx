@@ -28,6 +28,7 @@ interface User {
 
 const CopyPastUserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +46,7 @@ const CopyPastUserTable = () => {
     return (
       <TableCell
         className="hover:bg-green-500 hover:cursor-pointer border border-white rounded-full "
-        onClick={() => copyToClipboard(text)}
+        onClick={() => navigator.clipboard.writeText(text)}
       >
         {text}
       </TableCell>
