@@ -1,5 +1,5 @@
-import { RoleType } from '@prisma/client';
 "use server";
+import { RoleType } from "@prisma/client";
 
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
@@ -78,7 +78,10 @@ export const updateUser = async (
 export const getUsers = async () => {
   const session = await auth();
 
-  if (!session || session.user.role !== "ADMIN") {
+  if (
+    !session ||
+    (session.user.role !== "ADMIN" && session.user.role !== "SUPERVISOR")
+  ) {
     return { success: false, message: "Not authorized" };
   }
 
@@ -157,7 +160,7 @@ export const getUserCountByRole = async (role: RoleType) => {
 
   try {
     const userCount = await prisma.user.count({
-      where: {role}
+      where: { role },
     });
     return { success: true, data: userCount };
   } catch (err) {
@@ -166,4 +169,4 @@ export const getUserCountByRole = async (role: RoleType) => {
       message: "Error while fetching count from DB",
     };
   }
-}
+};
