@@ -23,6 +23,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { createUser } from "@/actions/users";
 
 export default function requestsPage() {
     const [requests, setrequests] = useState<any>([]);
@@ -40,6 +41,7 @@ export default function requestsPage() {
     }, []);
 
     const [openDelete, setOpenDelete] = useState<string | null>(null);
+    const [openApprove, setOpenApprove] = useState<string | null>(null);
 
     return (
         <div className="container">
@@ -81,14 +83,14 @@ export default function requestsPage() {
                             </TableCell>
                             
                             <TableCell className="flex gap-2">
-                                <Dialog
-                                    open={openDelete === request.id}
+                            <Dialog
+                                    open={openApprove === request.id}
                                     onOpenChange={(open) => {
-                                        if (!open) setOpenDelete(null);
+                                        if (!open) setOpenApprove(null);
                                     }}>
                                     <DialogTrigger
                                         asChild
-                                        onClick={() => setOpenDelete(request.id)}
+                                        onClick={() => setOpenApprove(request.id)}
                                         className="">
                                             
                                         <Button variant={"default"}>
@@ -98,8 +100,7 @@ export default function requestsPage() {
                                     <DialogContent>
                                         <DialogHeader>
                                             <DialogTitle className="text-4xl font-bold">
-                                                Are you sure you want to approve
-                                                this user?
+                                                Are you sure you want to approve this user?
                                             </DialogTitle>
                                         </DialogHeader>
                                         <div className="">
@@ -108,33 +109,42 @@ export default function requestsPage() {
                                                     <b>Name:</b> {request.name}
                                                 </li>
                                                 <li>
-                                                    <b>email:</b>{" "}
-                                                    {request.email}
+                                                    <b>Email:</b> {request.email}
                                                 </li>
                                             </ul>
-                                            <div className="self-end i ">                                           
+                                            <div className="self-end">
                                                 <Button
                                                     variant={"default"}
                                                     onClick={async () => {
+                                                        const data = { name: request.name, email: request.email, role: "USER" as "USER" | "SUPERVISOR", password: request.password };
                                                         const res =
-                                                        //     await deleteRequest(
-                                                        //         request.id
-                                                        //     );
-                                                        // toast({
-                                                        //     description:
-                                                        //         res?.message,
-                                                        //     variant: res?.success
-                                                        //         ? "default"
-                                                        //         : "destructive",
-                                                        // });
+                                                            await createUser(
+                                                                data
+                                                            );
+                                                        await deleteRequest(request.id);
                                                         fetchRequests();
-                                                        setOpenDelete(null);
+                                                        setOpenApprove(null);
                                                     }}>
                                                     Approve
                                                 </Button>
                                             </div>
                                         </div>
                                     </DialogContent>
+                                </Dialog>
+                                    
+                                
+                                
+                                <Dialog
+                                    open={openDelete === request.id}
+                                    onOpenChange={(open) => {
+                                        if (!open) setOpenDelete(null);
+                                    }}>
+                                    <DialogTrigger
+                                        asChild
+                                        onClick={() => setOpenDelete(request.id)}
+                                        className="">
+                                    </DialogTrigger>
+                                    
                                     <DialogTrigger
                                         asChild
                                         onClick={() => setOpenDelete(request.id)}
@@ -169,13 +179,7 @@ export default function requestsPage() {
                                                             await deleteRequest(
                                                                 request.id
                                                             );
-                                                        toast({
-                                                            description:
-                                                                res?.message,
-                                                            variant: res?.success
-                                                                ? "default"
-                                                                : "destructive",
-                                                        });
+                                                        
                                                         fetchRequests();
                                                         setOpenDelete(null);
                                                     }}>
