@@ -1,3 +1,9 @@
+/**
+ * Reference:
+ * ChatGPT:
+ * 
+ * Prompt: how tf does this dialog component stuff from shadcn work <insert code>
+ */
 "use client";
 
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";

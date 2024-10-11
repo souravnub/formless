@@ -11,8 +11,6 @@ import { redirect } from "next/navigation";
 
 const SignupForm = () => {
     const { toast } = useToast();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     
     const handleSignup = async (e: React.FormEvent) => {
