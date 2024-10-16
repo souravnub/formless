@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AddCheckboxesProps } from "@/hooks/types";
 import { useToast } from "@/hooks/use-toast";
 import { PlusIcon, X } from "lucide-react";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
@@ -16,10 +17,7 @@ import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 type DialogProps = {
     isDialogOpen: boolean;
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-    onSubmit: (
-        e: FormEvent,
-        data: { title: string; checkboxes: string[] }
-    ) => void;
+    onSubmit: (data: AddCheckboxesProps) => void;
 };
 
 const AddCheckboxDialog = ({
@@ -52,6 +50,7 @@ const AddCheckboxDialog = ({
     }
 
     function handleSubmit(e: FormEvent) {
+        e.preventDefault();
         if (title.trim().length == 0) {
             return toast({
                 description: "title is required",
@@ -67,7 +66,7 @@ const AddCheckboxDialog = ({
         setIsDialogOpen(false);
         setCheckboxes([]);
         setTitle("");
-        onSubmit(e, { title, checkboxes });
+        onSubmit({ title, checkboxes });
     }
 
     return (

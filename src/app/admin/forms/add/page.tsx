@@ -19,11 +19,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 
 import { RoleType } from ".prisma/client";
 import { createForm } from "@/actions/forms";
 import AddCheckboxDialog from "@/components/domains/createForm/AddCheckboxDialog";
+import AddDecisionCommentDialog from "@/components/domains/createForm/AddDecisionComment";
 import AddDecisionFieldsDialog from "@/components/domains/createForm/AddDescisionDialog";
 import AddRadioButtonsDialog from "@/components/domains/createForm/AddRadioButtonsDialog";
 import AddTextInputDialog from "@/components/domains/createForm/AddTextInputDialog";
@@ -31,17 +32,24 @@ import "@/components/domains/createForm/form.css";
 import { useJsonForm } from "@/hooks/use-json-form";
 import { useToast } from "@/hooks/use-toast";
 import Form from "@rjsf/core";
-import { StrictRJSFSchema, UiSchema } from "@rjsf/utils";
+import { StrictRJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import AddDecisionCommentDialog from "@/components/domains/createForm/AddDecisionComment";
 
 const AddFormPage = () => {
     const { toast } = useToast();
-    const { propertiesArr, addField, requiredFields, removeField } =
-        useJsonForm();
+    const {
+        propertiesArr,
+        requiredFields,
+        removeField,
+        UISchema,
+        addCheckboxes,
+        addDecisionFields,
+        addDecisionFieldsWithComment,
+        addRadioButtons,
+        addTextInput,
+    } = useJsonForm();
 
     const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({});
-    const [RJSFUISchema, setRJSFUISchema] = useState<UiSchema>({});
 
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
@@ -53,139 +61,13 @@ const AddFormPage = () => {
 
     const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
 
-    function onCreateRadioButtons(
-        e: FormEvent,
-        { title, radioButtons }: { title: string; radioButtons: string[] }
-    ) {
-        e.preventDefault();
-        setRJSFUISchema((prev) => {
-            const schema = prev;
-            schema[title] = { "ui:widget": "RadioWidget" };
-            return schema;
-        });
-        addField({ title, enum: radioButtons });
-    }
-
-    function onCreateCheckbox(
-        e: FormEvent,
-        { title, checkboxes }: { title: string; checkboxes: string[] }
-    ) {
-        e.preventDefault();
-        setRJSFUISchema((prev) => {
-            const schema = prev;
-            schema[title] = { "ui:widget": "CheckboxesWidget" };
-            return schema;
-        });
-        addField({
-            title,
-            type: "array",
-            uniqueItems: true,
-            items: { enum: checkboxes },
-        });
-    }
-
-    function onCreateTextInput(data: {
-        title: string;
-        required: boolean;
-        defaultVal: string;
-        isMutableList: boolean;
-    }) {
-        const isRequired = data.required ? true : false;
-        if (!data.isMutableList) {
-            addField(
-                { title: data.title, default: data.defaultVal, type: "string" },
-                isRequired
-            );
-        } else {
-            addField({
-                title: data.title,
-                type: "array",
-                items: {
-                    type: "string",
-                    default: data.defaultVal,
-                },
-            });
-        }
-    }
-
-    function onCreateDecisionFields({
-        title,
-        fields,
-    }: {
-        title: string;
-        fields: string[];
-    }) {
-        const properties: StrictRJSFSchema[] = fields.map((field) => ({
-            [field]: {
-                title: field,
-                enum: ["Yes", "No", "NA"],
-            },
-        }));
-        setRJSFUISchema((prev) => {
-            const schema = prev;
-            const subSchema: Record<string, Record<string, string>> = {};
-            fields.forEach((field) => {
-                subSchema[field] = { "ui:widget": "RadioWidget" };
-            });
-            schema[title] = subSchema;
-            return schema;
-        });
-
-        addField({
-            title,
-            properties: Object.assign({}, ...properties),
-        });
-    }
-
-    function onCreateDecisionComment({
-        title,
-        fields,
-    }: {
-        title: string;
-        fields: string[];
-    }) {
-        const properties: StrictRJSFSchema[] = fields.map((field) => ({
-            [field]: {
-                properties: {
-                    response: {
-                        enum: ["Yes", "No", "NA"],
-                    },
-                    comments: {
-                        type: "string",
-                    },
-                },
-            },
-        }));
-
-        setRJSFUISchema((prev) => {
-            const schema = prev;
-            const subSchema: Record<
-                string,
-                Record<string, Record<string, string>>
-            > = {};
-            fields.forEach((field) => {
-                subSchema[field] = {
-                    response: { "ui:widget": "RadioWidget" },
-                    comments: { "ui:widget": "textarea" },
-                };
-            });
-            schema[title] = subSchema;
-            return schema;
-        });
-
-        addField({
-            title,
-            properties: Object.assign({}, ...properties),
-        });
-    }
-
     const handleSubmit = async () => {
         const formData = {
             title: RJSFState.title as string,
             description: RJSFState.description as string,
             requiredFields,
             properties: Object.assign({}, ...propertiesArr),
-            uiSchema: RJSFUISchema,
+            uiSchema: UISchema,
             role: formRole,
         };
 
@@ -361,7 +243,7 @@ const AddFormPage = () => {
                     <h2 className="text-lg ">Form Preview</h2>
                     <Form
                         className="form space-y-3"
-                        uiSchema={RJSFUISchema}
+                        uiSchema={UISchema}
                         onSubmit={(data) => {
                             console.log(data.formData);
                         }}
@@ -382,31 +264,31 @@ const AddFormPage = () => {
             <AddTextInputDialog
                 isInputDialogOpen={isInputDialogOpen}
                 setIsInputDialogOpen={setIsInputDialogOpen}
-                onCreateTextInput={onCreateTextInput}
+                onCreateTextInput={addTextInput}
             />
 
             <AddRadioButtonsDialog
                 isDialogOpen={isRadioDialogOpen}
                 setIsDialogOpen={setIsRadioDialogOpen}
-                onSubmit={onCreateRadioButtons}
+                onSubmit={addRadioButtons}
             />
 
             <AddCheckboxDialog
                 isDialogOpen={isCheckboxDialogOpen}
                 setIsDialogOpen={setIsCheckboxDialogOpen}
-                onSubmit={onCreateCheckbox}
+                onSubmit={addCheckboxes}
             />
 
             <AddDecisionFieldsDialog
                 isDialogOpen={isDecisionFieldDialogOpen}
                 setIsDialogOpen={setIsDesicionFieldDialogOpen}
-                onSubmit={onCreateDecisionFields}
+                onSubmit={addDecisionFields}
             />
 
             <AddDecisionCommentDialog
                 isDialogOpen={isDecisionCommentDialogOpen}
                 setIsDialogOpen={setIsDecisionCommentDialogOpen}
-                onSubmit={onCreateDecisionComment}
+                onSubmit={addDecisionFieldsWithComment}
             />
         </div>
     );
