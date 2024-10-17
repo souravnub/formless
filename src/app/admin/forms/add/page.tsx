@@ -34,9 +34,11 @@ import { useToast } from "@/hooks/use-toast";
 import Form from "@rjsf/core";
 import { StrictRJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
+import { useSearchParams } from "next/navigation";
 
 const AddFormPage = () => {
     const { toast } = useToast();
+    const params = useSearchParams();
     const {
         propertiesArr,
         requiredFields,

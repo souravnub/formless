@@ -37,7 +37,7 @@ const GenerateFormDialog = ({ children }: { children: ReactNode }) => {
                 </div>
                 <DialogFooter>
                     <Button type="submit" asChild>
-                        <Link href={`/admin/forms/generate?propmt=${prompt}`}>
+                        <Link href={`/admin/forms/add?prompt=${prompt}`}>
                             Generate
                         </Link>
                     </Button>
