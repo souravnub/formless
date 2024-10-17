@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_TOKEN || "");
+const genAI = new GoogleGenerativeAI(
+    process.env.NEXT_PUBLIC_GOOGLE_AI_TOKEN || ""
+);
 
 export async function generateData(prompt: string, schema: any) {
     const model = genAI.getGenerativeModel({

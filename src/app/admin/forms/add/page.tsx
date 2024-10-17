@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { RoleType } from ".prisma/client";
 import { createForm } from "@/actions/forms";
@@ -35,10 +35,17 @@ import Form from "@rjsf/core";
 import { StrictRJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { generateData } from "@/ai";
+import schema from "@/ai/generate-form-schema";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AddFormPage = () => {
     const { toast } = useToast();
     const params = useSearchParams();
+    const prompt = params.get("prompt");
+    const router = useRouter();
+
     const {
         propertiesArr,
         requiredFields,
@@ -62,6 +69,7 @@ const AddFormPage = () => {
         useState(false);
 
     const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
+    const [isGeneratingForm, setIsGeneratingForm] = useState(false);
 
     const handleSubmit = async () => {
         const formData = {
@@ -103,6 +111,22 @@ const AddFormPage = () => {
         }
     };
 
+    async function generateForm(prompt: string, schema: any) {
+        setIsGeneratingForm(true);
+        const res = await generateData(prompt, schema);
+        const data = JSON.parse(res.response.text());
+        if (data.title) {
+            setRJSFState((prev) => ({ ...prev, title: data.title }));
+        }
+        setIsGeneratingForm(false);
+    }
+
+    useEffect(() => {
+        if (prompt) {
+            generateForm(prompt, schema);
+        }
+    }, [prompt]);
+
     return (
         <div className="container">
             <CustomBreadcrumb
@@ -113,156 +137,183 @@ const AddFormPage = () => {
                 ]}
             />
 
-            <div className="grid grid-cols-2 bg-accent/30 p-5 rounded-md">
-                <form className="space-y-3 pr-5">
-                    <h1 className="text-lg">Create a New Form</h1>
-                    <div>
-                        <Label htmlFor="title">Title</Label>
-                        <Input
-                            id="title"
-                            onChange={(e) =>
-                                setRJSFState((prev) => ({
-                                    ...prev,
-                                    title: e.target.value,
-                                }))
-                            }
-                        />
+            {isGeneratingForm ? (
+                <div className="grid grid-cols-2 h-[25rem] gap-2">
+                    <div className="space-y-5">
+                        <div className="flex gap-1 flex-col">
+                            <Skeleton className="h-3 rounded-sm w-[100px]" />
+                            <Skeleton className="h-9 w-[250px]" />
+                        </div>
+                        <div className="flex gap-1 flex-col">
+                            <Skeleton className="h-3 rounded-sm w-[100px]" />
+                            <Skeleton className="h-9 w-[250px]" />
+                        </div>
+
+                        <div className="flex gap-1 flex-col">
+                            <Skeleton className="h-3 rounded-sm w-[100px]" />
+                            <Skeleton className="w-[200px] h-9" />
+                        </div>
+                        <Skeleton className="w-full h-[13rem]" />
                     </div>
-
-                    <div>
-                        <Label htmlFor="desc">Description</Label>
-                        <Textarea
-                            id="desc"
-                            onChange={(e) =>
-                                setRJSFState((prev) => ({
-                                    ...prev,
-                                    description: e.target.value,
-                                }))
-                            }
-                        />
-                    </div>
-
-                    <div>
-                        <Label htmlFor="desc">Role: </Label>
-                        <select
-                            id="role"
-                            className="border p-2 rounded"
-                            onChange={(e) =>
-                                setFormRole(e.target.value as RoleType)
-                            }>
-                            <option value="SUPERVISOR">Supervisor</option>
-                            <option value="USER">User</option>
-                        </select>
-                    </div>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Fields</CardTitle>
-                            <CardDescription>
-                                Create all the fields that are needed in this
-                                form
-                            </CardDescription>
-                        </CardHeader>
-
-                        <CardContent>
-                            <div className="flex flex-col gap-2">
-                                {propertiesArr.map((prop, idx) => {
-                                    return (
-                                        <div
-                                            key={idx}
-                                            className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
-                                            <span>
-                                                {prop &&
-                                                    JSON.stringify(
-                                                        (
-                                                            Object.values(
-                                                                prop
-                                                            )[0] as StrictRJSFSchema
-                                                        ).title
-                                                    )}
-                                            </span>
-                                            <Button
-                                                type="button"
-                                                variant={"destructive"}
-                                                className="p-2 px-3 h-auto"
-                                                onClick={() => {
-                                                    removeField(idx);
-                                                }}>
-                                                <TrashIcon />
-                                            </Button>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button className="px-8 mt-4">
-                                        <PlusIcon />
-                                    </Button>
-                                </DropdownMenuTrigger>
-
-                                <DropdownMenuContent align="center">
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            setIsInputDialogOpen(true)
-                                        }>
-                                        Text Input
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            setIsRadioDialogOpen(true)
-                                        }>
-                                        Radio Buttons
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            setIsCheckboxDialogOpen(true)
-                                        }>
-                                        Checkboxes
-                                    </DropdownMenuItem>
-
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            setIsDesicionFieldDialogOpen(true)
-                                        }>
-                                        Decision Fields
-                                    </DropdownMenuItem>
-
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            setIsDecisionCommentDialogOpen(true)
-                                        }>
-                                        Decision & Comment
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </CardContent>
-                    </Card>
-                </form>
-
-                <div className="border-l pl-5">
-                    <h2 className="text-lg ">Form Preview</h2>
-                    <Form
-                        className="form space-y-3"
-                        uiSchema={UISchema}
-                        onSubmit={(data) => {
-                            console.log(data.formData);
-                        }}
-                        schema={{
-                            title: RJSFState.title,
-                            description: RJSFState.description,
-                            required: requiredFields,
-                            properties: Object.assign({}, ...propertiesArr), // to flatten array of obejcts into single object,
-                        }}
-                        validator={validator}
-                    />
-                    <Button className="mt-16" onClick={handleSubmit}>
-                        Create Form
-                    </Button>
+                    <Skeleton className="rounded-xl" />
                 </div>
-            </div>
+            ) : (
+                <div className="grid grid-cols-2 bg-accent/30 p-5 rounded-md">
+                    <form className="space-y-3 pr-5">
+                        <h1 className="text-lg">Create a New Form</h1>
+                        <div>
+                            <Label htmlFor="title">Title</Label>
+                            <Input
+                                id="title"
+                                value={RJSFState.title}
+                                onChange={(e) =>
+                                    setRJSFState((prev) => ({
+                                        ...prev,
+                                        title: e.target.value,
+                                    }))
+                                }
+                            />
+                        </div>
 
+                        <div>
+                            <Label htmlFor="desc">Description</Label>
+                            <Textarea
+                                id="desc"
+                                value={RJSFState.description}
+                                onChange={(e) =>
+                                    setRJSFState((prev) => ({
+                                        ...prev,
+                                        description: e.target.value,
+                                    }))
+                                }
+                            />
+                        </div>
+
+                        <div>
+                            <Label htmlFor="desc">Role: </Label>
+                            <select
+                                id="role"
+                                className="border p-2 rounded"
+                                onChange={(e) =>
+                                    setFormRole(e.target.value as RoleType)
+                                }>
+                                <option value="SUPERVISOR">Supervisor</option>
+                                <option value="USER">User</option>
+                            </select>
+                        </div>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Fields</CardTitle>
+                                <CardDescription>
+                                    Create all the fields that are needed in
+                                    this form
+                                </CardDescription>
+                            </CardHeader>
+
+                            <CardContent>
+                                <div className="flex flex-col gap-2">
+                                    {propertiesArr.map((prop, idx) => {
+                                        return (
+                                            <div
+                                                key={idx}
+                                                className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
+                                                <span>
+                                                    {prop &&
+                                                        JSON.stringify(
+                                                            (
+                                                                Object.values(
+                                                                    prop
+                                                                )[0] as StrictRJSFSchema
+                                                            ).title
+                                                        )}
+                                                </span>
+                                                <Button
+                                                    type="button"
+                                                    variant={"destructive"}
+                                                    className="p-2 px-3 h-auto"
+                                                    onClick={() => {
+                                                        removeField(idx);
+                                                    }}>
+                                                    <TrashIcon />
+                                                </Button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button className="px-8 mt-4">
+                                            <PlusIcon />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent align="center">
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setIsInputDialogOpen(true)
+                                            }>
+                                            Text Input
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setIsRadioDialogOpen(true)
+                                            }>
+                                            Radio Buttons
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setIsCheckboxDialogOpen(true)
+                                            }>
+                                            Checkboxes
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setIsDesicionFieldDialogOpen(
+                                                    true
+                                                )
+                                            }>
+                                            Decision Fields
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setIsDecisionCommentDialogOpen(
+                                                    true
+                                                )
+                                            }>
+                                            Decision & Comment
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </CardContent>
+                        </Card>
+                    </form>
+
+                    <div className="border-l pl-5">
+                        <h2 className="text-lg ">Form Preview</h2>
+                        <Form
+                            className="form space-y-3"
+                            uiSchema={UISchema}
+                            onSubmit={(data) => {
+                                console.log(data.formData);
+                            }}
+                            schema={{
+                                title: RJSFState.title,
+                                description: RJSFState.description,
+                                required: requiredFields,
+                                properties: Object.assign({}, ...propertiesArr), // to flatten array of obejcts into single object,
+                            }}
+                            validator={validator}
+                        />
+                        <Button className="mt-16" onClick={handleSubmit}>
+                            Create Form
+                        </Button>
+                    </div>
+                </div>
+            )}
             <AddTextInputDialog
                 isInputDialogOpen={isInputDialogOpen}
                 setIsInputDialogOpen={setIsInputDialogOpen}
