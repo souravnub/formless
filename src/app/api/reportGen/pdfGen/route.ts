@@ -1,3 +1,5 @@
+
+//Have to change File path system
 import docCreator from '../../../../reportTemplates/doccreator';
 import path from 'path';
 import fs from 'fs';
@@ -10,13 +12,16 @@ export async function POST(req: Request) {
             const data = receivedData.dataJson.submission[0].submissions;
             const inputFile = "flha_template.docx"; // This will have to be made variable later on
             const docBuffer = await docCreator(inputFile, data);
-            const docPath = path.join(process.cwd(), 'public', 'output','flha.docx');
+            const docPath = path.resolve(process.cwd(), 'src', 'temp', 'output','flha.docx');
             fs.writeFileSync(docPath, docBuffer);
             
             //Convert the DOCX to PDF
-            const pdfPath = path.join(process.cwd(), 'public', 'output','flha.pdf');
-            await topdf(docPath, pdfPath);
-
+            const pdfName = 'flha.pdf';
+            await topdf.convert(docPath,'flha.pdf');
+            console.log("PDF Created");
+            const pdfPath = path.resolve(process.cwd(),'src', 'temp', 'output',pdfName);
+            fs.unlinkSync(docPath);
+            console.log("DOCX Deleted");
             //return the PDF File
             const pdfBuffer = fs.readFileSync(pdfPath);
             const response = new Response(pdfBuffer, {
