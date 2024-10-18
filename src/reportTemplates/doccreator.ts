@@ -1,4 +1,3 @@
-
 //Reference Used Docxtemplater Documentation
 // Reference Used ChatGPT  Prompt: 
 // Show me how to direct download the outputFile based upon this code [code]
@@ -18,6 +17,7 @@ async function docCreator(inputFile:string , data: any){
         }
         return value;
     };
+    
 
     const inputPath = path.resolve(process.cwd(), "src", "reportTemplates", "templates", inputFile);
     
