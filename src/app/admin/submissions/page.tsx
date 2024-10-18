@@ -220,12 +220,11 @@ export default function SubmissionsPage() {
                                         View
                                     </Link>
                                 </Button>
-                                <Button onClick={() => handlePDFDownload({submissionId:submission.id})}>
-                                    {/* <Link
+                                <Button>
+                                    <Link
                                         href={`/admin/submissions/${submission.id}/pdf`}>
-                                        Pdf
-                                    </Link> */}
-                                    PDF
+                                        PDF
+                                    </Link>
                                 </Button>
                                 <Button onClick={() => handleDownload({submissionId:submission.id})}>
                                     Doc
