@@ -39,23 +39,14 @@ const CopyPastUserTable = () => {
   }, []);
 
   const copyToClipboard = (text: string) => {
-    try {
-      navigator.clipboard.writeText(text);
-      toast({
-        description: `Copied "${text}" to clipboard`,
-      });
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        description: "Failed to copy text to clipboard",
-      });
-    }
+    navigator.clipboard.writeText(text);
   };
+
   const tc = (text: string) => {
     return (
       <TableCell
         className="hover:bg-green-500 hover:cursor-pointer border border-white rounded-full "
-        onClick={() => copyToClipboard(text)}
+        onClick={() => navigator.clipboard.writeText(text)}
       >
         {text}
       </TableCell>
