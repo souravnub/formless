@@ -1,13 +1,11 @@
 import docCreator from '../../../../reportTemplates/doccreator';
-import { NextApiRequest,NextApiResponse } from 'next';
 import path from 'path';
 import fs from 'fs';
 import { NextResponse } from 'next/server';
 const topdf = require("docx2pdf-converter");
-export default async function handler(req: Request, res: Response) {
-    if (req.method === 'POST'){
-        const receivedData  = await req.json();
+export async function POST(req: Request) {
         try{
+            const receivedData  = await req.json();
             //Generate the DOCX
             const data = receivedData.dataJson.submission[0].submissions;
             const inputFile = "flha_template.docx"; // This will have to be made variable later on
@@ -33,5 +31,4 @@ export default async function handler(req: Request, res: Response) {
         console.error('Error generating document:', error);
         return NextResponse.json({ error: 'Error generating document' });
     }
-}
 }
