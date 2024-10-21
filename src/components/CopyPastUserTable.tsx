@@ -16,7 +16,6 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { getUsers } from "@/actions/users";
-import { useToast } from "@/hooks/use-toast";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -28,7 +27,6 @@ interface User {
 
 const CopyPastUserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +35,6 @@ const CopyPastUserTable = () => {
     };
     fetchData();
   }, []);
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
 
   const tc = (text: string) => {
     return (
@@ -60,17 +54,18 @@ const CopyPastUserTable = () => {
         <div className="overflow-y-auto max-h-[400px]">
           <Table className="border">
             <TableCaption>All Users</TableCaption>
-            <TableHeader className="bg-accent/70 sticky top-0 z-10 ">
+            <TableHeader className="bg-accent/70">
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users &&
                 [...users] // Copy the users array to avoid mutating the original
                   .sort((a, b) => {
-                    const roleOrder = { ADMIN: 1, SUPERVISOR: 2, USER: 3 }; //create custom order to sort by
+                    const roleOrder = { ADMIN: 1, SUPERVISOR: 2, USER: 3 }; //create custom order object to sort by
                     const diff = roleOrder[a.role] - roleOrder[b.role];
                     if (diff !== 0) return diff; // if roles are different, return the difference
 

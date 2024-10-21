@@ -1,3 +1,10 @@
+/**
+ * Prisma ORM Documentation: https://www.prisma.io/docs
+ * 
+ * Formless utilizes Prisma ORM to interact with the Postgre database via
+ * prisma schema, database queries, and migrations
+ */
+
 "use server";
 import { RoleType } from "@prisma/client";
 
