@@ -58,7 +58,7 @@ const AddFormPage = () => {
         addTextInput,
     } = useJsonForm();
 
-    const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({});
+    const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({title: '', description: ''});
 
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
@@ -114,10 +114,47 @@ const AddFormPage = () => {
     async function generateForm(prompt: string, schema: any) {
         setIsGeneratingForm(true);
         const res = await generateData(prompt, schema);
-        const data = JSON.parse(res.response.text());
+        const data = JSON.parse(res.response.text()); 
+        console.log(res.response.text())
+        
+      
         if (data.title) {
             setRJSFState((prev) => ({ ...prev, title: data.title }));
         }
+        if(data.description) {
+            setRJSFState(prev => ({...prev, description: data.description}))
+        }
+        if(data.radioButtons && data.radioButtons.length > 0) {
+            data.radioButtons.map((group: any) => {
+                if(group) {
+                    addRadioButtons({title: group.title, radioButtons: group.elements })
+                }
+            })
+        }
+
+        if(data.textInputs && data.textInputs.length > 0) {
+            data.textInputs.map((inpGroup: any) => {
+                if(inpGroup ) {
+                    const {title, defaultValue, isRequired, isMutableList} = inpGroup;
+                    addTextInput({title, defaultVal: defaultValue? defaultValue : '', required: isRequired, isMutableList})
+                }
+            })
+        }
+
+        if(data.decisionFields && data.decisionFields.length > 0) {
+            data.decisionFields.map((descGroup : any) => {
+                if(descGroup) {
+                    const {title, withComments, elements} = descGroup;
+                    if(withComments) {
+                        addDecisionFieldsWithComment({title, fields: elements})
+                    }else {
+                        addDecisionFields({title, fields: elements})
+                    }
+                }
+            })
+        }
+
+
         setIsGeneratingForm(false);
     }
 
@@ -194,6 +231,7 @@ const AddFormPage = () => {
                             <select
                                 id="role"
                                 className="border p-2 rounded"
+                                value={formRole}
                                 onChange={(e) =>
                                     setFormRole(e.target.value as RoleType)
                                 }>

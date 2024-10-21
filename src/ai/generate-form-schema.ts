@@ -1,17 +1,17 @@
+// https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/control-generated-output
 import { SchemaType } from "@google/generative-ai";
 
 const schema = {
     description: "Generated Form",
     type: SchemaType.OBJECT,
+    required: ['title', 'description'],
     properties: {
         title: {
             type: SchemaType.STRING,
-            nullable: false,
             description: "Title of the form",
         },
         description: {
             type: SchemaType.STRING,
-            nullable: false,
             description: "Description of the form",
         },
         radioButtons: {

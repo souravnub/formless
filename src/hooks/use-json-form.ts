@@ -1,5 +1,7 @@
+// https://rjsf-team.github.io/react-jsonschema-form/
+
 import { StrictRJSFSchema, UiSchema } from "@rjsf/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     AddCheckboxesProps,
     addDecisionFieldsProps,
@@ -24,9 +26,19 @@ export function useJsonForm() {
         delete data["required"];
         newInpData[data.title as string] = data;
 
-        setPropertiesArr((prev) => [...prev, newInpData]);
+        setPropertiesArr((prev) => {
+            
+            // the below code to select unique elements from propArr is taken from: https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects
+            const propArrWithUniqueElements = [...prev, newInpData].filter((value, index, self) => {
+                const key = Object.keys(value as any)[0]
+                return index === self.findIndex((t) => (
+                  Object.keys(t as any)[0] === key 
+                ))
+            })
+     
+            return propArrWithUniqueElements
+        });
     }
-
     function removeField(fieldIdx: number) {
         setPropertiesArr((prev) => prev.filter((_, idx) => fieldIdx !== idx));
     }
