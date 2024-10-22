@@ -50,11 +50,11 @@ const LoginForm = () => {
             onSubmit={handleLoginFormAction}>
             <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Email</Label>
-                <Input id="name" name="email" />
+                <Input id="name" name="email" disabled={isLoading} />
             </div>
             <div>
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" name="password" />
+                <Input disabled={isLoading} id="password" type="password" name="password" />
             </div>
 
             <Button type="submit" disabled={isLoading} className="px-8 w-min">
