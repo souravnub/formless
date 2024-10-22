@@ -27,6 +27,7 @@ interface User {
 
 const CopyPastUserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [c, setC] = useState("Copy");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,19 +40,28 @@ const CopyPastUserTable = () => {
   const tc = (text: string) => {
     return (
       <TableCell
-        className="hover:bg-green-500 hover:cursor-pointer border border-white rounded-full "
-        onClick={() => navigator.clipboard.writeText(text)}
+        className="hover:bg-black hover:text-white hover:cursor-pointer border border-white rounded-full "
+        onClick={() => {
+          navigator.clipboard.writeText(text);
+          setC("Copied!");
+          setTimeout(() => {
+            setC("Copy");
+          }, 200);
+        }}
       >
-        {text}
+        <div className="flex flex-row justify-between">
+          {text}
+          <span className="text-white">{c}</span>
+        </div>
       </TableCell>
     );
   };
 
   return (
-    <Card className="mb-2">
+    <Card className="mb-2 min-w-[90%]">
       <CardHeader>Users to copy and paste</CardHeader>
       <CardContent>
-        <div className="overflow-y-auto max-h-[400px]">
+        <div className="overflow-y-auto max-h-[500px]">
           <Table className="border">
             <TableCaption>All Users</TableCaption>
             <TableHeader className="bg-accent/70">
