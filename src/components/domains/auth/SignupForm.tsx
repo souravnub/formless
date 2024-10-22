@@ -38,7 +38,7 @@ const SignupForm = () => {
         }
         setIsLoading(true);
         try {
-            const data = { name, email, password };
+            const data = { name, email: email.toLowerCase(), password };
             const res = await createRequest(data);
 
             if (!res.success) {

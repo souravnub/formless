@@ -24,7 +24,7 @@ export const createRequest = async (formData: CreateRequestProps) => {
         await prisma.userRequest.create({
             data: {
                 name,
-                email,
+                email: email.toLowerCase(),
                 password,
             },
         });
