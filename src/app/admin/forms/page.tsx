@@ -1,7 +1,16 @@
 "use client";
 
+import { deleteForms, getForms } from "@/actions/forms";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
+import GenerateFormDialog from "@/components/domains/dialogs/GenerateFormDialog";
 import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import {
     Table,
     TableBody,
@@ -11,18 +20,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { getForms, deleteForms } from "@/actions/forms";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function FormsPage() {
     const [forms, setForms] = useState<any>([]);
@@ -55,9 +56,17 @@ export default function FormsPage() {
                     Manage Forms
                 </h1>
 
-                <Button asChild className="flex gap-2">
-                    <Link href={"/admin/forms/add"}>Add New Form</Link>
-                </Button>
+                <div className="flex gap-4">
+                    <Button asChild className="flex gap-2" variant={"outline"}>
+                        <Link href={"/admin/forms/add"}>Add New Form</Link>
+                    </Button>
+                    <GenerateFormDialog>
+                        <Button className="flex gap-2">
+                            Generate Form
+                            <Sparkles fill="white" className="size-4" />
+                        </Button>
+                    </GenerateFormDialog>
+                </div>
             </div>
             <Table className="border">
                 <TableCaption>A list of forms</TableCaption>

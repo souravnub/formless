@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AddRadioButtonProps } from "@/hooks/types";
 import { useToast } from "@/hooks/use-toast";
 import { PlusIcon, X } from "lucide-react";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
@@ -16,10 +17,7 @@ import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 type DialogProps = {
     isDialogOpen: boolean;
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-    onSubmit: (
-        e: FormEvent,
-        data: { title: string; radioButtons: string[] }
-    ) => void;
+    onSubmit: (data: AddRadioButtonProps) => void;
 };
 
 const AddRadioButtonsDialog = ({
@@ -52,6 +50,7 @@ const AddRadioButtonsDialog = ({
     }
 
     function handleSubmit(e: FormEvent) {
+        e.preventDefault();
         if (title.trim().length == 0) {
             return toast({
                 description: "title is required",
@@ -67,7 +66,7 @@ const AddRadioButtonsDialog = ({
         setIsDialogOpen(false);
         setRadioButtons([]);
         setTitle("");
-        onSubmit(e, { title, radioButtons });
+        onSubmit({ title, radioButtons });
     }
 
     return (
