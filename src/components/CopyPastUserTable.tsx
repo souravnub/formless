@@ -3,6 +3,7 @@
 // CHATGPT prompt: How to make <TableBody> scrollable? LINES 60-80
 // How to manipulate cursor in Tailwind https://tailwindcss.com/docs/cursor tc function LINE 56
 // CHATPGT prompt: i want to show admin roles first, then supervisors, then employees,if there are multiple people per role I want to sort by name
+// CHATGPT prompt: What are all the props for the toast from sonner shadcn? LINES 47-55
 "use client";
 import {
   Table,
@@ -16,6 +17,7 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { getUsers } from "@/actions/users";
+import { toast, Toaster } from "sonner";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -40,7 +42,18 @@ const CopyPastUserTable = () => {
     return (
       <TableCell
         className="relative hover:bg-black hover:text-white hover:cursor-pointer border border-white rounded-full"
-        onClick={() => navigator.clipboard.writeText(text)}
+        onClick={() => {
+          navigator.clipboard.writeText(text);
+          toast(`Copied  "${text}"  to clipboard`, {
+            duration: 1300,
+            style: {
+              fontSize: "18px",
+              backgroundColor: "black",
+              color: "white",
+              fontFamily: "sans-serif",
+            },
+          });
+        }}
       >
         <div className="flex flex-row justify-between items-center">{text}</div>
       </TableCell>
@@ -51,7 +64,7 @@ const CopyPastUserTable = () => {
     <Card className="mb-2 min-w-[90%]">
       <CardHeader>Users to copy and paste</CardHeader>
       <CardContent>
-        <div className="overflow-y-auto max-h-[500px]">
+        <div className="overflow-y-auto max-h-[600px]">
           <Table className="border">
             <TableCaption>All Users</TableCaption>
             <TableHeader className="bg-accent/70">
@@ -82,6 +95,7 @@ const CopyPastUserTable = () => {
           </Table>
         </div>
       </CardContent>
+      <Toaster />
     </Card>
   );
 };
