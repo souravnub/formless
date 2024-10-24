@@ -192,3 +192,15 @@ export const getUserCountByRole = async (role: RoleType) => {
     };
   }
 };
+
+export const getUserByEmail = async (email: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: fieldsWithoutPassword,
+    });
+    return user;
+  } catch (err) {
+    return null;
+  }
+}
