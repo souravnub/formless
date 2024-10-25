@@ -1,6 +1,7 @@
 "use client";
 import handleDownload  from "@/actions/handleDownload";
 import handlePDFDownload from "@/actions/handlePDFDownload";
+import handleExcelDownload from "@/actions/handleExcelDownload";
 import { getForms } from "@/actions/forms";
 import { deleteSubmission, getSubmissions } from "@/actions/submissions";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
@@ -220,14 +221,14 @@ export default function SubmissionsPage() {
                                         View
                                     </Link>
                                 </Button>
-                                <Button>
-                                    <Link
-                                        href={`/admin/submissions/${submission.id}/pdf`}>
-                                        PDF
-                                    </Link>
+                                <Button onClick={() => handlePDFDownload({submissionId:submission.id})}>
+                                    PDF
                                 </Button>
                                 <Button onClick={() => handleDownload({submissionId:submission.id})}>
                                     Doc
+                                </Button>
+                                <Button onClick={() => handleExcelDownload({submissionId:submission.id})}>
+                                    Excel
                                 </Button>
                                 <Dialog>
                                     <DialogTrigger asChild>
