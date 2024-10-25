@@ -21,10 +21,10 @@ const FormSubmissionPage = async ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="flex flex-row justify-center">
-      <div className="min-w-[50%]">
+      <div className="min-w-[55%]">
         <UserForm form={form} />
       </div>
-      <div className="min-w-[35%] mt-5">
+      <div className="min-w-[40%] mt-5">
         <div className="sticky top-5">
           <CopyPastUserTable />
         </div>
