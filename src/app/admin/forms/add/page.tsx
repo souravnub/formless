@@ -131,6 +131,13 @@ const AddFormPage = () => {
                 }
             })
         }
+        if(data.checkboxes && data.checkboxes.length > 0) {
+            data.checkboxes.map((group: any) => {
+                if(group) {
+                    addCheckboxes({title: group.title, checkboxes: group.elements})
+                }
+            })
+        }
 
         if(data.textInputs && data.textInputs.length > 0) {
             data.textInputs.map((inpGroup: any) => {
