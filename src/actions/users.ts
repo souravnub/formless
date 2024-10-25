@@ -11,6 +11,7 @@ import { RoleType } from "@prisma/client";
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { hashPass } from "@/lib/utils";
 
 const fieldsWithoutPassword = {
   email: true,
@@ -63,7 +64,8 @@ export const deleteUser = async (userId: string) => {
 
 export const updateUser = async (
   userId: string,
-  userData: Partial<CreateUserInput>
+  userData: Partial<CreateUserInput>,
+  shouldUpdatePass: boolean
 ) => {
   const session = await auth();
 
@@ -72,12 +74,25 @@ export const updateUser = async (
   }
 
   try {
-    await prisma.user.update({
-      where: { id: userId },
-      data: userData,
-    });
+
+    if(shouldUpdatePass) {
+      const hashedPass = await hashPass(userData.password as string)
+      await prisma.user.update({
+        where: { id: userId },
+        data: {...userData, password: hashedPass},
+      });
+    }else {
+      delete userData['password']
+      
+      await prisma.user.update({
+        where: { id: userId },
+        data: userData ,
+      });
+    }
+
     return { success: true, message: "User updated!" };
   } catch (err) {
+    console.log(err)
     return { success: false, message: "Error while updating user in DB" };
   }
 };
@@ -177,3 +192,15 @@ export const getUserCountByRole = async (role: RoleType) => {
     };
   }
 };
+
+export const getUserByEmail = async (email: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: fieldsWithoutPassword,
+    });
+    return user;
+  } catch (err) {
+    return null;
+  }
+}

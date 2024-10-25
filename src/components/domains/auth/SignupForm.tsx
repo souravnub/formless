@@ -5,21 +5,41 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { createRequest } from "@/actions/userRequests";
-import { redirect } from "next/navigation";
+import { createRequest, getRequestByEmail } from "@/actions/userRequests";
+import { useRouter } from "next/navigation";
+import { getUserByEmail } from "@/actions/users";
 
 
 const SignupForm = () => {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
     
-    const handleSignup = async (e: React.FormEvent) => {
+    async function handleSignup (e: React.FormEvent)  {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
         const name = formData.get("name") as string;
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
         const confirmPassword = formData.get("confirmPass") as string;
+        const reqAlreadyExists = await getRequestByEmail(email);
+        const userAlreadyExists = await getUserByEmail(email);
+        
+        if (reqAlreadyExists && "email" in reqAlreadyExists && reqAlreadyExists.email === email) {
+            return toast({
+                variant: "destructive",
+                title: "Invalid inputs",
+                description: "User with this email already exists",
+            });
+        }
+
+        if (userAlreadyExists && "email" in userAlreadyExists && userAlreadyExists.email === email) {
+            return toast({
+                variant: "destructive",
+                title: "Invalid inputs",
+                description: "User with this email already exists",
+            });
+        }
 
         if (!name || !email || !password || !confirmPassword) {
             return toast({
@@ -38,17 +58,24 @@ const SignupForm = () => {
         }
         setIsLoading(true);
         try {
-            const data = { name, email, password };
+            const data = { name, email: email.toLowerCase(), password };
             const res = await createRequest(data);
 
-            if (!res.success) {
+            if (!res?.success) {
                 return toast({
                     variant: "destructive",
                     title: "Error",
-                    description: res.message,
+                    description: res?.message,
                 });
-            }   
-            redirect("/login");
+            }
+
+            toast({
+                variant: "default",
+                title: "Success",
+                description: "Successfully created request",
+            });
+
+            router.push("/login");
         } catch (error) {
         console.log(error);
         }

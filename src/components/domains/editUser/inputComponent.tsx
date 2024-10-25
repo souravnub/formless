@@ -7,6 +7,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 
 interface InputComponentProps {
   id: string;
@@ -14,7 +16,7 @@ interface InputComponentProps {
   email: string;
 
   role: "ADMIN" | "SUPERVISOR" | "USER";
-  refresh: () => void;
+  refresh?: () => void;
   closeDialog: () => void;
 }
 
@@ -26,7 +28,9 @@ const InputComponent: React.FC<InputComponentProps> = ({
   refresh,
   closeDialog,
 }) => {
-  const [data, setData] = useState<string[]>([name, email, "password", role]);
+  const {toast} = useToast();
+  const [data, setData] = useState<string[]>([name, email, "", role]);
+  const [wantToChangePassword, setWantToChangePassword]= useState<boolean>(false);
 
   const handleInput = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -37,17 +41,27 @@ const InputComponent: React.FC<InputComponentProps> = ({
     setData(newData);
   };
 
+
+  
+
   const handleEdit = async () => {
-    const salt = await bcrypt.genSalt();
-    const hashedPass = await bcrypt.hash(data[2], salt);
+
+    if(wantToChangePassword && data[2].trim().length == 0) {
+      toast({
+        variant: "destructive",
+        description: 'Please provide a new passoword'
+      })
+      return;
+    }
     const res = await updateUser(id, {
       name: data[0],
       email: data[1],
-      password: hashedPass,
+      password: data[2],
       role: data[3] as "SUPERVISOR" | "USER",
-    });
+    }, wantToChangePassword);
+
     if (res.success) {
-      refresh();
+      refresh && refresh();
       closeDialog();
     }
   };
@@ -56,7 +70,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
     <div>
       {data.map((item, index) => (
         <>
-          {index === 3 ? (
+          {index === 3 && (
             <>
               <RadioGroup
                 className="my-2"
@@ -81,19 +95,27 @@ const InputComponent: React.FC<InputComponentProps> = ({
                 </div>
               </RadioGroup>
             </>
-          ) : (
-            <>
-              <Input
-                type="text"
-                value={item === "password" ? "" : item}
-                placeholder={item === "password" ? "New Password" : ""}
-                onChange={(e) => handleInput(e, index)}
-                className="my-2"
-              />
-            </>
           )}
         </>
       ))}
+
+      <div className="my-2">
+        <div >
+          <Label htmlFor="editPassword">Want to edit password?</Label>
+          <Checkbox id="eidtPassword"  className="ml-2" onCheckedChange={(value) => setWantToChangePassword(value ? true: false)} checked={wantToChangePassword}/>
+        </div>
+
+{wantToChangePassword && 
+        <Input
+          type="text"
+          value={data[2]}
+          placeholder={"New Password"}
+          required
+          onChange={(e) => handleInput(e, 2)}
+          className="my-2"
+        />}
+      </div>
+
       <Button className="justify-end" onClick={() => handleEdit()}>
         Save
       </Button>

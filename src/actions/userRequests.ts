@@ -24,16 +24,17 @@ export const createRequest = async (formData: CreateRequestProps) => {
         await prisma.userRequest.create({
             data: {
                 name,
-                email,
+                email: email.toLowerCase(),
                 password,
             },
         });
+        return { success: true, message: "Request created!" };
         
     } catch (err) {
         console.log(err);
         return { success: false, message: "Error while creating request in DB" };
     }
-    redirect("/login");
+    
 }
 
 export const deleteRequest = async (requestId: string) => {
@@ -47,7 +48,26 @@ export const deleteRequest = async (requestId: string) => {
 }
 
 export const getRequests = async () => {
-    const requests = await prisma.userRequest.findMany();
-    return requests;
+    try{
+        const requests = await prisma.userRequest.findMany();
+        return requests;
+    }
+    catch(err){
+        console.log(err);
+        return { success: false, message: "Error while fetching requests from DB" };
+    }
+    
+}
+
+export const getRequestByEmail = async (requestEmail: string) => {
+    try{
+        const request = await prisma.userRequest.findFirst({ where: { email: requestEmail } });
+        return request;
+    }
+    catch(err){
+        console.log(err);
+        return { success: false, message: "Error while fetching request from DB" };
+    }
+    
 }
 
