@@ -4,6 +4,7 @@ import docCreator from '../../../../reportTemplates/doccreator';
 import path from 'path';
 import fs from 'fs';
 import { NextResponse } from 'next/server';
+import {exec} from 'child_process';
 const topdf = require("docx2pdf-converter");
 export async function POST(req: Request) {
         try{
@@ -16,10 +17,28 @@ export async function POST(req: Request) {
             fs.writeFileSync(docPath, docBuffer);
             
             //Convert the DOCX to PDF
+            
+            const psScriptPath = path.resolve(process.cwd(), 'node_modules', 'docx2pdf-converter', 'convert.ps1');
+            if(!fs.existsSync(psScriptPath)){
+                throw new Error('PowerShell script not found');
+            }
             const pdfName = 'flha.pdf';
-            await topdf.convert(docPath,'flha.pdf');
-            console.log("PDF Created");
-            const pdfPath = path.resolve(process.cwd(),'src', 'temp', 'output',pdfName);
+            const pdfPath = path.resolve(process.cwd(), 'src', 'temp', 'output', pdfName);
+            const pdfCommand = `powershell.exe -ExecutionPolicy Bypass -File "${psScriptPath}" -inputPath "${docPath}" -outputPath "${pdfPath}" -keepActive "false"`;
+            await new Promise((resolve, reject) => {
+                exec(pdfCommand, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`Error converting to PDF: ${error.message}`);
+                        reject(error);
+                    }
+                    if (stderr) {
+                        console.error(`Error converting to PDF: ${stderr}`);
+                        reject(stderr);
+                    }
+                    console.log(`PDF generated: ${pdfPath}`);
+                    resolve(stdout);
+                });
+            });
             fs.unlinkSync(docPath);
             console.log("DOCX Deleted");
             //return the PDF File
@@ -31,9 +50,14 @@ export async function POST(req: Request) {
                     'Content-Disposition': 'attachment; filename=flha.pdf',
                 },
         });
+        if(fs.existsSync(pdfPath)){
+            fs.unlinkSync(pdfPath);
+            console.log("PDF Deleted");
+        }
         return response;
+
     }catch(error){
         console.error('Error generating document:', error);
         return NextResponse.json({ error: 'Error generating document' });
-    }
+    } 
 }
