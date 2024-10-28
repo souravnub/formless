@@ -114,8 +114,11 @@ const AddFormPage = () => {
     async function generateForm(prompt: string, schema: any) {
         setIsGeneratingForm(true);
         const res = await generateData(prompt, schema);
-        const data = JSON.parse(res.response.text()); 
-        console.log(res.response.text())
+        if(!res.success ) {
+            setIsGeneratingForm(false)
+            return toast({description: res.message, variant: 'destructive'});
+        }
+        const data = JSON.parse(res.result.response.text()); 
         
       
         if (data.title) {
@@ -128,6 +131,13 @@ const AddFormPage = () => {
             data.radioButtons.map((group: any) => {
                 if(group) {
                     addRadioButtons({title: group.title, radioButtons: group.elements })
+                }
+            })
+        }
+        if(data.checkboxes && data.checkboxes.length > 0) {
+            data.checkboxes.map((group: any) => {
+                if(group) {
+                    addCheckboxes({title: group.title, checkboxes: group.elements})
                 }
             })
         }
