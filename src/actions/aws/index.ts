@@ -6,7 +6,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "@/lib/awsUtils";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-export const ALLOWED_IMAGE_FILE_TYPES = ["image/jpeg", "image/png", "image/avif"];
+const ALLOWED_IMAGE_FILE_TYPES = ["image/jpeg", "image/png", "image/avif", "image/webp"];
 const MAX_FILE_SIZE = 1048576 * 10; // 1048576bytes = 1mb, therefore, 1mb * 10 = 10mb
 
 export async function generateSignedUrl({
