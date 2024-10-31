@@ -1,13 +1,7 @@
 "use client";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
     DropdownMenu,
@@ -39,12 +33,14 @@ import { useRouter } from "next/navigation";
 import { generateData } from "@/ai";
 import schema from "@/ai/generate-form-schema";
 import { Skeleton } from "@/components/ui/skeleton";
+import { imageUrlToBase64 } from "@/lib/utils";
 
 const AddFormPage = () => {
     const { toast } = useToast();
     const params = useSearchParams();
     const prompt = params.get("prompt");
-    const router = useRouter();
+    const imageUrl = params.get("image");
+    const imageType = params.get("imageType");
 
     const {
         propertiesArr,
@@ -58,15 +54,13 @@ const AddFormPage = () => {
         addTextInput,
     } = useJsonForm();
 
-    const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({title: '', description: ''});
+    const [RJSFState, setRJSFState] = useState<StrictRJSFSchema>({ title: "", description: "" });
 
     const [isInputDialogOpen, setIsInputDialogOpen] = useState(false);
     const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
     const [isCheckboxDialogOpen, setIsCheckboxDialogOpen] = useState(false);
-    const [isDecisionFieldDialogOpen, setIsDesicionFieldDialogOpen] =
-        useState(false);
-    const [isDecisionCommentDialogOpen, setIsDecisionCommentDialogOpen] =
-        useState(false);
+    const [isDecisionFieldDialogOpen, setIsDesicionFieldDialogOpen] = useState(false);
+    const [isDecisionCommentDialogOpen, setIsDecisionCommentDialogOpen] = useState(false);
 
     const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
     const [isGeneratingForm, setIsGeneratingForm] = useState(false);
@@ -113,57 +107,76 @@ const AddFormPage = () => {
 
     async function generateForm(prompt: string, schema: any) {
         setIsGeneratingForm(true);
-        const res = await generateData(prompt, schema);
-        if(!res.success ) {
-            setIsGeneratingForm(false)
-            return toast({description: res.message, variant: 'destructive'});
+
+        let res: any;
+        if (imageUrl && imageType) {
+            const dataURL = await imageUrlToBase64(imageUrl);
+            if (dataURL) {
+                res = await generateData(prompt, schema, [
+                    { inlineData: { data: (dataURL as string).split(",")[1], mimeType: imageType } },
+                ]);
+                if (res.success) {
+                    console.log(res.result.response.text());
+                }
+                console.log(res.success);
+            }
+        } else {
+            res = await generateData(prompt, schema);
         }
-        const data = JSON.parse(res.result.response.text()); 
-        
-      
+
+        if (!res.success) {
+            setIsGeneratingForm(false);
+            return toast({ description: res.message, variant: "destructive" });
+        }
+        const data = JSON.parse(res.result.response.text());
+
         if (data.title) {
             setRJSFState((prev) => ({ ...prev, title: data.title }));
         }
-        if(data.description) {
-            setRJSFState(prev => ({...prev, description: data.description}))
+        if (data.description) {
+            setRJSFState((prev) => ({ ...prev, description: data.description }));
         }
-        if(data.radioButtons && data.radioButtons.length > 0) {
+        if (data.radioButtons && data.radioButtons.length > 0) {
             data.radioButtons.map((group: any) => {
-                if(group) {
-                    addRadioButtons({title: group.title, radioButtons: group.elements })
+                if (group) {
+                    addRadioButtons({ title: group.title, radioButtons: group.elements });
                 }
-            })
+            });
         }
-        if(data.checkboxes && data.checkboxes.length > 0) {
+        if (data.checkboxes && data.checkboxes.length > 0) {
             data.checkboxes.map((group: any) => {
-                if(group) {
-                    addCheckboxes({title: group.title, checkboxes: group.elements})
+                if (group) {
+                    addCheckboxes({ title: group.title, checkboxes: group.elements });
                 }
-            })
+            });
         }
 
-        if(data.textInputs && data.textInputs.length > 0) {
+        if (data.textInputs && data.textInputs.length > 0) {
             data.textInputs.map((inpGroup: any) => {
-                if(inpGroup ) {
-                    const {title, defaultValue, isRequired, isMutableList} = inpGroup;
-                    addTextInput({title, defaultVal: defaultValue? defaultValue : '', required: isRequired, isMutableList})
+                if (inpGroup) {
+                    const { title, defaultValue, isRequired, isMutableList } = inpGroup;
+                    addTextInput({
+                        title,
+                        defaultVal: defaultValue ? defaultValue : "",
+                        required: isRequired,
+                        isMutableList,
+                    });
                 }
-            })
+            });
         }
 
-        if(data.decisionFields && data.decisionFields.length > 0) {
-            data.decisionFields.map((descGroup : any) => {
-                if(descGroup) {
-                    const {title, withComments, elements} = descGroup;
-                    if(withComments) {
-                        addDecisionFieldsWithComment({title, fields: elements})
-                    }else {
-                        addDecisionFields({title, fields: elements})
+        if (data.decisionFields && data.decisionFields.length > 0) {
+            data.decisionFields.map((descGroup: any) => {
+                if (descGroup) {
+                    const { title, withComments, elements } = descGroup;
+                    if (withComments) {
+                        addDecisionFieldsWithComment({ title, fields: elements });
+                    } else {
+                        addDecisionFields({ title, fields: elements });
                     }
                 }
-            })
+            });
         }
-
 
         setIsGeneratingForm(false);
     }
@@ -242,9 +255,8 @@ const AddFormPage = () => {
                                 id="role"
                                 className="border p-2 rounded"
                                 value={formRole}
-                                onChange={(e) =>
-                                    setFormRole(e.target.value as RoleType)
-                                }>
+                                onChange={(e) => setFormRole(e.target.value as RoleType)}
+                            >
                                 <option value="SUPERVISOR">Supervisor</option>
                                 <option value="USER">User</option>
                             </select>
@@ -253,10 +265,7 @@ const AddFormPage = () => {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Fields</CardTitle>
-                                <CardDescription>
-                                    Create all the fields that are needed in
-                                    this form
-                                </CardDescription>
+                                <CardDescription>Create all the fields that are needed in this form</CardDescription>
                             </CardHeader>
 
                             <CardContent>
@@ -265,15 +274,12 @@ const AddFormPage = () => {
                                         return (
                                             <div
                                                 key={idx}
-                                                className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs">
+                                                className="flex justify-between bg-accent p-1 rounded-md items-center max-w-xs"
+                                            >
                                                 <span>
                                                     {prop &&
                                                         JSON.stringify(
-                                                            (
-                                                                Object.values(
-                                                                    prop
-                                                                )[0] as StrictRJSFSchema
-                                                            ).title
+                                                            (Object.values(prop)[0] as StrictRJSFSchema).title
                                                         )}
                                                 </span>
                                                 <Button
@@ -282,7 +288,8 @@ const AddFormPage = () => {
                                                     className="p-2 px-3 h-auto"
                                                     onClick={() => {
                                                         removeField(idx);
-                                                    }}>
+                                                    }}
+                                                >
                                                     <TrashIcon />
                                                 </Button>
                                             </div>
@@ -298,40 +305,21 @@ const AddFormPage = () => {
                                     </DropdownMenuTrigger>
 
                                     <DropdownMenuContent align="center">
-                                        <DropdownMenuItem
-                                            onClick={() =>
-                                                setIsInputDialogOpen(true)
-                                            }>
+                                        <DropdownMenuItem onClick={() => setIsInputDialogOpen(true)}>
                                             Text Input
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            onClick={() =>
-                                                setIsRadioDialogOpen(true)
-                                            }>
+                                        <DropdownMenuItem onClick={() => setIsRadioDialogOpen(true)}>
                                             Radio Buttons
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            onClick={() =>
-                                                setIsCheckboxDialogOpen(true)
-                                            }>
+                                        <DropdownMenuItem onClick={() => setIsCheckboxDialogOpen(true)}>
                                             Checkboxes
                                         </DropdownMenuItem>
 
-                                        <DropdownMenuItem
-                                            onClick={() =>
-                                                setIsDesicionFieldDialogOpen(
-                                                    true
-                                                )
-                                            }>
+                                        <DropdownMenuItem onClick={() => setIsDesicionFieldDialogOpen(true)}>
                                             Decision Fields
                                         </DropdownMenuItem>
 
-                                        <DropdownMenuItem
-                                            onClick={() =>
-                                                setIsDecisionCommentDialogOpen(
-                                                    true
-                                                )
-                                            }>
+                                        <DropdownMenuItem onClick={() => setIsDecisionCommentDialogOpen(true)}>
                                             Decision & Comment
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

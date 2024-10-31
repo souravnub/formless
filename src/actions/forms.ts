@@ -1,6 +1,6 @@
 /**
  * Prisma ORM Documentation: https://www.prisma.io/docs
- * 
+ *
  * Formless utilizes Prisma ORM to interact with the Postgre database via
  * prisma schema, database queries, and migrations
  */
@@ -49,7 +49,6 @@ export const createForm = async (formData: CreateFormProps) => {
             },
         });
         revalidatePath("/admin/forms");
-        
     } catch (err) {
         console.log(err);
         return { success: false, message: "Error while creating form in DB" };
@@ -70,6 +69,7 @@ export const deleteForms = async (formId: string) => {
                 id: formId,
             },
         });
+        revalidatePath("/admin/forms");
         return { success: true, message: "Form deleted!" };
     } catch (err) {
         console.log(err);
