@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import AddUserInputComponent from "@/components/domains/addUser/addUserInputComponent";
+import SpeechToText from "@/components/SpeechTextInput";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -285,6 +286,7 @@ const UsersPage = () => {
           </Table>
         </CardContent>
       </Card>
+      <SpeechToText />
     </div>
   );
 };
