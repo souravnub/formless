@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "node": "node server.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
@@ -29,6 +30,7 @@
     "@rjsf/utils": "^5.21.1",
     "@rjsf/validator-ajv8": "^5.21.1",
     "@types/bcryptjs": "^2.4.6",
+    "@types/socket.io": "^3.0.2",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -48,6 +50,8 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
     "recharts": "^2.12.7",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "sonner": "^1.5.0",
     "swr": "^2.2.5",
     "tailwind-merge": "^2.5.2",
