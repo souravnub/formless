@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { getRequests, deleteRequest } from "@/actions/userRequests";
+import { getRequests, deleteRequest, approveRequest, denyRequest } from "@/actions/userRequests";
 import {
     Dialog,
     DialogContent,
@@ -124,10 +124,10 @@ export default function requestsPage() {
                                                     onClick={async () => {
                                                         const data = { name: request.name, email: request.email, role: "USER" as "USER" | "SUPERVISOR", password: request.password };
                                                         const res =
-                                                            await createUser(
-                                                                data
+                                                            await approveRequest(
+                                                                request.id
                                                             );
-                                                        await deleteRequest(request.id);
+                                                        
                                                         fetchRequests();
                                                         setOpenApprove(null);
                                                     }}>
@@ -182,7 +182,7 @@ export default function requestsPage() {
                                                     variant={"destructive"}
                                                     onClick={async () => {
                                                         const res =
-                                                            await deleteRequest(
+                                                            await denyRequest(
                                                                 request.id
                                                             );
                                                         

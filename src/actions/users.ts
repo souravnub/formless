@@ -7,11 +7,11 @@
 
 "use server";
 import { RoleType } from "@prisma/client";
-
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { hashPass } from "@/lib/utils";
+import { createLog } from "./logging";
 
 const fieldsWithoutPassword = {
   email: true,
@@ -23,7 +23,7 @@ const fieldsWithoutPassword = {
 export const createUser = async (userData: CreateUserInput) => {
   const session = await auth();
 
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session || session.user.role !== "ADMIN" || !session.user.id) {
     return { success: false, message: "Not authorized" };
   }
 
@@ -33,7 +33,7 @@ export const createUser = async (userData: CreateUserInput) => {
   const hashedPass = await bcrypt.hash(password, salt);
 
   try {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
@@ -41,6 +41,16 @@ export const createUser = async (userData: CreateUserInput) => {
         password: hashedPass,
       },
     });
+    await createLog(
+      {
+          userId: session.user.id,
+          action: "CREATE",
+          objectType: "USER",
+          objectId: user.id,
+          info: {"info": {"user" : name + "(" + user.id + ")", "createdBy" : session.user.name + "(" + session.user.id + ")"}},
+          
+      },
+  )
     return { success: true, message: "User created!" };
   } catch (err) {
     return { success: false, message: "Error while creating user in DB" };
@@ -50,12 +60,22 @@ export const createUser = async (userData: CreateUserInput) => {
 export const deleteUser = async (userId: string) => {
   const session = await auth();
 
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session || session.user.role !== "ADMIN" || !session.user.id) {
     return { success: false, message: "Not authorized" };
   }
 
   try {
-    await prisma.user.delete({ where: { id: userId } });
+    const user = await prisma.user.delete({ where: { id: userId } });
+    await createLog(
+      {
+          userId: session.user.id,
+          action: "DELETE",
+          objectType: "USER",
+          objectId: userId,
+          info: {"info": {"user" : user.name + "(" + user.id + ")", "deletedBy" : session.user.name + "(" + session.user.id + ")"}},
+          
+      },
+  )
     return { success: true, message: "User deleted!" };
   } catch (err) {
     return { success: false, message: "Error while deleting user in DB" };
@@ -69,26 +89,53 @@ export const updateUser = async (
 ) => {
   const session = await auth();
 
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session || session.user.role !== "ADMIN" || !session.user.id) {
     return { success: false, message: "Not authorized" };
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return { success: false, message: "User not found!" };
+    }
+
+    const updatedFields: Partial<CreateUserInput> = {};
+    for (const key in userData) {
+      if (userData[key as keyof CreateUserInput] !== user[key as keyof typeof user]) {
+        updatedFields[key as keyof CreateUserInput] = userData[key as keyof CreateUserInput] as any;
+      }
+    }
 
     if(shouldUpdatePass) {
       const hashedPass = await hashPass(userData.password as string)
+      updatedFields['password'] = hashedPass
       await prisma.user.update({
         where: { id: userId },
         data: {...userData, password: hashedPass},
       });
     }else {
       delete userData['password']
+      delete updatedFields['password']
       
       await prisma.user.update({
         where: { id: userId },
         data: userData ,
       });
     }
+    
+    await createLog(
+      {
+          userId: session.user.id,
+          action: "UPDATE",
+          objectType: "USER",
+          objectId: userId,
+          info: {"info" : { "user" : user.name + "(" + user.id + ")", "updatedBy" : session.user.name + "(" + session.user.id + ")", "Updated Fields": updatedFields}},
+          
+      },
+  )
 
     return { success: true, message: "User updated!" };
   } catch (err) {

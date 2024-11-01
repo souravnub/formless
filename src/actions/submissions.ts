@@ -1,3 +1,4 @@
+import { User } from './../../node_modules/.prisma/client/index.d';
 /**
  * Prisma ORM Documentation: https://www.prisma.io/docs
  * 
@@ -12,6 +13,7 @@ import { auth } from "@/lib/auth";
 import { dateRangeOptions } from "@rjsf/utils";
 import { revalidatePath } from "next/cache";
 import { DateRange } from "react-day-picker";
+import { createLog } from "./logging";
 
 type GetSubmissonsProps = {
     dateRange?: DateRange;
@@ -59,15 +61,28 @@ export const getSubmissionsCount = async ({
 };
 
 export const deleteSubmission = async (submissionId: number) => {
-    const a = await auth();
-    if (!a?.user) {
+    const session = await auth();
+    if (!session || session.user.role !== "ADMIN" || !session.user.id) {
         return { success: false, message: "Not authorized" };
-    }
+      }
     try {
-        await prisma.formSubmission.delete({
+        const submission = await prisma.formSubmission.delete({
             where: {
                 id: submissionId,
             },
+        });
+        
+        const form = await prisma.form.findUnique({
+            where: {
+                id: submission.formId,
+            },
+        });
+        await createLog({
+            userId: session.user.id,
+            action: "DELETE",
+            objectType: "FORM_SUBMISSION",
+            objectId: submissionId.toString(),
+            info: {"info": {"formTitle" : form?.title, "submittedBy" : submission.userId, "deletedBy": session.user.name + "(" + session.user.id + ")"}},
         });
         return { success: true, message: "Submission deleted" };
     } catch (err) {

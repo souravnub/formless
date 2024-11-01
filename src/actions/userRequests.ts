@@ -10,6 +10,9 @@
 import prisma from "@/db";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
+import { auth } from "@/lib/auth";
+import { createLog } from "./logging";
+import { createUser } from "./users";
 
 interface CreateRequestProps {
     name: string;
@@ -28,6 +31,7 @@ export const createRequest = async (formData: CreateRequestProps) => {
                 password,
             },
         });
+        
         return { success: true, message: "Request created!" };
         
     } catch (err) {
@@ -38,12 +42,82 @@ export const createRequest = async (formData: CreateRequestProps) => {
 }
 
 export const deleteRequest = async (requestId: string) => {
+    const session = await auth();
+
+    if (!session || session.user.role !== "ADMIN" || !session.user.id) {
+        return { success: false, message: "Not authorized" };
+    }
+    
     try {
         await prisma.userRequest.delete({ where: { id: requestId } });
+        
         return { success: true, message: "Request deleted!" };
     } catch (err) {
         console.log(err);
         return { success: false, message: "Error while deleting request in DB" };
+    }
+}
+
+export const approveRequest = async (requestId: string) => {
+    const session = await auth();
+
+    if (!session || session.user.role !== "ADMIN" || !session.user.id) {
+        return { success: false, message: "Not authorized" };
+    }
+    
+    try {
+        const request = await prisma.userRequest.findUnique({ where: { id: requestId } });
+        const name = request?.name;
+        const email = request?.email;
+        const password = request?.password;
+
+        if (!name || !email || !password) {
+            return { success: false, message: "Invalid request data" };
+        }
+        
+        await createUser({ name, email, role: "USER", password });
+        await deleteRequest(requestId);
+        await createLog(
+            {
+                userId: session.user.id,
+                action: "APPROVE",
+                objectType: "USER_REQUEST",
+                objectId: requestId,
+                info: {"info": {"user" : name + "(" + request.id + ")", "approvedBy" : session.user.name + "(" + session.user.id + ")"}},
+                
+            },
+        )
+        return { success: true, message: "Request approved!" };
+    } catch (err) {
+        console.log(err);
+        return { success: false, message: "Error while approving request in DB" };
+    }
+}
+
+export const denyRequest = async (requestId: string) => {
+    const session = await auth();
+
+    if (!session || session.user.role !== "ADMIN" || !session.user.id) {
+        return { success: false, message: "Not authorized" };
+    }
+    
+    try {
+        const request = await prisma.userRequest.findUnique({ where: { id: requestId } });
+        await deleteRequest(requestId);
+        await createLog(
+            {
+                userId: session.user.id,
+                action: "DENY",
+                objectType: "USER_REQUEST",
+                objectId: requestId,
+                info: {"info": {"user" : request?.name + "(" + requestId + ")", "deniedBy" : session.user.name + "(" + session.user.id + ")"}},
+                
+            },
+        )
+        return { success: true, message: "Request denied!" };
+    } catch (err) {
+        console.log(err);
+        return { success: false, message: "Error while denying request in DB" };
     }
 }
 

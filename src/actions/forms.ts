@@ -14,6 +14,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { RoleType } from ".prisma/client";
+import { createLog } from "./logging";
 
 interface CreateFormProps {
     title: string;
@@ -34,7 +35,7 @@ export const createForm = async (formData: CreateFormProps) => {
         formData;
 
     try {
-        await prisma.form.create({
+        const form = await prisma.form.create({
             data: {
                 title,
                 createdBy: session.user.id,
@@ -48,6 +49,17 @@ export const createForm = async (formData: CreateFormProps) => {
                 role,
             },
         });
+
+        await createLog(
+            {
+                userId: session.user.id,
+                action: "CREATE",
+                objectType: "FORM",
+                objectId: form.id,
+                info: {"info": {"title" : form.title, "createdBy": session.user.name + "(" + session.user.id + ")", "formRole" : form.role, "description" : form.description}},
+                
+            },
+        )
         revalidatePath("/admin/forms");
     } catch (err) {
         console.log(err);
@@ -59,17 +71,27 @@ export const createForm = async (formData: CreateFormProps) => {
 export const deleteForms = async (formId: string) => {
     const session = await auth();
 
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || session.user.role !== "ADMIN" || !session.user.id) {
         return { success: false, message: "Not authorized" };
     }
 
     try {
-        await prisma.form.delete({
+        const form = await prisma.form.delete({
             where: {
                 id: formId,
             },
         });
-        revalidatePath("/admin/forms");
+
+        await createLog(
+            {
+                userId: session.user.id,
+                action: "DELETE",
+                objectType: "FORM",
+                objectId: formId,
+                info: {"info": {"title" : form.title, "deletedBy": session.user.name + "(" + session.user.id + ")", "formRole" : form.role, "description" : form.description}},
+                
+            },
+        )
         return { success: true, message: "Form deleted!" };
     } catch (err) {
         console.log(err);
@@ -111,13 +133,28 @@ export const submitForm = async (formId: string, formValues: any) => {
         return { success: false, message: "Not authorized" };
     }
     try {
-        await prisma.formSubmission.create({
+        const submission = await prisma.formSubmission.create({
             data: {
                 submissions: formValues,
                 formId,
                 userId: session?.user.id,
             },
         });
+
+        const form = await prisma.form.findUnique({
+            where: {
+                id: formId,
+            },
+        });
+        await createLog(
+            {
+                userId: session.user.id,
+                action: "SUBMIT",
+                objectType: "FORM_SUBMISSION",
+                objectId: formId,
+                info: {"info": {"formTitle" : form?.title, "submittedBy" : session.user.name + "(" + session.user.id + ")"}},
+            },
+        )
         revalidatePath("/user");
         return { success: true, message: "form submitted successfully!" };
     } catch (err) {
