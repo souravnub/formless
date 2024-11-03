@@ -1,6 +1,11 @@
+//REFERENCES
+//CHATGPT prompt: How to do speech to text in NEXTJS typescript application
+//CHATGPT prompt: How to use chrome webkitSpeechRecognition API in NEXTJS TYPESCRIPT LINES 15-42 startListening function
+
 import React, { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { SpeechToTextIconComponent } from "./speech-to-text-icon";
 
 const SpeechToText: React.FC = () => {
   const [transcript, setTranscript] = useState<string>("");
@@ -45,17 +50,19 @@ const SpeechToText: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 px-6 flex flex-row justify-center items-center ">
       <Input
         value={transcript}
         onChange={(e) => setTranscript(e.target.value)}
       />
-      <Button
-        onClick={isListening ? stopListening : startListening}
-        className="mt-4"
-      >
-        {isListening ? "Stop" : "Start"}
-      </Button>
+      <span className="relative right-10">
+        <SpeechToTextIconComponent
+          onClick={isListening ? stopListening : startListening}
+          isRecording={isListening}
+          size="md"
+        />
+      </span>
+      <Button onClick={() => setTranscript("")}>Clear</Button>
     </div>
   );
 };
