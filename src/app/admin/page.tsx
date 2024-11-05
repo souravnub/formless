@@ -14,14 +14,14 @@ export default async function AdminDashboard() {
     const usersCount = await getUserCountByRole("USER");
     const supervisorCount = await getUserCountByRole("SUPERVISOR");
 
-    if (!supervisorCount.data || !usersCount.data) {
+    if (!supervisorCount.success || !usersCount.success) {
         return <p>Error while loading user or supervisor count</p>;
     }
 
     const chartData = forms.map((form) => {
         return {
             formTitle: form.title,
-            requiredSubmissions: form.role === "USER" ? usersCount.data : supervisorCount.data,
+            requiredSubmissions: form.role === "USER" ? usersCount.data! : supervisorCount.data!,
             actualSubmissions: form.submissions.length,
         };
     });
