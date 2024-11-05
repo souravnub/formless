@@ -7,6 +7,18 @@ This is a seed file for seeding the database with the following:
 - 3 Forms
     - 2 user forms
     - 1 supervisor form
+
+- Form Submissions
+    - 2 submissions on Form (id: 1),
+        - first submission: by userId 1
+        - second submission: by userId 2
+    - 1 submnission on Form (id: 2)
+        - by userId 2
+    - 3 submissions on Form (id:3) [supervisor Form]
+        - by userId 11
+        - by userId 12
+        - by userId 13
+
 */
 
 import prisma from "../src/db";
@@ -17,7 +29,7 @@ async function seedUsers() {
     const password = await bcrypt.hash("password", salt);
 
     try {
-        Array.from({ length: 10 }).map((_, index) => {
+        const userPromises = Array.from({ length: 10 }).map((_, index) => {
             const count = index + 1; // Start from 1 instead of 0
 
             return prisma.user.upsert({
@@ -31,6 +43,7 @@ async function seedUsers() {
                 update: {},
             });
         });
+        Promise.all(userPromises);
 
         await prisma.user.upsert({
             where: { id: "1000" },
@@ -39,6 +52,7 @@ async function seedUsers() {
                 email: "admin@gmail.com",
                 name: "admin",
                 password,
+                role: "ADMIN",
             },
             update: {},
         });
@@ -52,8 +66,8 @@ async function seedSupervisors() {
     const password = await bcrypt.hash("password", salt);
 
     try {
-        Array.from({ length: 10 }).map((_, index) => {
-            const count = index + 1; // Start from 1 instead of 0
+        const supervisorPromises = Array.from({ length: 10 }).map((_, index) => {
+            const count = index + 11; // Start from 11 instead of 0, because user Ids are till 10
 
             return prisma.user.upsert({
                 where: { id: `${count}` },
@@ -67,6 +81,7 @@ async function seedSupervisors() {
                 update: {},
             });
         });
+        Promise.all(supervisorPromises);
     } catch (err) {
         console.log("ERROR while seeding supervisors", err);
     }
@@ -280,11 +295,149 @@ async function seedForms() {
     }
 }
 
+async function seedSubmissions() {
+    try {
+        await prisma.formSubmission.upsert({
+            where: { id: 1 },
+            create: {
+                id: 1,
+                submissions: {
+                    Date: "11",
+                    Time: "11",
+                    "Serial #": "11",
+                    Inspector: "21",
+                    QUESTIONS: {
+                        "Is the pressure gauge in good condition?": { response: "Yes" },
+                        "Is the extinguisher wall-mounted and secured?": { response: "Yes" },
+                        "Is the extinguisher accessible & unobstructed?": { response: "No" },
+                        "Are the extinguishers damaged? Dented? Corroded?": { response: "No" },
+                        "Is the hose & nozzle secured and in good condition?": { response: "Yes" },
+                        "Is it fully charged and operable? (needle in the green?)": { response: "No" },
+                        "Is the inspection tag attached & readable? Last annual inspection completed?": {
+                            response: "Yes",
+                        },
+                    },
+                    "Type/ Rating": "12",
+                    "License Plate": "1",
+                    "Additional Comments": "sdf",
+                    "Inspector Signature": "sdf",
+                    "Reviewed by Safety/Management (name & signature)": "sdf",
+                },
+                userId: "1",
+                formId: "1",
+            },
+            update: {},
+        });
+        await prisma.formSubmission.upsert({
+            where: { id: 2 },
+            create: {
+                id: 2,
+                submissions: {
+                    Date: "11/12/1220",
+                    Time: "11:23pm",
+                    "Serial #": "11",
+                    Inspector: "21",
+                    QUESTIONS: {
+                        "Is the pressure gauge in good condition?": { response: "Yes" },
+                        "Is the extinguisher wall-mounted and secured?": { response: "Yes" },
+                        "Is the extinguisher accessible & unobstructed?": { response: "No" },
+                        "Are the extinguishers damaged? Dented? Corroded?": { response: "No" },
+                        "Is the hose & nozzle secured and in good condition?": { response: "Yes" },
+                        "Is it fully charged and operable? (needle in the green?)": { response: "No" },
+                        "Is the inspection tag attached & readable? Last annual inspection completed?": {
+                            response: "Yes",
+                        },
+                    },
+                    "Type/ Rating": "12",
+                    "License Plate": "1",
+                    "Additional Comments": "sdf",
+                    "Inspector Signature": "sdf",
+                    "Reviewed by Safety/Management (name & signature)": "sdf",
+                },
+                userId: "2",
+                formId: "1",
+            },
+            update: {},
+        });
+
+        await prisma.formSubmission.upsert({
+            where: { id: 3 },
+            create: {
+                id: 3,
+                submissions: { Name: "emp", "EMP Id": "empi1", "Work Location": "NAIT" },
+                userId: "2",
+                formId: "2",
+            },
+            update: {},
+        });
+
+        await prisma.formSubmission.upsert({
+            where: { id: 4 },
+            create: {
+                id: 4,
+                submissions: {
+                    Name: "Sourav",
+                    "SUP Id": "supervisor11@gmail.com",
+                    "Employment status": {
+                        "Have you been encharge of a location in last month?": "Yes",
+                        "Have you ever been accused of conducting crime at a work location?": "Yes",
+                    },
+                    "Current location of work": "SAIT",
+                },
+                userId: "11",
+                formId: "3",
+            },
+            update: {},
+        });
+
+        await prisma.formSubmission.upsert({
+            where: { id: 5 },
+            create: {
+                id: 5,
+                submissions: {
+                    Name: "Amrinder",
+                    "SUP Id": "amrinder id",
+                    "Employment status": {
+                        "Have you been encharge of a location in last month?": "Yes",
+                        "Have you ever been accused of conducting crime at a work location?": "Yes",
+                    },
+                    "Current location of work": "SAIT",
+                },
+                userId: "12",
+                formId: "3",
+            },
+            update: {},
+        });
+
+        await prisma.formSubmission.upsert({
+            where: { id: 6 },
+            create: {
+                id: 6,
+                submissions: {
+                    Name: "Elias",
+                    "SUP Id": "SUP123w",
+                    "Employment status": {
+                        "Have you been encharge of a location in last month?": "Yes",
+                        "Have you ever been accused of conducting crime at a work location?": "Yes",
+                    },
+                    "Current location of work": "SAIT",
+                },
+                userId: "13",
+                formId: "3",
+            },
+            update: {},
+        });
+    } catch (err) {
+        console.log("ERROR while seeding submissions", err);
+    }
+}
+
 async function seedDatabase() {
     try {
         await seedUsers();
         await seedSupervisors();
         await seedForms();
+        await seedSubmissions();
     } catch (err) {
         console.log("Error while seeding database", err);
     } finally {
