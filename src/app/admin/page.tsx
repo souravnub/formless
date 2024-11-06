@@ -1,20 +1,31 @@
-"use client"
+import { getUserCountByRole } from "@/actions/users";
+import AdminDashboardChart from "@/components/charts/AdminDashboardChart";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
-import { DashChart } from "@/components/dashchart";
-import DashSubmissionsStat from "@/components/DashSubmissionsStat";
-import { Button } from "@/components/ui/button";
-import DashUsageStats from "@/components/DashUsageStats";
 import DashFormIssues from "@/components/DashFormIssues";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import DashSubmissionsStat from "@/components/DashSubmissionsStat";
+import DashUsageStats from "@/components/DashUsageStats";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import prisma from "@/db";
 import Link from "next/link";
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+    const forms = await prisma.form.findMany({ include: { submissions: true } });
+    const usersCount = await getUserCountByRole("USER");
+    const supervisorCount = await getUserCountByRole("SUPERVISOR");
+
+    if (!supervisorCount.success || !usersCount.success) {
+        return <p>Error while loading user or supervisor count</p>;
+    }
+
+    const chartData = forms.map((form) => {
+        return {
+            formTitle: form.title,
+            requiredSubmissions: form.role === "USER" ? usersCount.data! : supervisorCount.data!,
+            actualSubmissions: form.submissions.length,
+        };
+    });
+
     return (
         <div className=" p-2">
             <div className="container mx-auto space-y-2">
@@ -63,7 +74,7 @@ export default function AdminDashboard() {
                         </CardContent>
                         <CardFooter>
                             <Button>
-                            <Link href="/admin/forms">View Form</Link>
+                                <Link href="/admin/forms">View Form</Link>
                             </Button>
                         </CardFooter>
                     </Card>
@@ -82,17 +93,16 @@ export default function AdminDashboard() {
                         </CardFooter>
                     </Card>
                 </div>
-                {/* Form Metrics Chart*/}
+
                 <Card className="bg-accent/30">
                     <CardHeader>
                         <CardTitle>Form Metrics</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <DashChart />
+                        <AdminDashboardChart data={chartData} />
                     </CardContent>
                 </Card>
             </div>
         </div>
     );
-
 }

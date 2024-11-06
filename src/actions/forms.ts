@@ -31,8 +31,7 @@ export const createForm = async (formData: CreateFormProps) => {
         return { success: false, message: "Not authorized" };
     }
 
-    const { title, description, properties, uiSchema, role, requiredFields } =
-        formData;
+    const { title, description, properties, uiSchema, role, requiredFields } = formData;
 
     try {
         const form = await prisma.form.create({
@@ -50,16 +49,20 @@ export const createForm = async (formData: CreateFormProps) => {
             },
         });
 
-        await createLog(
-            {
-                userId: session.user.id,
-                action: "CREATE",
-                objectType: "FORM",
-                objectId: form.id,
-                info: {"info": {"title" : form.title, "createdBy": session.user.name + "(" + session.user.id + ")", "formRole" : form.role, "description" : form.description}},
-                
+        await createLog({
+            userId: session.user.id,
+            action: "CREATE",
+            objectType: "FORM",
+            objectId: form.id,
+            info: {
+                info: {
+                    title: form.title,
+                    createdBy: session.user.name + "(" + session.user.id + ")",
+                    formRole: form.role,
+                    description: form.description,
+                },
             },
-        )
+        });
         revalidatePath("/admin/forms");
     } catch (err) {
         console.log(err);
@@ -82,16 +85,21 @@ export const deleteForms = async (formId: string) => {
             },
         });
 
-        await createLog(
-            {
-                userId: session.user.id,
-                action: "DELETE",
-                objectType: "FORM",
-                objectId: formId,
-                info: {"info": {"title" : form.title, "deletedBy": session.user.name + "(" + session.user.id + ")", "formRole" : form.role, "description" : form.description}},
-                
+        await createLog({
+            userId: session.user.id,
+            action: "DELETE",
+            objectType: "FORM",
+            objectId: formId,
+            info: {
+                info: {
+                    title: form.title,
+                    deletedBy: session.user.name + "(" + session.user.id + ")",
+                    formRole: form.role,
+                    description: form.description,
+                },
             },
-        )
+        });
+        revalidatePath("/admin/forms");
         return { success: true, message: "Form deleted!" };
     } catch (err) {
         console.log(err);
@@ -111,8 +119,7 @@ export const getForms = async () => {
     const session = await auth();
     const forms = await prisma.form.findMany({
         //Admins can see all forms, users can only see forms they have access to
-        where:
-            session?.user.role === "ADMIN" ? {} : { role: session?.user.role },
+        where: session?.user.role === "ADMIN" ? {} : { role: session?.user.role },
     });
     return forms;
 };
@@ -146,15 +153,13 @@ export const submitForm = async (formId: string, formValues: any) => {
                 id: formId,
             },
         });
-        await createLog(
-            {
-                userId: session.user.id,
-                action: "SUBMIT",
-                objectType: "FORM_SUBMISSION",
-                objectId: formId,
-                info: {"info": {"formTitle" : form?.title, "submittedBy" : session.user.name + "(" + session.user.id + ")"}},
-            },
-        )
+        await createLog({
+            userId: session.user.id,
+            action: "SUBMIT",
+            objectType: "FORM_SUBMISSION",
+            objectId: formId,
+            info: { info: { formTitle: form?.title, submittedBy: session.user.name + "(" + session.user.id + ")" } },
+        });
         revalidatePath("/user");
         return { success: true, message: "form submitted successfully!" };
     } catch (err) {
