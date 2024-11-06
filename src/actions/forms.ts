@@ -62,6 +62,7 @@ export const createForm = async (formData: CreateFormProps) => {
                     description: form.description,
                 },
             },
+            prevState: Prisma.JsonNull,
         });
         revalidatePath("/admin/forms");
     } catch (err) {
@@ -98,6 +99,7 @@ export const deleteForms = async (formId: string) => {
                     description: form.description,
                 },
             },
+            prevState: form,
         });
         revalidatePath("/admin/forms");
         return { success: true, message: "Form deleted!" };
@@ -159,6 +161,7 @@ export const submitForm = async (formId: string, formValues: any) => {
             objectType: "FORM_SUBMISSION",
             objectId: formId,
             info: { info: { formTitle: form?.title, submittedBy: session.user.name + "(" + session.user.id + ")" } },
+            prevState: submission,
         });
         revalidatePath("/user");
         return { success: true, message: "form submitted successfully!" };
