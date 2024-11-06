@@ -1,5 +1,5 @@
 "use client";
-import handleDownload  from "@/actions/handleDownload";
+import handleDownload from "@/actions/handleDownload";
 import handlePDFDownload from "@/actions/handlePDFDownload";
 import handleExcelDownload from "@/actions/handleExcelDownload";
 import { getForms } from "@/actions/forms";
@@ -35,20 +35,19 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Prisma } from "@prisma/client";
-import { Cross1Icon } from "@radix-ui/react-icons";
+import { Cross1Icon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Submissions = Prisma.FormSubmissionGetPayload<{
     include: { user: true; form: true };
@@ -56,16 +55,10 @@ type Submissions = Prisma.FormSubmissionGetPayload<{
 
 export default function SubmissionsPage() {
     const [submissions, setSubmissions] = useState<Submissions[]>([]);
-    const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>(
-        []
-    );
+    const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
     const [formFilter, setFormFilter] = useState<string | undefined>(undefined);
-    const [currentForms, setCurrentForms] = useState<
-        { title: string; id: string }[]
-    >([]);
-    const [currentDateRange, setCurrentDateRange] = useState<
-        DateRange | undefined
-    >(undefined);
+    const [currentForms, setCurrentForms] = useState<{ title: string; id: string }[]>([]);
+    const [currentDateRange, setCurrentDateRange] = useState<DateRange | undefined>(undefined);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 
@@ -80,12 +73,10 @@ export default function SubmissionsPage() {
     }, []);
 
     function fetchAndSetSubmissions() {
-        getSubmissions({ dateRange: currentDateRange, formFilter }).then(
-            (res) => {
-                setSubmissions(res);
-                setLoading(false);
-            }
-        );
+        getSubmissions({ dateRange: currentDateRange, formFilter }).then((res) => {
+            setSubmissions(res);
+            setLoading(false);
+        });
     }
 
     useEffect(() => {
@@ -102,23 +93,16 @@ export default function SubmissionsPage() {
                 ]}
             />
             <div className="flex justify-between my-5">
-                <h1 className="text-xl font-medium items-center">
-                    Manage Submissions
-                </h1>
+                <h1 className="text-xl font-medium items-center">Manage Submissions</h1>
                 <div className="flex gap-4 items-center">
                     {selectedSubmissions.length > 0 && (
                         <Button>
-                            <Link
-                                href={`/admin/submissions/pdf?submissions=${selectedSubmissions.join(
-                                    ","
-                                )}`}>
+                            <Link href={`/admin/submissions/pdf?submissions=${selectedSubmissions.join(",")}`}>
                                 Generate Report
                             </Link>
                         </Button>
                     )}
-                    <Select
-                        value={formFilter || ""}
-                        onValueChange={(val) => setFormFilter(val)}>
+                    <Select value={formFilter || ""} onValueChange={(val) => setFormFilter(val)}>
                         <SelectTrigger className="flex gap-2">
                             <SelectValue placeholder="Select a Form" />
                         </SelectTrigger>
@@ -128,11 +112,10 @@ export default function SubmissionsPage() {
                                     Forms
                                     {formFilter && (
                                         <Button
-                                            onClick={() =>
-                                                setFormFilter(undefined)
-                                            }
+                                            onClick={() => setFormFilter(undefined)}
                                             variant={"destructive"}
-                                            className="h-fit p-1 rounded-full ">
+                                            className="h-fit p-1 rounded-full "
+                                        >
                                             <Cross1Icon className="size-3" />
                                         </Button>
                                     )}
@@ -146,10 +129,7 @@ export default function SubmissionsPage() {
                         </SelectContent>
                     </Select>
                     {/* we can use shadcn data-table to enable filtering and sorting */}
-                    <DatePickerWithRange
-                        currentDateRange={currentDateRange}
-                        onChange={setCurrentDateRange}
-                    />
+                    <DatePickerWithRange currentDateRange={currentDateRange} onChange={setCurrentDateRange} />
                 </div>
             </div>
             <Table className="border">
@@ -159,15 +139,12 @@ export default function SubmissionsPage() {
                             <Checkbox
                                 onCheckedChange={(isChecked) => {
                                     if (isChecked) {
-                                        setSelectedSubmissions(
-                                            submissions.map(
-                                                (submission) => submission.id
-                                            )
-                                        );
+                                        setSelectedSubmissions(submissions.map((submission) => submission.id));
                                     } else {
                                         setSelectedSubmissions([]);
                                     }
-                                }}></Checkbox>
+                                }}
+                            ></Checkbox>
                         </TableHead>
                         <TableHead className="pl-5">User's Name</TableHead>
                         <TableHead>Contact Info</TableHead>
@@ -178,107 +155,89 @@ export default function SubmissionsPage() {
                 </TableHeader>
                 <TableBody>
                     {submissions.map((submission) => (
-                        <TableRow
-                            key={submission.id}
-                            className="hover:bg-none!important">
+                        <TableRow key={submission.id} className="hover:bg-none!important">
                             <TableCell>
                                 <Checkbox
-                                    checked={selectedSubmissions.includes(
-                                        submission.id
-                                    )}
+                                    checked={selectedSubmissions.includes(submission.id)}
                                     onCheckedChange={(isChecked) => {
                                         if (isChecked) {
-                                            setSelectedSubmissions((prev) => [
-                                                ...prev,
-                                                submission.id,
-                                            ]);
+                                            setSelectedSubmissions((prev) => [...prev, submission.id]);
                                         } else {
                                             setSelectedSubmissions((prev) =>
-                                                prev.filter(
-                                                    (prevSub) =>
-                                                        prevSub !==
-                                                        submission.id
-                                                )
+                                                prev.filter((prevSub) => prevSub !== submission.id)
                                             );
                                         }
                                     }}
                                 />
                             </TableCell>
-                            <TableCell className="font-medium pl-5">
-                                {submission.user.name}
-                            </TableCell>
+                            <TableCell className="font-medium pl-5">{submission.user.name}</TableCell>
                             <TableCell>{submission.user.email}</TableCell>
                             <TableCell>{submission.form.title}</TableCell>
-                            <TableCell>
-                                {new Date(
-                                    submission.createdAt
-                                ).toLocaleDateString()}
-                            </TableCell>
+                            <TableCell>{new Date(submission.createdAt).toLocaleDateString()}</TableCell>
                             <TableCell className="flex gap-2">
                                 <Button asChild>
-                                    <Link
-                                        href={`/admin/submissions/${submission.id}`}>
-                                        View
-                                    </Link>
+                                    <Link href={`/admin/submissions/${submission.id}`}>View</Link>
                                 </Button>
-                                <Button onClick={() => handlePDFDownload({submissionId:submission.id})}>
-                                    PDF
-                                </Button>
-                                <Button onClick={() => handleDownload({submissionId:submission.id})}>
-                                    Doc
-                                </Button>
-                                <Button onClick={() => handleExcelDownload({submissionId:submission.id})}>
-                                    Excel
-                                </Button>
+
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <Button variant={"destructive"}>
-                                            Delete
-                                        </Button>
+                                        <Button variant={"destructive"}>Delete</Button>
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-[425px]">
                                         <DialogHeader>
-                                            <DialogTitle>
-                                                Delete Submission
-                                            </DialogTitle>
+                                            <DialogTitle>Delete Submission</DialogTitle>
                                             <DialogDescription>
-                                                Are you sure you want to delete
-                                                submission?
+                                                Are you sure you want to delete submission?
                                             </DialogDescription>
-                                            <span>
-                                                SubmissionId : {submission.id},
-                                            </span>
-                                            <span>
-                                                Submission made by:{" "}
-                                                {submission.user.name}
-                                            </span>
-                                            <span>
-                                                user email:{" "}
-                                                {submission.user.email}
-                                            </span>
+                                            <span>SubmissionId : {submission.id},</span>
+                                            <span>Submission made by: {submission.user.name}</span>
+                                            <span>user email: {submission.user.email}</span>
                                         </DialogHeader>
                                         <DialogFooter>
                                             <Button
                                                 variant={"destructive"}
                                                 onClick={async () => {
-                                                    const res =
-                                                        await deleteSubmission(
-                                                            submission.id
-                                                        );
+                                                    const res = await deleteSubmission(submission.id);
                                                     fetchAndSetSubmissions();
                                                     toast({
-                                                        description:
-                                                            res.message,
-                                                        variant: res.success
-                                                            ? "default"
-                                                            : "destructive",
+                                                        description: res.message,
+                                                        variant: res.success ? "default" : "destructive",
                                                     });
-                                                }}>
+                                                }}
+                                            >
                                                 Delete
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
+
+                                <DropdownMenu>
+                                    <Button asChild variant={"secondary"} className="px-2">
+                                        <DropdownMenuTrigger>
+                                            <DotsVerticalIcon />
+                                        </DropdownMenuTrigger>
+                                    </Button>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuItem
+                                            className="hover:cursor-pointer"
+                                            onClick={() => handlePDFDownload({ submissionId: submission.id })}
+                                        >
+                                            PDF
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className="hover:cursor-pointer"
+                                            onClick={() => handleDownload({ submissionId: submission.id })}
+                                        >
+                                            Doc
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className="hover:cursor-pointer"
+                                            onClick={() => handleExcelDownload({ submissionId: submission.id })}
+                                        >
+                                            Excel
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </TableCell>
                         </TableRow>
                     ))}
