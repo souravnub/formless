@@ -1,5 +1,5 @@
 "use client";
-import { deleteLog, getLogs } from "@/actions/logging";
+import { deleteLog, getLogs, undoLog } from "@/actions/logging";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 import { DatePickerWithRange } from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Prisma } from "@prisma/client";
 import { Cross1Icon } from "@radix-ui/react-icons";
+import { log } from "console";
 import { set } from "date-fns";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -274,9 +275,58 @@ export default function LogsPage() {
                                         Details
                                     </Link>
                                 </Button>
-                                {/* { <Button onClick={() => }>
-                                    UNDO
-                                </Button> */}
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant={"outline"}>
+                                            Undo
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                Undo Action
+                                            </DialogTitle>
+                                            <DialogDescription>
+                                                Are you sure you want to undo
+                                                action?
+                                            </DialogDescription>
+                                            <span>
+                                                LogId : {Log.id},
+                                            </span>
+                                            <span>
+                                                Action: {Log.action} {Log.objectType}
+                                                
+                                            </span>
+                                            <span>
+                                                Performed by:{" "}
+                                                {Log.user.name}({Log.user.email})
+                                            </span>
+                                            
+                                        </DialogHeader>
+                                        <DialogFooter>
+                                            <Button
+                                                variant={"default"}
+                                                onClick={async () => {
+                                                    const res =
+                                                        await undoLog(
+                                                            Log.id
+                                                        );
+                                                        await deleteLog(Log.id);
+                                                    fetchAndSetLogs();
+                                                    toast({
+                                                        description:
+                                                            res.message,
+                                                        variant: res.success
+                                                            ? "default"
+                                                            : "destructive",
+                                                    });
+                                                }}
+                                                >
+                                                UNDO
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                                 
                                 <Dialog>
                                     <DialogTrigger asChild>
@@ -297,12 +347,12 @@ export default function LogsPage() {
                                                 LogId : {Log.id},
                                             </span>
                                             <span>
-                                                Log made by:{" "}
-                                                {Log.user.name}
+                                                Action: {Log.action} {Log.objectType}
+                                                
                                             </span>
                                             <span>
-                                                user email:{" "}
-                                                {Log.user.email}
+                                                Performed by:{" "}
+                                                {Log.user.name}({Log.user.email})
                                             </span>
                                         </DialogHeader>
                                         <DialogFooter>
