@@ -10,7 +10,7 @@ export default function Home(){
 
 
 var socket: any;
-socket = io("http://localhost:3005");
+socket = io("http://10.187.216.157:3005");
 
 const handleJoin = () => {
     if(username !== "" && roomId !== ""){
