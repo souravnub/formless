@@ -52,5 +52,12 @@ export const useTTS = () => {
 // TTS Toggle Button Component
 export const TTSButton: React.FC = () => {
   const { TTS, toggleTTS } = useTTS();
-  return <Button onClick={toggleTTS}>{TTS ? "TTS on" : "TTS off"}</Button>;
+  return (
+    <Button
+      className={TTS ? "bg-red-500 hover:bg-red-500" : "bg-black"}
+      onClick={toggleTTS}
+    >
+      {TTS ? "TTS on" : "TTS off"}
+    </Button>
+  );
 };
