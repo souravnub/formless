@@ -47,12 +47,15 @@ export default async function FormsPage() {
                 </TableHeader>
                 <TableBody>
                     {forms.map((form) => (
-                        <TableRow key={form.id} className="hover:bg-none!important">
+                        <TableRow key={form.id} className="hover:bg-none!important ">
                             <TableCell className="font-medium pl-5">{form.title}</TableCell>
                             <TableCell>{new Date(form.createdAt).toLocaleDateString()}</TableCell>
                             <TableCell>{form.description}</TableCell>
-                            <TableCell className="flex gap-2">
+                            <TableCell className="flex gap-2  ">
                                 <DeleteFormDialog id={form.id} description={form.description} title={form.title} />
+                                <Button asChild>
+                                    <Link href={`/admin/forms/${form.id}/analytics`}>Analytics</Link>
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
