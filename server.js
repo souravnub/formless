@@ -1,12 +1,15 @@
+//Using Socket.io documentation
+
 const http = require('http');
 const {Server} = require('socket.io');
 const cors = require('cors');
+const os = require('os');
 
 const httpServer = http.createServer();
 
 const io = new Server(httpServer, {
     cors:{
-        origin:'http://localhost:3001' ,
+        origin:'*' ,
         methods: ['GET', 'POST'],
         allowedHeaders: ['my-custom-header'],
         credentials: true
@@ -27,6 +30,13 @@ io.on('connection', (socket) => {
     })
 })
 const PORT = process.env.PORT || 3005;
-httpServer.listen(PORT, ()=>{
+httpServer.listen(PORT,'0.0.0.0', ()=>{
     console.log(`Server is running on port ${PORT}`);
 })
+
+// Retrieve network interfaces and log IP addresses
+const interfaces = os.networkInterfaces();
+for (const interfaceName in interfaces) {
+    for (const net of interfaces[interfaceName]) {
+        if (net.family === 'IPv4' && !net.internal) {
+            console.log(`Server IP Address: ${net.address}:${PORT}`);}}}
