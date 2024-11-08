@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useState, useEffect } from "react";
 import { getSubmissionsCount } from "@/actions/submissions";
@@ -10,17 +11,17 @@ const DashFormIssues = () => {
     const fetchForms = async () => {
         const forms = await getForms();
         setForms(forms);
-    }
+    };
     useEffect(() => {
         fetchForms();
     }, []);
 
-    useEffect (() => {
+    useEffect(() => {
         forms.forEach((form: any) => {
             getSubmissionsCount({
                 // Needs Date Implementation Logic to Check for Resubmissions
 
-                formFilter: form.title
+                formFilter: form.title,
             }).then((res) => {
                 if (res > highestResubmissions) {
                     setHighestResubmissions(res);
@@ -34,6 +35,5 @@ const DashFormIssues = () => {
             The form with the most resubmissions is {formTitle} with {highestResubmissions} resubmissions
         </p>
     );
-
-}
+};
 export default DashFormIssues;
