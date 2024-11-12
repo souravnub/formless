@@ -13,6 +13,7 @@ import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { createLog } from "./logging";
 import { createUser } from "./users";
+import { Prisma } from "@prisma/client";
 
 interface CreateRequestProps {
     name: string;
@@ -84,7 +85,7 @@ export const approveRequest = async (requestId: string) => {
                 objectType: "USER_REQUEST",
                 objectId: requestId,
                 info: {"info": {"user" : name + "(" + request.id + ")", "approvedBy" : session.user.name + "(" + session.user.id + ")"}},
-                
+                prevState: request ?? Prisma.JsonNull,
             },
         )
         return { success: true, message: "Request approved!" };
@@ -111,7 +112,7 @@ export const denyRequest = async (requestId: string) => {
                 objectType: "USER_REQUEST",
                 objectId: requestId,
                 info: {"info": {"user" : request?.name + "(" + requestId + ")", "deniedBy" : session.user.name + "(" + session.user.id + ")"}},
-                
+                prevState: request ?? Prisma.JsonNull,
             },
         )
         return { success: true, message: "Request denied!" };
