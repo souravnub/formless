@@ -12,6 +12,7 @@ import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { hashPass } from "@/lib/utils";
 import { createLog } from "./logging";
+import { Prisma } from ".prisma/client";
 
 const fieldsWithoutPassword = {
     email: true,
@@ -49,6 +50,7 @@ export const createUser = async (userData: CreateUserInput) => {
             info: {
                 info: { user: name + "(" + user.id + ")", createdBy: session.user.name + "(" + session.user.id + ")" },
             },
+            prevState: Prisma.JsonNull,
         });
         return { success: true, message: "User created!" };
     } catch (err) {
@@ -76,6 +78,7 @@ export const deleteUser = async (userId: string) => {
                     deletedBy: session.user.name + "(" + session.user.id + ")",
                 },
             },
+            prevState: user,
         });
         return { success: true, message: "User deleted!" };
     } catch (err) {
@@ -135,6 +138,7 @@ export const updateUser = async (userId: string, userData: Partial<CreateUserInp
                     "Updated Fields": updatedFields,
                 },
             },
+            prevState: user,
         });
 
         return { success: true, message: "User updated!" };

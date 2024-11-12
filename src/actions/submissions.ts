@@ -86,6 +86,7 @@ export const deleteSubmission = async (submissionId: number) => {
                     deletedBy: session.user.name + "(" + session.user.id + ")",
                 },
             },
+            prevState: submission,
         });
         return { success: true, message: "Submission deleted" };
     } catch (err) {

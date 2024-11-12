@@ -67,7 +67,7 @@ model Log{
   objectId    String
   user        User     @relation(fields: [userId], references: [id])
   userId      String
-
+  prevState   Json
 }
 
 enum Action {
