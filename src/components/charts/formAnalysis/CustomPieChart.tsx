@@ -21,13 +21,13 @@ const CustomPieChart = ({ question, data }: any) => {
     }
 
     return (
-        <Card className="w-fit">
+        <Card className="flex-1 min-w-60 max-w-xl">
             <CardHeader className="items-center pb-0">
                 <CardTitle>{question}</CardTitle>
             </CardHeader>
 
             <CardContent>
-                <ChartContainer config={config} className="mx-auto aspect-square max-h-[250px] min-w-96">
+                <ChartContainer config={config} className="mx-auto aspect-square max-h-[250px]">
                     <PieChart>
                         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                         <Pie data={data} dataKey="count" nameKey="answer" innerRadius={60} strokeWidth={5}>

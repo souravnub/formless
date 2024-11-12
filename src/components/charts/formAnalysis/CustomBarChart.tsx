@@ -13,7 +13,7 @@ const chartData = [
 
 export function CustomBarChart(props: any) {
     return (
-        <Card className="max-w-sm">
+        <Card className="flex-1 min-w-80 max-w-xl">
             <CardHeader>
                 <CardTitle>{props.title}</CardTitle>
             </CardHeader>

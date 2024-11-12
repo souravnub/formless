@@ -74,8 +74,8 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
             <h1 className="font-semibold text-3xl">Form Analytics</h1>
             <p className="font-medium text-muted-foreground">{form?.title}</p>
 
-            <div className="mt-8 flex gap-4 ">
-                <Card className="rounded-md flex flex-col justify-between">
+            <div className="mt-8 flex flex-wrap gap-4 ">
+                <Card className="rounded-md flex flex-1 flex-col justify-between">
                     <CardHeader className="pb-8">
                         <CardDescription className="text-lg font-medium">Total Responses</CardDescription>
                     </CardHeader>
@@ -85,7 +85,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     </CardContent>
                 </Card>
 
-                <Card className=" rounded-md flex flex-col justify-between">
+                <Card className=" rounded-md flex flex-1 flex-col justify-between">
                     <CardHeader className="pb-8">
                         <CardDescription className="text-lg font-medium">Average Response Time</CardDescription>
                     </CardHeader>
@@ -98,7 +98,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     </CardContent>
                 </Card>
 
-                <Card className=" rounded-md flex flex-col justify-between">
+                <Card className=" rounded-md flex flex-1 flex-col justify-between">
                     <CardHeader className="pb-8">
                         <CardDescription className="text-lg font-medium">Responses made Today</CardDescription>
                     </CardHeader>
@@ -107,7 +107,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     </CardContent>
                 </Card>
 
-                <Card className=" rounded-md p-2 w-44 flex flex-col justify-between">
+                <Card className=" rounded-md flex-1 p-2 w-44 flex flex-col justify-between min-w-36">
                     <CardHeader className="p-0 mb-2">
                         <CardDescription className="text-primary font-medium">Responses</CardDescription>
                     </CardHeader>
@@ -134,7 +134,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                 </Card>
             </div>
 
-            <div className="mt-5 flex gap-2">
+            <div className="mt-5 flex flex-wrap gap-2">
                 {Object.keys(radioButtonFieldChartData).map((key: any) => {
                     return <CustomPieChart key={key} question={key} data={radioButtonFieldChartData[key]} />;
                 })}
