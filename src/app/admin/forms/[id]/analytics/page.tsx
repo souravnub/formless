@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import prisma from "@/db";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import { getCheckboxChartData, getRadioButtonChartData } from "./utils";
 
 const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
     const form = await getForm(params.id);
@@ -14,6 +14,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
         where: { formId: params.id },
         include: { user: true },
     });
+
     if (!form) return <h1>No Form found</h1>;
 
     const totalResponders = await prisma.user.count({ where: { role: form.role } });
@@ -26,57 +27,8 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
         where: { createdAt: { gte: startOfDay, lte: endOfDay }, formId: params.id },
     });
 
-    const radioButtonFields: any = [];
-
-    Object.keys((form?.schema as any).properties).forEach((key) => {
-        const keyValue = (form?.schema as any).properties[key];
-        if (keyValue.enum !== undefined) {
-            radioButtonFields.push({ key, enum: keyValue.enum });
-        }
-    });
-    const radioButtonFieldChartData: any = {};
-
-    radioButtonFields.forEach((radioGroup: any) => {
-        const enumObj: any = {};
-
-        radioGroup.enum.map((e: any) => (enumObj[e] = { count: 0 }));
-
-        formSubmissions.forEach((submission) => {
-            const res = submission.submissions as any;
-            enumObj[res[radioGroup.key]].count++;
-        });
-
-        radioButtonFieldChartData[radioGroup.key] = Object.keys(enumObj).map((key) => {
-            return { answer: key, count: enumObj[key].count };
-        });
-    });
-
-    const checkboxFields: any = [];
-
-    Object.keys((form?.schema as any).properties).forEach((key) => {
-        const keyValue = (form?.schema as any).properties[key];
-        if (keyValue.items !== undefined) {
-            checkboxFields.push({ key, enum: keyValue.items.enum });
-        }
-    });
-
-    const checkboxChartData: any = {};
-
-    checkboxFields.forEach((radioGroup: any) => {
-        const enumObj: any = {};
-
-        radioGroup.enum.map((e: any) => (enumObj[e] = { count: 0 }));
-
-        formSubmissions.forEach((submission) => {
-            // console.log(submission);
-            const res = submission.submissions as any;
-            res[radioGroup.key].map((ans: any) => enumObj[ans].count++);
-        });
-
-        checkboxChartData[radioGroup.key] = Object.keys(enumObj).map((key, idx) => {
-            return { label: key, count: enumObj[key].count, fill: `hsl(var(--chart-${idx + 1}))` };
-        });
-    });
+    const radioButtonFieldChartData = getRadioButtonChartData(form.schema, formSubmissions);
+    const checkboxChartData = getCheckboxChartData(form.schema, formSubmissions);
 
     return (
         <div className="container py-5">
