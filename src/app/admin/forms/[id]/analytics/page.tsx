@@ -1,14 +1,18 @@
 import { getForm } from "@/actions/forms";
-import { getSubmissions } from "@/actions/submissions";
 import CustomPieChart from "@/components/charts/formAnalysis/CustomPieChart";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/db";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
     const form = await getForm(params.id);
-    const formSubmissions = await prisma.formSubmission.findMany({ where: { formId: params.id } });
+    const formSubmissions = await prisma.formSubmission.findMany({
+        where: { formId: params.id },
+        include: { user: true },
+    });
 
     const radioButtonFields: any = [];
 
@@ -38,7 +42,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
     return (
         <div className="container py-5">
             <h1 className="font-semibold text-3xl">Form Analytics</h1>
-            <p className="font-medium text-muted-foreground">Fire extinguisher form</p>
+            <p className="font-medium text-muted-foreground">{form?.title}</p>
 
             <div className="mt-8 flex gap-4">
                 <Card className=" rounded-md ">
@@ -70,6 +74,32 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     </CardHeader>
                     <CardContent>
                         <CardTitle className="text-2xl font-medium">5</CardTitle>
+                    </CardContent>
+                </Card>
+
+                <Card className=" rounded-md p-2">
+                    <CardHeader className="p-0 mb-2">
+                        <CardDescription className="text-primary font-medium">Responses</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0 space-y-1">
+                        {[...formSubmissions].splice(0, 4).map((submission) => {
+                            return (
+                                <div
+                                    key={submission.id}
+                                    className="bg-muted p-1 px-3 rounded-sm flex justify-between items-center group"
+                                >
+                                    <span className="font-medium text-sm">{submission.user.name}</span>
+                                    <Link href={`/admin/submissions/${submission.id}`}>
+                                        <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                    </Link>
+                                </div>
+                            );
+                        })}
+                        {formSubmissions.length > 4 && (
+                            <Button variant={"link"} className="underline">
+                                <Link href={`/admin/submissions?formId=${params.id}`}>View all submissions</Link>
+                            </Button>
+                        )}
                     </CardContent>
                 </Card>
             </div>
