@@ -26,7 +26,7 @@ const DashSubmissionsStat = () => {
         console.log(endOfToday);
         getSubmissionsCount({
             // dateRange: {from: startOfToday, to: endOfToday},
-            formFilter: "FLHA Form",
+            formTitle: "FLHA Form",
         }).then((res) => {
             if (res) {
                 setTotalForms(res);

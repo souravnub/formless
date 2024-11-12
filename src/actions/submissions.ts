@@ -57,7 +57,7 @@ export const getSubmissionsCount = async ({ dateRange, formTitle }: GetSubmissio
     return count;
 };
 
-export const deleteSubmission = async (submissionId: number) => {
+export const deleteSubmission = async (submissionId: string) => {
     const session = await auth();
     if (!session || session.user.role !== "ADMIN" || !session.user.id) {
         return { success: false, message: "Not authorized" };

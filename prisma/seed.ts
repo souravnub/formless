@@ -298,9 +298,9 @@ async function seedForms() {
 async function seedSubmissions() {
     try {
         await prisma.formSubmission.upsert({
-            where: { id: 1 },
+            where: { id: "1" },
             create: {
-                id: 1,
+                id: "1",
                 submissions: {
                     Date: "11",
                     Time: "11",
@@ -329,9 +329,9 @@ async function seedSubmissions() {
             update: {},
         });
         await prisma.formSubmission.upsert({
-            where: { id: 2 },
+            where: { id: "2" },
             create: {
-                id: 2,
+                id: "2",
                 submissions: {
                     Date: "11/12/1220",
                     Time: "11:23pm",
@@ -361,9 +361,9 @@ async function seedSubmissions() {
         });
 
         await prisma.formSubmission.upsert({
-            where: { id: 3 },
+            where: { id: "3" },
             create: {
-                id: 3,
+                id: "3",
                 submissions: { Name: "emp", "EMP Id": "empi1", "Work Location": "NAIT" },
                 userId: "2",
                 formId: "2",
@@ -372,9 +372,9 @@ async function seedSubmissions() {
         });
 
         await prisma.formSubmission.upsert({
-            where: { id: 4 },
+            where: { id: "4" },
             create: {
-                id: 4,
+                id: "4",
                 submissions: {
                     Name: "Sourav",
                     "SUP Id": "supervisor11@gmail.com",
@@ -391,9 +391,9 @@ async function seedSubmissions() {
         });
 
         await prisma.formSubmission.upsert({
-            where: { id: 5 },
+            where: { id: "5" },
             create: {
-                id: 5,
+                id: "5",
                 submissions: {
                     Name: "Amrinder",
                     "SUP Id": "amrinder id",
@@ -410,9 +410,9 @@ async function seedSubmissions() {
         });
 
         await prisma.formSubmission.upsert({
-            where: { id: 6 },
+            where: { id: "6" },
             create: {
-                id: 6,
+                id: "6",
                 submissions: {
                     Name: "Elias",
                     "SUP Id": "SUP123w",

@@ -60,7 +60,7 @@ export default function SubmissionsPage() {
     const router = useRouter();
 
     const [submissions, setSubmissions] = useState<Submissions[]>([]);
-    const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
+    const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
 
     const [currentForms, setCurrentForms] = useState<{ title: string; id: string }[]>([]);
     const [currentDateRange, setCurrentDateRange] = useState<DateRange | undefined>(undefined);
