@@ -56,7 +56,9 @@ type Submissions = Prisma.FormSubmissionGetPayload<{
 export default function SubmissionsPage() {
     const [submissions, setSubmissions] = useState<Submissions[]>([]);
     const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
-    const [formFilter, setFormFilter] = useState<string | undefined>(undefined);
+
+    const [selectedFormId, setSelectedFormId] = useState<string | undefined>(undefined);
+
     const [currentForms, setCurrentForms] = useState<{ title: string; id: string }[]>([]);
     const [currentDateRange, setCurrentDateRange] = useState<DateRange | undefined>(undefined);
     const [loading, setLoading] = useState(true);
@@ -73,7 +75,7 @@ export default function SubmissionsPage() {
     }, []);
 
     function fetchAndSetSubmissions() {
-        getSubmissions({ dateRange: currentDateRange, formFilter }).then((res) => {
+        getSubmissions({ dateRange: currentDateRange, formId: selectedFormId }).then((res) => {
             setSubmissions(res);
             setLoading(false);
         });
@@ -81,7 +83,7 @@ export default function SubmissionsPage() {
 
     useEffect(() => {
         fetchAndSetSubmissions();
-    }, [currentDateRange, formFilter]);
+    }, [currentDateRange, selectedFormId]);
 
     return (
         <div className="container">
@@ -102,7 +104,7 @@ export default function SubmissionsPage() {
                             </Link>
                         </Button>
                     )}
-                    <Select value={formFilter || ""} onValueChange={(val) => setFormFilter(val)}>
+                    <Select value={selectedFormId || ""} onValueChange={(val) => setSelectedFormId(val)}>
                         <SelectTrigger className="flex gap-2">
                             <SelectValue placeholder="Select a Form" />
                         </SelectTrigger>
@@ -110,9 +112,9 @@ export default function SubmissionsPage() {
                             <SelectGroup>
                                 <SelectLabel className="flex items-center justify-between">
                                     Forms
-                                    {formFilter && (
+                                    {selectedFormId && (
                                         <Button
-                                            onClick={() => setFormFilter(undefined)}
+                                            onClick={() => setSelectedFormId(undefined)}
                                             variant={"destructive"}
                                             className="h-fit p-1 rounded-full "
                                         >
