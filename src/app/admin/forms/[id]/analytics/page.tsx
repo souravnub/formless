@@ -1,4 +1,5 @@
 import { getForm } from "@/actions/forms";
+import { CustomBarChart } from "@/components/charts/formAnalysis/CustomBarChart";
 import CustomPieChart from "@/components/charts/formAnalysis/CustomPieChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,23 +40,52 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
         });
     });
 
+    const checkboxFields: any = [];
+
+    Object.keys((form?.schema as any).properties).forEach((key) => {
+        const keyValue = (form?.schema as any).properties[key];
+        if (keyValue.items !== undefined) {
+            checkboxFields.push({ key, enum: keyValue.items.enum });
+        }
+    });
+
+    const checkboxChartData: any = {};
+
+    checkboxFields.forEach((radioGroup: any) => {
+        const enumObj: any = {};
+
+        radioGroup.enum.map((e: any) => (enumObj[e] = { count: 0 }));
+
+        formSubmissions.forEach((submission) => {
+            // console.log(submission);
+            const res = submission.submissions as any;
+            res[radioGroup.key].map((ans: any) => enumObj[ans].count++);
+        });
+
+        checkboxChartData[radioGroup.key] = Object.keys(enumObj).map((key, idx) => {
+            return { label: key, count: enumObj[key].count, fill: `hsl(var(--chart-${idx + 1}))` };
+        });
+    });
+
+    console.log(checkboxChartData);
+
     return (
         <div className="container py-5">
             <h1 className="font-semibold text-3xl">Form Analytics</h1>
             <p className="font-medium text-muted-foreground">{form?.title}</p>
 
-            <div className="mt-8 flex gap-4">
-                <Card className=" rounded-md ">
+            <div className="mt-8 flex gap-4 ">
+                <Card className="rounded-md flex flex-col justify-between">
                     <CardHeader className="pb-8">
                         <CardDescription className="text-lg font-medium">Total Responses</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex gap-10  items-center justify-between">
+                    <CardContent className="flex gap-10   items-center justify-between">
                         <CardTitle className="text-2xl font-medium">10</CardTitle>
                         <span className="rounded-md p-1 border px-4">50% users responded</span>
                     </CardContent>
                 </Card>
 
-                <Card className=" rounded-md">
+                <Card className=" rounded-md flex flex-col justify-between">
                     <CardHeader className="pb-8">
                         <CardDescription className="text-lg font-medium">Average Response Time</CardDescription>
                     </CardHeader>
@@ -68,7 +98,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     </CardContent>
                 </Card>
 
-                <Card className=" rounded-md">
+                <Card className=" rounded-md flex flex-col justify-between">
                     <CardHeader className="pb-8">
                         <CardDescription className="text-lg font-medium">Responses made Today</CardDescription>
                     </CardHeader>
@@ -77,26 +107,26 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     </CardContent>
                 </Card>
 
-                <Card className=" rounded-md p-2">
+                <Card className=" rounded-md p-2 w-44 flex flex-col justify-between">
                     <CardHeader className="p-0 mb-2">
                         <CardDescription className="text-primary font-medium">Responses</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-1">
                         {[...formSubmissions].splice(0, 4).map((submission) => {
                             return (
-                                <div
+                                <Link
+                                    href={`/admin/submissions/${submission.id}`}
                                     key={submission.id}
                                     className="bg-muted p-1 px-3 rounded-sm flex justify-between items-center group"
                                 >
                                     <span className="font-medium text-sm">{submission.user.name}</span>
-                                    <Link href={`/admin/submissions/${submission.id}`}>
-                                        <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                                    </Link>
-                                </div>
+
+                                    <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                </Link>
                             );
                         })}
                         {formSubmissions.length > 4 && (
-                            <Button variant={"link"} className="underline">
+                            <Button variant={"link"} className="underline w-fit px-0">
                                 <Link href={`/admin/submissions?formId=${params.id}`}>View all submissions</Link>
                             </Button>
                         )}
@@ -109,6 +139,13 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     return <CustomPieChart key={key} question={key} data={radioButtonFieldChartData[key]} />;
                 })}
             </div>
+
+            <div className="mt-5 flex gap-3 flex-wrap">
+                {Object.keys(checkboxChartData).map((key: any) => {
+                    return <CustomBarChart key={key} title={key} data={checkboxChartData[key]} />;
+                })}
+            </div>
+            {/* <CustomBarChart /> */}
         </div>
     );
 };
