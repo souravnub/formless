@@ -1,6 +1,6 @@
 "use client";
 import Form, { IChangeEvent } from "@rjsf/core";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import validator from "@rjsf/validator-ajv8";
 import "../createForm/form.css";
 import {
@@ -14,12 +14,14 @@ import { Button } from "@/components/ui/button";
 import { submitForm } from "@/actions/forms";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { set } from "date-fns";
+import { start } from "repl";
 
 const UserForm = ({ form }: { form: any }) => {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentFieldIndex, setCurrentFieldIndex] = useState(0);
+  const currentFieldIndex = useRef(0);
   const [formSchema, setFormSchema] = useState(form.schema); // Store schema in state to trigger re-renders
 
   const recognition =
@@ -28,6 +30,11 @@ const UserForm = ({ form }: { form: any }) => {
       : null;
 
   const fieldNames = Object.keys(formSchema.properties);
+
+  const startInput = () => {
+    currentFieldIndex.current = 0;
+    startListening();
+  };
 
   const startListening = () => {
     if (recognition) {
@@ -41,7 +48,7 @@ const UserForm = ({ form }: { form: any }) => {
         console.log("Speech result:", speechResult);
 
         // Get the current field name based on the current field index
-        const currentFieldName = fieldNames[currentFieldIndex];
+        const currentFieldName = fieldNames[currentFieldIndex.current];
         console.log("Current field being populated:", currentFieldName);
 
         if (formSchema.properties[currentFieldName].type === "string") {
@@ -54,8 +61,13 @@ const UserForm = ({ form }: { form: any }) => {
       };
 
       recognition.onend = () => {
-        console.log("Speech recognition ended");
-        setCurrentFieldIndex((prevIndex) => prevIndex + 1);
+        if (currentFieldIndex.current + 1 < fieldNames.length) {
+          currentFieldIndex.current++;
+          console.log("Moving to next field");
+          startListening();
+        } else {
+          console.log("Speech recognition ended");
+        }
       };
 
       recognition.start();
@@ -106,7 +118,7 @@ const UserForm = ({ form }: { form: any }) => {
         <Button
           onClick={() => {
             console.log("Voice input button clicked");
-            startListening();
+            startInput();
           }}
         >
           Voice Input
