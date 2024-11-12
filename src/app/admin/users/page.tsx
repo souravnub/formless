@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import AddUserInputComponent from "@/components/domains/addUser/addUserInputComponent";
 import SpeechToText from "@/components/SpeechTextInput";
+import { useTTS, TTSButton } from "@/components/TTSContext";
 
 type RoleType = "SUPERVISOR" | "USER" | "ADMIN";
 interface User {
@@ -49,8 +50,16 @@ const UsersPage = () => {
     console.log("users", users);
   }, [x]);
 
+  const { textToSpeech } = useTTS();
+
   return (
-    <div className="container">
+    <div
+      className="container"
+      onClick={(e) => {
+        const text = (e.target as HTMLElement).textContent || "";
+        textToSpeech(text);
+      }}
+    >
       <CustomBreadcrumb
         className="my-3"
         list={[
@@ -58,6 +67,7 @@ const UsersPage = () => {
           { name: "Users", href: "/admin/forms" },
         ]}
       />
+      <TTSButton />
       <div className="flex justify-between my-5">
         <h1 className="text-xl font-medium items-center">Manage Users</h1>
 

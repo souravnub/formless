@@ -1,19 +1,15 @@
-// TTSContext.tsx
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Button } from "./ui/button";
 
-// TTS Context Type
 interface TTSContextType {
   TTS: boolean;
   toggleTTS: () => void;
   textToSpeech: (text: string) => void;
 }
 
-// Create Context
 const TTSContext = createContext<TTSContextType | undefined>(undefined);
 
-// Provider Component
 export const TTSProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
@@ -40,7 +36,6 @@ export const TTSProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-// Custom Hook to use TTS Context
 export const useTTS = () => {
   const context = useContext(TTSContext);
   if (!context) {
@@ -49,7 +44,6 @@ export const useTTS = () => {
   return context;
 };
 
-// TTS Toggle Button Component
 export const TTSButton: React.FC = () => {
   const { TTS, toggleTTS } = useTTS();
   return (
