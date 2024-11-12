@@ -14,6 +14,17 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
         where: { formId: params.id },
         include: { user: true },
     });
+    if (!form) return <h1>No Form found</h1>;
+
+    const totalResponders = await prisma.user.count({ where: { role: form.role } });
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const responsesMadeToday = await prisma.formSubmission.count({
+        where: { createdAt: { gte: startOfDay, lte: endOfDay }, formId: params.id },
+    });
 
     const radioButtonFields: any = [];
 
@@ -67,8 +78,6 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
         });
     });
 
-    console.log(checkboxChartData);
-
     return (
         <div className="container py-5">
             <h1 className="font-semibold text-3xl">Form Analytics</h1>
@@ -80,8 +89,10 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                         <CardDescription className="text-lg font-medium">Total Responses</CardDescription>
                     </CardHeader>
                     <CardContent className="flex gap-10   items-center justify-between">
-                        <CardTitle className="text-2xl font-medium">10</CardTitle>
-                        <span className="rounded-md p-1 border px-4">50% users responded</span>
+                        <CardTitle className="text-2xl font-medium">{formSubmissions.length}</CardTitle>
+                        <span className="rounded-md p-1 border px-4">
+                            {(formSubmissions.length / totalResponders) * 100}% users responded
+                        </span>
                     </CardContent>
                 </Card>
 
@@ -103,7 +114,7 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                         <CardDescription className="text-lg font-medium">Responses made Today</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <CardTitle className="text-2xl font-medium">5</CardTitle>
+                        <CardTitle className="text-2xl font-medium">{responsesMadeToday}</CardTitle>
                     </CardContent>
                 </Card>
 
@@ -145,7 +156,6 @@ const FormAnalyticsPage = async ({ params }: { params: { id: string } }) => {
                     return <CustomBarChart key={key} title={key} data={checkboxChartData[key]} />;
                 })}
             </div>
-            {/* <CustomBarChart /> */}
         </div>
     );
 };
