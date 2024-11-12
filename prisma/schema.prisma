@@ -39,7 +39,7 @@ model Form {
 }
 
 model FormSubmission {
-  id          Int      @id @default(autoincrement())
+  id          String      @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   submissions Json

@@ -3,17 +3,14 @@ import prisma from "@/db";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const submissionIds = searchParams
-        .get("submissions")
-        ?.split(",")
-        .map((id) => Number(id));
+    const submissionIds = searchParams.get("submissions")?.split(",");
 
     const submission = await prisma.formSubmission.findMany({
         where: { id: { in: submissionIds } },
-        select:{
-            submissions : true,
-        }
+        select: {
+            submissions: true,
+        },
     });
 
-    return NextResponse.json({submission});
+    return NextResponse.json({ submission });
 }
