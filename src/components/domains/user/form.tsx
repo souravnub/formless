@@ -1,3 +1,8 @@
+//References
+// useref https://react.dev/reference/react/useRef
+// CHATGPT prompt: How to use useRef in React
+// CHATGPT prompt: I have a form with text inputs and radio buttons, i want to fill it using speech to text
+
 "use client";
 import Form, { IChangeEvent } from "@rjsf/core";
 import React, { useRef, useState } from "react";
@@ -14,15 +19,13 @@ import { Button } from "@/components/ui/button";
 import { submitForm } from "@/actions/forms";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { set } from "date-fns";
-import { start } from "repl";
 
 const UserForm = ({ form }: { form: any }) => {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const currentFieldIndex = useRef(0);
-  const [formSchema, setFormSchema] = useState(form.schema); // Store schema in state to trigger re-renders
+  const [formData, setFormData] = useState({}); // State to hold form values
   const [isListening, setIsListening] = useState(false);
 
   const recognition =
@@ -30,9 +33,10 @@ const UserForm = ({ form }: { form: any }) => {
       ? new (window as any).webkitSpeechRecognition()
       : null;
 
-  const fieldNames = Object.keys(formSchema.properties);
+  const fields = form.schema.properties;
+  const fieldNames = Object.keys(fields);
 
-  const startInput = () => {
+  const startVoiceInput = () => {
     currentFieldIndex.current = 0;
     setIsListening(true);
     startListening();
@@ -40,21 +44,27 @@ const UserForm = ({ form }: { form: any }) => {
 
   const startListening = () => {
     if (recognition) {
-      console.log("Recognition initialized");
+      console.log(
+        "started listening for" + fieldNames[currentFieldIndex.current]
+      );
       recognition.continuous = false;
       recognition.interimResults = true;
       recognition.lang = "en-US";
 
       recognition.onresult = (event: any) => {
         const speechResult = event.results[0][0].transcript.trim();
-        console.log("Speech result:", speechResult);
-
-        // Get the current field name based on the current field index
         const currentFieldName = fieldNames[currentFieldIndex.current];
-        console.log("Current field being populated:", currentFieldName);
+        const currentField = fields[currentFieldName];
+        console.log(currentFieldName, speechResult);
 
-        if (formSchema.properties[currentFieldName].type === "string") {
+        if (currentField.type === "string") {
           handleSpeechResult(speechResult, currentFieldName);
+        } else if (currentField.enum) {
+          handleRadioSpeechResult(
+            speechResult,
+            currentFieldName,
+            currentField.enum
+          );
         }
       };
 
@@ -65,7 +75,6 @@ const UserForm = ({ form }: { form: any }) => {
       recognition.onend = () => {
         if (currentFieldIndex.current + 1 < fieldNames.length) {
           currentFieldIndex.current++;
-          console.log("Moving to next field");
           startListening();
         } else {
           setIsListening(false);
@@ -74,25 +83,39 @@ const UserForm = ({ form }: { form: any }) => {
       };
 
       recognition.start();
-      console.log("Speech recognition started");
     } else {
       alert("Speech recognition is not supported in this browser.");
     }
   };
 
   const handleSpeechResult = (speechResult: string, fieldName: string) => {
-    console.log(
-      "Populating field with speech result:",
-      fieldName,
-      speechResult
+    setFormData((prevData) => ({
+      ...prevData,
+      [fieldName]: speechResult,
+    }));
+  };
+
+  const handleRadioSpeechResult = (
+    speechResult: string,
+    fieldName: string,
+    options: string[]
+  ) => {
+    const matchedOption = options.find(
+      (option) => option.toLowerCase() === speechResult.toLowerCase()
     );
 
-    // Update the specific field's default value in the schema
-    const updatedSchema = { ...formSchema };
-    updatedSchema.properties[fieldName].default = speechResult;
-
-    // Trigger re-render by setting schema in state
-    setFormSchema(updatedSchema);
+    if (matchedOption) {
+      setFormData((prevData) => ({
+        ...prevData,
+        [fieldName]: matchedOption,
+      }));
+      console.log(`Matched option for ${fieldName}:`, matchedOption);
+    } else {
+      console.log(
+        `No match found for speech result: "${speechResult}" in options`,
+        options
+      );
+    }
   };
 
   async function handleFormSubmit(formState: IChangeEvent) {
@@ -119,19 +142,17 @@ const UserForm = ({ form }: { form: any }) => {
       </CardHeader>
       <CardContent>
         <Button
-          onClick={() => {
-            console.log("Voice input button clicked");
-            startInput();
-          }}
-          className={`${isListening ? "bg-red-500 hover:bg-red-500" : ""}`}
+          onClick={startVoiceInput}
+          className={isListening ? "bg-red-500 hover:bg-red-500" : ""}
         >
-          {isListening ? "Listening..." : "Start Voice Input"}
+          {isListening ? "Listening" : "Voice Input"}
         </Button>
         <Form
           onSubmit={handleFormSubmit}
           className="form space-y-3"
           uiSchema={form.uiSchema}
-          schema={formSchema} // Use state schema here
+          schema={form.schema}
+          formData={formData} // Pass formData here
           validator={validator}
         >
           <Button disabled={isSubmitting}>
