@@ -23,6 +23,7 @@ const UserForm = ({ form }: { form: any }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const currentFieldIndex = useRef(0);
   const [formSchema, setFormSchema] = useState(form.schema); // Store schema in state to trigger re-renders
+  const [isListening, setIsListening] = useState(false);
 
   const recognition =
     typeof window !== "undefined" && (window as any).webkitSpeechRecognition
@@ -33,6 +34,7 @@ const UserForm = ({ form }: { form: any }) => {
 
   const startInput = () => {
     currentFieldIndex.current = 0;
+    setIsListening(true);
     startListening();
   };
 
@@ -66,6 +68,7 @@ const UserForm = ({ form }: { form: any }) => {
           console.log("Moving to next field");
           startListening();
         } else {
+          setIsListening(false);
           console.log("Speech recognition ended");
         }
       };
@@ -120,8 +123,9 @@ const UserForm = ({ form }: { form: any }) => {
             console.log("Voice input button clicked");
             startInput();
           }}
+          className={`${isListening ? "bg-red-500 hover:bg-red-500" : ""}`}
         >
-          Voice Input
+          {isListening ? "Listening..." : "Start Voice Input"}
         </Button>
         <Form
           onSubmit={handleFormSubmit}
