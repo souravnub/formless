@@ -12,28 +12,24 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell } from "lucide-react";
 import { Button } from "../../ui/button";
-import { Notification as NotificationProps } from "@prisma/client";
 import Notification from "./notification";
-import { getNotifications } from "@/actions/notifications";
+import { getUserNotifications } from "@/actions/notifications";
+import { UserNotification } from "@/actions/notifications/type";
 
 const NotificationDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const [notifications, setNotifications] = useState<NotificationProps[]>([]);
+    const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
     const [areThereNewNotifications, setAreThereNewNotifications] = useState(true);
 
     async function fetchNotifications() {
-        const getNotificationsRes = await getNotifications();
+        const getNotificationsRes = await getUserNotifications();
         if (getNotificationsRes.success) {
-            setNotifications(
-                getNotificationsRes.notifications.map((userNotifications) => userNotifications.notification)
+            setUserNotifications(
+                getNotificationsRes.userNotifications.map((userNotifications) => ({ ...userNotifications }))
             );
         }
     }
-
-    useEffect(() => {
-        console.log(notifications);
-    }, [notifications]);
 
     useEffect(() => {
         fetchNotifications();
@@ -56,9 +52,9 @@ const NotificationDialog = () => {
                     )}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-96 mx-10 p-0 px-2 mt-1">
+            <DropdownMenuContent className="min-w-96 mx-10 p-0 mt-1">
                 <Tabs defaultValue="inbox">
-                    <TabsList className="flex gap-3 bg-transparent px-2 p-0">
+                    <TabsList className="flex gap-3 bg-transparent p-0">
                         <TabsTrigger
                             value="inbox"
                             className="flex-1 rounded-none data-[state=active]:border-b-primary border-y-2 border-transparent data-[state=active]:shadow-none"
@@ -73,17 +69,21 @@ const NotificationDialog = () => {
                         </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="'inbox"></TabsContent>
+                    <TabsContent value="inbox" className="mt-0">
+                        <DropdownMenuSeparator className="bg-primary/10" />
+                        <div className="flex flex-col">
+                            {userNotifications.map((userNotification) => (
+                                <>
+                                    <Notification key={userNotification.notification.id} {...userNotification} />
+                                    <DropdownMenuSeparator className="bg-primary/10" />
+                                </>
+                            ))}
+                        </div>
+                    </TabsContent>
 
                     <TabsContent value="'archive"></TabsContent>
                 </Tabs>
                 <DropdownMenuSeparator />
-
-                <div className="flex flex-col gap-2">
-                    {notifications.map((notification) => (
-                        <Notification key={notification.id} {...notification} />
-                    ))}
-                </div>
             </DropdownMenuContent>
         </DropdownMenu>
     );

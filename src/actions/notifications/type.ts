@@ -1,9 +1,12 @@
-import { $Enums, Prisma, UserNotification } from "@prisma/client";
+import { $Enums, Prisma } from "@prisma/client";
 
 export interface SendNotificationProps {
     userType: $Enums.RoleType;
     notificationId: string;
 }
+
+export type UserNotification = Prisma.UserNotificationGetPayload<{ include: { notification: true } }>;
+
 export type CreateNotificationRes =
     | {
           success: true;
@@ -16,5 +19,5 @@ export type CreateNotificationRes =
       };
 
 export type GetNotificationsRes =
-    | { success: true; notifications: Prisma.UserNotificationGetPayload<{ include: { notification: true } }>[] }
+    | { success: true; userNotifications: UserNotification[] }
     | { success: false; message: string };

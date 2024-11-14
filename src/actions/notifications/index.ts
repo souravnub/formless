@@ -4,7 +4,7 @@ import { CreateNotificationRes, GetNotificationsRes, SendNotificationProps } fro
 import { auth } from "@/lib/auth";
 import prisma from "@/db";
 
-export const getNotifications = async (): Promise<GetNotificationsRes> => {
+export const getUserNotifications = async (): Promise<GetNotificationsRes> => {
     const session = await auth();
     if (!session) {
         return { success: false, message: "Not authorized" };
@@ -14,7 +14,7 @@ export const getNotifications = async (): Promise<GetNotificationsRes> => {
             include: { notification: true },
             where: { userId: session.user.id },
         });
-        return { success: true, notifications: userNotifications };
+        return { success: true, userNotifications };
     } catch (err) {
         return { success: false, message: "Error while fetching notifications" };
     }
