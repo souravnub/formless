@@ -2,9 +2,9 @@
 
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
-import { $Enums } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { CreateUserInput, SearchUsersRes } from "./types";
+import { CreateNotificationRes, CreateUserInput, SearchUsersRes, SendNotificationProps } from "./types";
 
 const fieldsWithoutPassword = {
     email: true,
@@ -55,10 +55,7 @@ export const deleteUser = async (userId: string) => {
     }
 };
 
-export const updateUser = async (
-    userId: string,
-    userData: Partial<CreateUserInput>
-) => {
+export const updateUser = async (userId: string, userData: Partial<CreateUserInput>) => {
     const session = await auth();
 
     if (!session || session.user.role !== "ADMIN") {
@@ -128,10 +125,7 @@ export const searchUsers = async (query: string): Promise<SearchUsersRes> => {
     try {
         const users = await prisma.user.findMany({
             where: {
-                OR: [
-                    { name: { contains: query } },
-                    { email: { contains: query } },
-                ],
+                OR: [{ name: { contains: query } }, { email: { contains: query } }],
             },
             // omitting password
             select: fieldsWithoutPassword,
@@ -141,6 +135,53 @@ export const searchUsers = async (query: string): Promise<SearchUsersRes> => {
         return {
             success: false,
             message: "Error while fetching users from DB",
+        };
+    }
+};
+
+export const createNotification = async (
+    notificationData: Pick<Prisma.NotificationCreateInput, "description" | "link" | "type">
+): Promise<CreateNotificationRes> => {
+    const session = await auth();
+    if (!session || session.user.role !== "ADMIN") {
+        return { success: false, message: "Not authorized" };
+    }
+    try {
+        const createdNotification = await prisma.notification.create({
+            data: notificationData,
+        });
+        return { success: true, message: "Notification created", id: createdNotification.id };
+    } catch (err) {
+        return { success: false, message: "Error while creating notification" };
+    }
+};
+
+export const sendNotification = async ({ userType, notificationId }: SendNotificationProps) => {
+    const session = await auth();
+    if (!session || session.user.role !== "ADMIN") {
+        return { success: false, message: "Not authorized" };
+    }
+
+    try {
+        const notificationReceivers = await prisma.user.findMany({
+            where: { role: userType },
+            select: { id: true },
+        });
+        const userNotifications = notificationReceivers.map((receiver) => ({
+            userId: receiver.id,
+            notificationId,
+            isArchived: false,
+        }));
+
+        await prisma.$transaction(
+            userNotifications.map((userNotification) => prisma.userNotification.create({ data: userNotification }))
+        );
+
+        return { success: true, message: `Notfiication sent to all ${userType}` };
+    } catch (err) {
+        return {
+            success: false,
+            message: "Error while sending notification",
         };
     }
 };
