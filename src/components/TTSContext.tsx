@@ -74,11 +74,19 @@ export const useTTS = () => {
 };
 
 export const TTSButton: React.FC = () => {
-  const { TTS, toggleTTS } = useTTS();
+  const { TTS, toggleTTS, textToSpeech } = useTTS();
   return (
     <Button
       className={TTS ? "bg-red-500 hover:bg-red-500" : "bg-black"}
-      onClick={toggleTTS}
+      onClick={() => {
+        if ((window as any).speechSynthesis) {
+          const utterance = new SpeechSynthesisUtterance(
+            TTS ? "TTS off" : "TTS on"
+          );
+          window.speechSynthesis.speak(utterance);
+          toggleTTS();
+        }
+      }}
     >
       {TTS ? "TTS on" : "TTS off"}
     </Button>
