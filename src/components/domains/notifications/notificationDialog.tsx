@@ -11,26 +11,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell } from "lucide-react";
-import { Button } from "../ui/button";
-import prisma from "@/db";
-import { useSession } from "next-auth/react";
-import { Notification } from "@prisma/client";
+import { Button } from "../../ui/button";
+import { Notification as NotificationProps } from "@prisma/client";
+import Notification from "./notification";
+import { getNotifications } from "@/actions/notifications";
 
 const NotificationDialog = () => {
-    const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
 
-    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [notifications, setNotifications] = useState<NotificationProps[]>([]);
     const [areThereNewNotifications, setAreThereNewNotifications] = useState(true);
 
     async function fetchNotifications() {
-        if (!session) return;
-        const userNotifications = await prisma.userNotification.findMany({
-            include: { notification: true },
-            where: { userId: session.user.id },
-        });
-        setNotifications(userNotifications.map((userNotifications) => userNotifications.notification));
+        const getNotificationsRes = await getNotifications();
+        if (getNotificationsRes.success) {
+            setNotifications(
+                getNotificationsRes.notifications.map((userNotifications) => userNotifications.notification)
+            );
+        }
     }
+
+    useEffect(() => {
+        console.log(notifications);
+    }, [notifications]);
 
     useEffect(() => {
         fetchNotifications();
@@ -76,7 +79,11 @@ const NotificationDialog = () => {
                 </Tabs>
                 <DropdownMenuSeparator />
 
-                <span>hello</span>
+                <div className="flex flex-col gap-2">
+                    {notifications.map((notification) => (
+                        <Notification key={notification.id} {...notification} />
+                    ))}
+                </div>
             </DropdownMenuContent>
         </DropdownMenu>
     );

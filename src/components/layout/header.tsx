@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 import { auth } from "@/lib/auth";
-import NotificationDialog from "./notificationDialog";
+import NotificationDialog from "../domains/notifications/notificationDialog";
 
 const links = [
     { name: "Overview", href: "/admin" },

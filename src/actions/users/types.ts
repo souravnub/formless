@@ -21,18 +21,3 @@ export interface CreateUserInput {
     role: "USER" | "SUPERVISOR";
     password: string;
 }
-
-export interface SendNotificationProps {
-    userType: $Enums.RoleType;
-    notificationId: string;
-}
-export type CreateNotificationRes =
-    | {
-          success: true;
-          message: string;
-          id: string;
-      }
-    | {
-          success: false;
-          message: string;
-      };
