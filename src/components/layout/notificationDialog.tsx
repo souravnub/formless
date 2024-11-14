@@ -1,3 +1,6 @@
+// TODO: create socket connection and listen for notification-events
+// TODO: fetchNotifications when there is a new notification event on socket
+
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -9,10 +12,29 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell } from "lucide-react";
 import { Button } from "../ui/button";
+import prisma from "@/db";
+import { useSession } from "next-auth/react";
+import { Notification } from "@prisma/client";
 
-const Notifications = () => {
+const NotificationDialog = () => {
+    const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
+
+    const [notifications, setNotifications] = useState<Notification[]>([]);
     const [areThereNewNotifications, setAreThereNewNotifications] = useState(true);
+
+    async function fetchNotifications() {
+        if (!session) return;
+        const userNotifications = await prisma.userNotification.findMany({
+            include: { notification: true },
+            where: { userId: session.user.id },
+        });
+        setNotifications(userNotifications.map((userNotifications) => userNotifications.notification));
+    }
+
+    useEffect(() => {
+        fetchNotifications();
+    }, []);
 
     useEffect(() => {
         if (isOpen) setAreThereNewNotifications(false);
@@ -60,4 +82,4 @@ const Notifications = () => {
     );
 };
 
-export default Notifications;
+export default NotificationDialog;
