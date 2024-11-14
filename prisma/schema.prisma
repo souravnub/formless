@@ -14,32 +14,33 @@ datasource db {
 }
 
 model User {
-  id             String           @id @default(cuid())
+  id             String             @id @default(cuid())
   name           String
-  email          String           @unique
+  email          String             @unique
   password       String
-  role           RoleType         @default(USER)
+  role           RoleType           @default(USER)
   FormsCreated   Form[]
   FormSubmission FormSubmission[]
   Log            Log[]
+  Notifications  UserNotification[]
 }
 
 model Form {
   id          String           @id @default(cuid())
   createdAt   DateTime         @default(now())
-  createdBy   String 
+  createdBy   String
   user        User             @relation(fields: [createdBy], references: [id])
   updatedAt   DateTime         @updatedAt
   title       String
   description String
   schema      Json
-  uiSchema Json?
+  uiSchema    Json?
   submissions FormSubmission[]
-  role       RoleType         
+  role        RoleType
 }
 
 model FormSubmission {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   submissions Json
@@ -50,24 +51,43 @@ model FormSubmission {
 }
 
 model UserRequest {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  password    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Log{
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  info        Json
-  action      Action
-  objectType  ObjectType
-  objectId    String
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-  prevState   Json
+model Log {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  info       Json
+  action     Action
+  objectType ObjectType
+  objectId   String
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+  prevState  Json
+}
+
+model UserNotification {
+  isArchived     Boolean
+  notificationId String
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@id([notificationId, userId])
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  description String
+  type        NotificationType
+  link        String
+
+  userNotifications UserNotification[]
 }
 
 enum Action {
@@ -84,10 +104,16 @@ enum ObjectType {
   FORM_SUBMISSION
   USER
   USER_REQUEST
-} 
+}
 
 enum RoleType {
   USER
   ADMIN
   SUPERVISOR
+}
+
+enum NotificationType {
+  WARNING
+  ERROR
+  REMINDER
 }
