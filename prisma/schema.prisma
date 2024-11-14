@@ -77,6 +77,7 @@ model UserNotification {
   notification   Notification @relation(fields: [notificationId], references: [id])
   userId         String
   user           User         @relation(fields: [userId], references: [id])
+  createdAt      DateTime     @default(now())
 
   @@id([notificationId, userId])
 }
@@ -116,4 +117,5 @@ enum NotificationType {
   WARNING
   ERROR
   REMINDER
+  INFO
 }
