@@ -16,10 +16,10 @@ import { createLog } from "./logging";
 
 type GetSubmissonsProps = {
     dateRange?: DateRange;
-    formFilter?: string;
+    formId?: string;
 };
 
-export const getSubmissions = async ({ dateRange, formFilter }: GetSubmissonsProps) => {
+export const getSubmissions = async ({ dateRange, formId }: GetSubmissonsProps) => {
     const submissions = await prisma.formSubmission.findMany({
         include: {
             user: true,
@@ -31,14 +31,18 @@ export const getSubmissions = async ({ dateRange, formFilter }: GetSubmissonsPro
                 gte: dateRange?.from,
             },
             form: {
-                id: formFilter,
+                id: formId,
             },
         },
     });
     return submissions;
 };
 
-export const getSubmissionsCount = async ({ dateRange, formFilter }: GetSubmissonsProps) => {
+type GetSubmissionCountProps = {
+    dateRange?: DateRange;
+    formTitle?: string;
+};
+export const getSubmissionsCount = async ({ dateRange, formTitle }: GetSubmissionCountProps) => {
     const count = await prisma.formSubmission.count({
         where: {
             // createdAt: {
@@ -46,14 +50,14 @@ export const getSubmissionsCount = async ({ dateRange, formFilter }: GetSubmisso
             //     gte: dateRange?.from,
             // },
             form: {
-                title: formFilter,
+                title: formTitle,
             },
         },
     });
     return count;
 };
 
-export const deleteSubmission = async (submissionId: number) => {
+export const deleteSubmission = async (submissionId: string) => {
     const session = await auth();
     if (!session || session.user.role !== "ADMIN" || !session.user.id) {
         return { success: false, message: "Not authorized" };

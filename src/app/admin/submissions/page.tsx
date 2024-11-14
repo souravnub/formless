@@ -48,15 +48,20 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSearchParams, useRouter } from "next/navigation";
 
 type Submissions = Prisma.FormSubmissionGetPayload<{
     include: { user: true; form: true };
 }>;
 
 export default function SubmissionsPage() {
+    const searchParams = useSearchParams();
+    const searchedFormId = searchParams.get("formId") ?? undefined;
+    const router = useRouter();
+
     const [submissions, setSubmissions] = useState<Submissions[]>([]);
-    const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
-    const [formFilter, setFormFilter] = useState<string | undefined>(undefined);
+    const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
+
     const [currentForms, setCurrentForms] = useState<{ title: string; id: string }[]>([]);
     const [currentDateRange, setCurrentDateRange] = useState<DateRange | undefined>(undefined);
     const [loading, setLoading] = useState(true);
@@ -73,7 +78,7 @@ export default function SubmissionsPage() {
     }, []);
 
     function fetchAndSetSubmissions() {
-        getSubmissions({ dateRange: currentDateRange, formFilter }).then((res) => {
+        getSubmissions({ dateRange: currentDateRange, formId: searchedFormId }).then((res) => {
             setSubmissions(res);
             setLoading(false);
         });
@@ -81,7 +86,7 @@ export default function SubmissionsPage() {
 
     useEffect(() => {
         fetchAndSetSubmissions();
-    }, [currentDateRange, formFilter]);
+    }, [currentDateRange, searchedFormId]);
 
     return (
         <div className="container">
@@ -102,7 +107,12 @@ export default function SubmissionsPage() {
                             </Link>
                         </Button>
                     )}
-                    <Select value={formFilter || ""} onValueChange={(val) => setFormFilter(val)}>
+                    <Select
+                        value={searchedFormId || ""}
+                        onValueChange={(val) => {
+                            router.push(`/admin/submissions?formId=${val}`);
+                        }}
+                    >
                         <SelectTrigger className="flex gap-2">
                             <SelectValue placeholder="Select a Form" />
                         </SelectTrigger>
@@ -110,9 +120,11 @@ export default function SubmissionsPage() {
                             <SelectGroup>
                                 <SelectLabel className="flex items-center justify-between">
                                     Forms
-                                    {formFilter && (
+                                    {searchedFormId && (
                                         <Button
-                                            onClick={() => setFormFilter(undefined)}
+                                            onClick={() => {
+                                                router.push(`/admin/submissions`);
+                                            }}
                                             variant={"destructive"}
                                             className="h-fit p-1 rounded-full "
                                         >

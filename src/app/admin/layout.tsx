@@ -24,13 +24,8 @@ const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
                         {links.map((link) => {
                             return (
                                 <li key={link.name}>
-                                    <Button
-                                        className="px-0"
-                                        asChild
-                                        variant="link">
-                                        <Link href={link.href}>
-                                            {link.name}
-                                        </Link>
+                                    <Button className="px-0" asChild variant="link">
+                                        <Link href={link.href}>{link.name}</Link>
                                     </Button>
                                 </li>
                             );

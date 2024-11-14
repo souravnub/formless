@@ -3,12 +3,9 @@ import { SubmissionPdf } from "./SubmissionPdf";
 import { NextResponse } from "next/server";
 import prisma from "@/db";
 
-export async function GET(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
     const submission = await prisma.formSubmission.findUnique({
-        where: { id: Number(params.id) },
+        where: { id: params.id },
         include: {
             form: true,
             user: true,
