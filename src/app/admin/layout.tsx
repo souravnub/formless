@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import React, { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { TTSProvider } from "@/components/TTSContext";
+import { TTSButton, useTTS } from "@/components/TTSContext";
 
 const links = [
   { name: "Overview", href: "/admin" },
@@ -11,17 +12,19 @@ const links = [
   { name: "Forms", href: "/admin/forms" },
   { name: "Submissions", href: "/admin/submissions" },
   { name: "Reports", href: "/admin/reports" },
+  { name: "Requests", href: "/admin/requests" },
 ];
 
 const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
   const a = await auth();
+
   return (
     <TTSProvider>
       <div>
         <div className="bg-accent/50">
           <header className="py-3 flex justify-between items-center container">
             <div className="text-lg font-semibold">Dashboard</div>
-
+            <TTSButton />
             <ul className="flex gap-8">
               {links.map((link) => {
                 return (

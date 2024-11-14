@@ -50,15 +50,14 @@ const UsersPage = () => {
     console.log("users", users);
   }, [x]);
 
-  const { textToSpeech } = useTTS();
+  const { TTSClick, TTSMouseOver, TTSMouseOut } = useTTS();
 
   return (
     <div
       className="container"
-      onClick={(e) => {
-        const text = (e.target as HTMLElement).textContent || "";
-        textToSpeech(text);
-      }}
+      onClick={TTSClick}
+      onMouseOver={TTSMouseOver}
+      onMouseOut={TTSMouseOut}
     >
       <CustomBreadcrumb
         className="my-3"
@@ -67,7 +66,6 @@ const UsersPage = () => {
           { name: "Users", href: "/admin/forms" },
         ]}
       />
-      <TTSButton />
       <div className="flex justify-between my-5">
         <h1 className="text-xl font-medium items-center">Manage Users</h1>
 

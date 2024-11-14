@@ -20,7 +20,12 @@ export default function AdminDashboard() {
     useTTS();
 
   return (
-    <div className=" p-2">
+    <div
+      className=" p-2"
+      onClick={TTSClick}
+      onMouseOver={TTSMouseOver}
+      onMouseOut={TTSMouseOut}
+    >
       <div className="container mx-auto space-y-2">
         <CustomBreadcrumb
           list={[
@@ -28,13 +33,8 @@ export default function AdminDashboard() {
             { name: "overview", href: "/admin" },
           ]}
         />
-        <TTSButton />
-        <div
-          className="flex gap-2 flex-row flex-wrap"
-          onClick={TTSClick}
-          onMouseOver={TTSMouseOver}
-          onMouseOut={TTSMouseOut}
-        >
+
+        <div className="flex gap-2 flex-row flex-wrap">
           <Card className="flex-1 min-w-64 bg-accent/30">
             <CardHeader>
               <CardTitle>Submissions</CardTitle>
