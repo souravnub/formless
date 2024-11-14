@@ -1,66 +1,79 @@
 .form input[type="text"],
 .form textarea {
-    @apply block rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+  @apply block rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .form input[type="radio"] {
-    @apply aspect-square h-4 w-4 rounded-full border border-primary text-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+  @apply aspect-square h-4 w-4 rounded-full border border-primary text-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .form #root {
-    @apply space-y-3;
+  @apply space-y-3;
 }
 
 .form .field-radio-group,
 .form .checkboxes {
-    @apply space-y-1;
+  @apply space-y-1;
 }
 
 .form .radio > label > span,
 .form .checkbox > label > span {
-    @apply flex items-center gap-1;
+  @apply flex items-center gap-1;
 }
 
 .form .control-label {
-    @apply font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 inline-block;
+  @apply font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 inline-block;
 }
 .form label {
-    @apply text-sm;
+  @apply text-sm;
 }
 
 i.glyphicon {
-    display: none;
+  display: none;
 }
 
 .btn-add::after,
 .array-item-remove::after {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input px-4 py-2 w-full;
+  @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input px-4 py-2 w-full;
 }
 
 .array-item {
-    @apply flex items-end;
+  @apply flex items-end;
 }
 .array-item-list {
-    @apply space-y-1;
+  @apply space-y-1;
 }
 
 .btn-group,
 .array-item-toolbox {
-    display: inline-block !important;
+  display: inline-block !important;
 }
 
 .array-item-move-up {
-    @apply hidden;
+  @apply hidden;
 }
 .array-item-move-down {
-    @apply hidden;
+  @apply hidden;
 }
 
 .btn-add::after {
-    content: "Add";
-    @apply mt-4 bg-background shadow-sm hover:bg-accent hover:text-accent-foreground;
+  content: "Add";
+  @apply mt-4 bg-background shadow-sm hover:bg-accent hover:text-accent-foreground;
 }
 .array-item-remove::after {
-    content: "Remove";
-    @apply py-1 px-2 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90;
+  content: "Remove";
+  @apply py-1 px-2 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90;
+}
+
+.form input[type="text"].highlighted-field,
+.form textarea.highlighted-field {
+  @apply border-primary ring-2 ring-primary/50;
+}
+
+.form input[type="radio"].highlighted-field {
+  @apply ring-2 ring-primary/50;
+}
+
+.form .highlighted-container {
+  @apply bg-primary/10 rounded-md p-2 transition-colors;
 }

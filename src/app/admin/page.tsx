@@ -16,7 +16,8 @@ import Link from "next/link";
 import { TTSButton, useTTS } from "@/components/TTSContext";
 
 export default function AdminDashboard() {
-  const { TTS, toggleTTS, textToSpeech } = useTTS();
+  const { TTS, toggleTTS, textToSpeech, TTSClick, TTSMouseOver, TTSMouseOut } =
+    useTTS();
 
   return (
     <div className=" p-2">
@@ -30,10 +31,9 @@ export default function AdminDashboard() {
         <TTSButton />
         <div
           className="flex gap-2 flex-row flex-wrap"
-          onClick={(e) => {
-            const text = (e.target as HTMLElement).textContent || "";
-            textToSpeech(text);
-          }}
+          onClick={TTSClick}
+          onMouseOver={TTSMouseOver}
+          onMouseOut={TTSMouseOut}
         >
           <Card className="flex-1 min-w-64 bg-accent/30">
             <CardHeader>

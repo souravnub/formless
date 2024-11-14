@@ -27,6 +27,7 @@ const UserForm = ({ form }: { form: any }) => {
   const currentFieldIndex = useRef(0);
   const [formData, setFormData] = useState({}); // State to hold form values
   const [isListening, setIsListening] = useState(false);
+  const [currentFieldName, setCurrentFieldName] = useState("");
 
   const recognition =
     typeof window !== "undefined" && (window as any).webkitSpeechRecognition
@@ -47,6 +48,7 @@ const UserForm = ({ form }: { form: any }) => {
       console.log(
         "started listening for" + fieldNames[currentFieldIndex.current]
       );
+      setCurrentFieldName(fieldNames[currentFieldIndex.current]);
       recognition.continuous = false;
       recognition.interimResults = true;
       recognition.lang = "en-US";
@@ -79,6 +81,7 @@ const UserForm = ({ form }: { form: any }) => {
         } else {
           setIsListening(false);
           console.log("Speech recognition ended");
+          setCurrentFieldName("");
         }
       };
 
@@ -134,6 +137,17 @@ const UserForm = ({ form }: { form: any }) => {
     }
   }
 
+  const uiSchema = fieldNames.reduce(
+    (schema: { [key: string]: any }, fieldname) => {
+      schema[fieldname] = {
+        ...form.uiSchema[fieldname],
+        "ui:classNames": fieldname === currentFieldName ? "bg-orange-50" : "",
+      };
+      return schema;
+    },
+    {}
+  );
+
   return (
     <Card className="max-w-xl mx-auto mt-5">
       <CardHeader>
@@ -150,9 +164,9 @@ const UserForm = ({ form }: { form: any }) => {
         <Form
           onSubmit={handleFormSubmit}
           className="form space-y-3"
-          uiSchema={form.uiSchema}
+          uiSchema={uiSchema}
           schema={form.schema}
-          formData={formData} // Pass formData here
+          formData={formData}
           validator={validator}
         >
           <Button disabled={isSubmitting}>
