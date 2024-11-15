@@ -66,3 +66,22 @@ export const sendNotification = async ({ userType, notificationId }: SendNotific
         };
     }
 };
+
+export const archiveNotification = async (userId: string, notificationId: string) => {
+    const session = await auth();
+    if (!session) {
+        return { success: false, message: "Not authorized" };
+    }
+    try {
+        await prisma.userNotification.update({
+            where: { notificationId_userId: { userId, notificationId } },
+            data: {
+                isArchived: true,
+            },
+        });
+
+        return { success: true, message: "Notification archived" };
+    } catch (err) {
+        return { success: false, message: "Cannot archive notification" };
+    }
+};

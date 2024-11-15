@@ -52,7 +52,7 @@ const NotificationDialog = () => {
                     )}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-96 mx-10 p-0 mt-1">
+            <DropdownMenuContent className="w-[30rem] mx-10 p-0 mt-1">
                 <Tabs defaultValue="inbox">
                     <TabsList className="flex gap-3 bg-transparent p-0">
                         <TabsTrigger
@@ -72,16 +72,39 @@ const NotificationDialog = () => {
                     <TabsContent value="inbox" className="mt-0">
                         <DropdownMenuSeparator className="bg-primary/10" />
                         <div className="flex flex-col">
-                            {userNotifications.map((userNotification) => (
-                                <>
-                                    <Notification key={userNotification.notification.id} {...userNotification} />
-                                    <DropdownMenuSeparator className="bg-primary/10" />
-                                </>
-                            ))}
+                            {userNotifications
+                                .filter((userNotification) => !userNotification.isArchived)
+                                .map((userNotification) => (
+                                    <>
+                                        <Notification
+                                            key={userNotification.notification.id}
+                                            userNotification={userNotification}
+                                            refetchNotifications={fetchNotifications}
+                                        />
+
+                                        <DropdownMenuSeparator className="bg-primary/10" />
+                                    </>
+                                ))}
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="'archive"></TabsContent>
+                    <TabsContent value="archive" className="mt-0">
+                        <DropdownMenuSeparator className="bg-primary/10" />
+                        <div className="flex flex-col">
+                            {userNotifications
+                                .filter((userNotification) => userNotification.isArchived)
+                                .map((userNotification) => (
+                                    <>
+                                        <Notification
+                                            key={userNotification.notification.id}
+                                            userNotification={userNotification}
+                                            refetchNotifications={fetchNotifications}
+                                        />
+                                        <DropdownMenuSeparator className="bg-primary/10" />
+                                    </>
+                                ))}
+                        </div>
+                    </TabsContent>
                 </Tabs>
                 <DropdownMenuSeparator />
             </DropdownMenuContent>
