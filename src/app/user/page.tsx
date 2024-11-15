@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,7 @@ import { UserTable } from "@/components/userTable";
 import { ArrowUpRight, FilePlus2, FileWarning, Layers, ListFilter, Plus, Search } from "lucide-react";
 import Link from "next/link";
 
-export default async function UserDashboard() {
+export default function UserDashboard() {
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-xl font-semibold mb-5">Overview</h1>
