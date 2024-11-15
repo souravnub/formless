@@ -125,7 +125,11 @@ const AddFormPage = () => {
             return;
         }
         await sendNotification({ userType: formRole, notificationId: createNotificationRes.id });
-        socket?.emit("notify", "employee");
+        if (formRole === "USER") {
+            socket?.emit("notify", "employee");
+        } else if (formRole === "SUPERVISOR") {
+            socket?.emit("notify", "supervisor");
+        }
         setIsCreatingForm(false);
         router.push("/admin/forms");
     };

@@ -13,6 +13,7 @@ export const getUserNotifications = async (): Promise<GetNotificationsRes> => {
         const userNotifications = await prisma.userNotification.findMany({
             include: { notification: true },
             where: { userId: session.user.id },
+            orderBy: { createdAt: "desc" },
         });
         return { success: true, userNotifications };
     } catch (err) {
