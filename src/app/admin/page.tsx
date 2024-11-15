@@ -16,8 +16,7 @@ import Link from "next/link";
 import { TTSButton, useTTS } from "@/components/TTSContext";
 
 export default function AdminDashboard() {
-  const { TTS, toggleTTS, textToSpeech, TTSClick, TTSMouseOver, TTSMouseOut } =
-    useTTS();
+  const { TTSClick, TTSMouseOver, TTSMouseOut } = useTTS();
 
   return (
     <div
