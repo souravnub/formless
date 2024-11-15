@@ -72,7 +72,8 @@ model Log {
 }
 
 model UserNotification {
-  isArchived     Boolean
+  isArchived     Boolean      @default(false)
+  isRead         Boolean      @default(false)
   notificationId String
   notification   Notification @relation(fields: [notificationId], references: [id])
   userId         String
