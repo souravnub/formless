@@ -34,6 +34,7 @@ import { generateData } from "@/ai";
 import schema from "@/ai/generate-form-schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { imageUrlToBase64 } from "@/lib/utils";
+import { useSocketContext } from "@/providers";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -41,6 +42,7 @@ const AddFormPage = () => {
     const prompt = params.get("prompt");
     const imageUrl = params.get("image");
     const imageType = params.get("imageType");
+    const socket = useSocketContext();
 
     const {
         propertiesArr,
@@ -96,7 +98,7 @@ const AddFormPage = () => {
         }
 
         const res = await createForm(formData);
-
+        socket?.emit("notify", "employee");
         if (res && !res.success) {
             toast({
                 description: res.message,

@@ -20,11 +20,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <NextAuthProvider>
+                {/* <SocketContextProvider> */}
                 <body className={`${inter.className} antialiased`}>
                     {children}
 
                     <Toaster />
                 </body>
+                {/* </SocketContextProvider> */}
             </NextAuthProvider>
         </html>
     );

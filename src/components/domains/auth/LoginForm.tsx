@@ -37,17 +37,14 @@ const LoginForm = () => {
             return toast({
                 variant: "destructive",
                 title: "Invalid Credentials",
-                description:
-                    "The credentials provided were incorrect. Please Try with valid credentials",
+                description: "The credentials provided were incorrect. Please Try with valid credentials",
             });
         }
         router.push("/");
     }
 
     return (
-        <form
-            className="grid w-full items-center gap-4"
-            onSubmit={handleLoginFormAction}>
+        <form className="grid w-full items-center gap-4" onSubmit={handleLoginFormAction}>
             <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Email</Label>
                 <Input id="name" name="email" disabled={isLoading} />

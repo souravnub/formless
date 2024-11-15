@@ -21,9 +21,7 @@ const NotificationDialog = () => {
     async function fetchNotifications() {
         const getNotificationsRes = await getUserNotifications();
         if (getNotificationsRes.success) {
-            setUserNotifications(
-                getNotificationsRes.userNotifications.map((userNotifications) => ({ ...userNotifications }))
-            );
+            setUserNotifications(getNotificationsRes.userNotifications);
         }
     }
 
