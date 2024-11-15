@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
-import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+import NotificationDialog from "@/components/domains/notifications/notificationDialog";
 import { LogoutButton } from "@/components/LogoutButton";
+import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { ReactNode } from "react";
 
 const links = [
     { name: "Overview", href: "/user" },
@@ -26,13 +26,8 @@ const UserLayout = async ({ children }: { children: ReactNode }) => {
                         {links.map((link) => {
                             return (
                                 <li key={link.name}>
-                                    <Button
-                                        className="px-0"
-                                        asChild
-                                        variant="link">
-                                        <Link href={link.href}>
-                                            {link.name}
-                                        </Link>
+                                    <Button className="px-0" asChild variant="link">
+                                        <Link href={link.href}>{link.name}</Link>
                                     </Button>
                                 </li>
                             );
@@ -41,6 +36,7 @@ const UserLayout = async ({ children }: { children: ReactNode }) => {
 
                     <div className="flex items-center space-x-4">
                         <span className="text-gray-700">{a?.user.name}</span>
+                        <NotificationDialog />
                         <LogoutButton />
                     </div>
                 </div>

@@ -34,6 +34,8 @@ import { generateData } from "@/ai";
 import schema from "@/ai/generate-form-schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { imageUrlToBase64 } from "@/lib/utils";
+import { useSocketContext } from "@/providers";
+import { createNotification, sendNotification } from "@/actions/notifications";
 
 const AddFormPage = () => {
     const { toast } = useToast();
@@ -41,6 +43,8 @@ const AddFormPage = () => {
     const prompt = params.get("prompt");
     const imageUrl = params.get("image");
     const imageType = params.get("imageType");
+    const socket = useSocketContext();
+    const router = useRouter();
 
     const {
         propertiesArr,
@@ -64,8 +68,10 @@ const AddFormPage = () => {
 
     const [formRole, setFormRole] = useState<RoleType>("SUPERVISOR");
     const [isGeneratingForm, setIsGeneratingForm] = useState(false);
+    const [isCreatingForm, setIsCreatingForm] = useState(false);
 
     const handleSubmit = async () => {
+        setIsCreatingForm(true);
         const formData = {
             title: RJSFState.title as string,
             description: RJSFState.description as string,
@@ -97,12 +103,35 @@ const AddFormPage = () => {
 
         const res = await createForm(formData);
 
-        if (res && !res.success) {
+        if (!res.success) {
             toast({
                 description: res.message,
                 variant: "destructive",
             });
+            return;
         }
+
+        const formLink =
+            formRole === "SUPERVISOR"
+                ? `/supervisor/forms/${res.formId}/submissions/new`
+                : `/user/forms/${res.formId}/submissions/new`;
+        const createNotificationRes = await createNotification({
+            description: `New form added: ${res.formTitle}`,
+            link: formLink,
+            type: "INFO",
+        });
+        if (!createNotificationRes.success) {
+            toast({ description: createNotificationRes.message, variant: "destructive" });
+            return;
+        }
+        await sendNotification({ userType: formRole, notificationId: createNotificationRes.id });
+        if (formRole === "USER") {
+            socket?.emit("notify", "employee");
+        } else if (formRole === "SUPERVISOR") {
+            socket?.emit("notify", "supervisor");
+        }
+        setIsCreatingForm(false);
+        router.push("/admin/forms");
     };
 
     async function generateForm(prompt: string, schema: any) {
@@ -344,8 +373,8 @@ const AddFormPage = () => {
                             }}
                             validator={validator}
                         />
-                        <Button className="mt-16" onClick={handleSubmit}>
-                            Create Form
+                        <Button className="mt-16" onClick={handleSubmit} disabled={isCreatingForm}>
+                            {isCreatingForm ? "Creating Form..." : "Create Form"}
                         </Button>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ export default function Home() {
     const [showSpinner, setShowSpinner] = useState(false);
 
     var socket: any;
-    socket = io(`http://10.187.216.157:${process.env.PORT}`);
+    socket = io(`http://localhost:${process.env.NEXT_PUBLIC_PORT}`);
 
     const handleJoin = () => {
         if (username !== "" && roomId !== "") {

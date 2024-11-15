@@ -1,20 +1,13 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserTable } from "@/components/userTable";
-import {
-    ArrowUpRight,
-    FilePlus2,
-    FileWarning,
-    Layers,
-    ListFilter,
-    Plus,
-    Search,
-} from "lucide-react";
+import { ArrowUpRight, FilePlus2, FileWarning, Layers, ListFilter, Plus, Search } from "lucide-react";
 import Link from "next/link";
 
-export default async function UserDashboard() {
+export default function UserDashboard() {
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-xl font-semibold mb-5">Overview</h1>
@@ -69,9 +62,7 @@ export default async function UserDashboard() {
                         <Tabs defaultValue="all">
                             <TabsList>
                                 <TabsTrigger value="all">View All</TabsTrigger>
-                                <TabsTrigger value="Completed">
-                                    Completed
-                                </TabsTrigger>
+                                <TabsTrigger value="Completed">Completed</TabsTrigger>
                             </TabsList>
                         </Tabs>
 
@@ -84,8 +75,7 @@ export default async function UserDashboard() {
                             />
                         </div>
                         <Button variant={"outline"}>
-                            <ListFilter className="text-muted-foreground size-4 mr-1" />{" "}
-                            Filters
+                            <ListFilter className="text-muted-foreground size-4 mr-1" /> Filters
                         </Button>
                     </div>
 
