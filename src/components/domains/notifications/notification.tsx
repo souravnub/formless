@@ -60,7 +60,7 @@ const Notification = (props: NotificationProps) => {
                             await props.refetchNotifications();
                         }}
                         variant={"ghost"}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-auto p-2 ml-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-auto p-2 ml-auto rounded-full opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
                     >
                         <Archive className="size-5 stroke-2" />
                     </Button>

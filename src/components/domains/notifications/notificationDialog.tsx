@@ -15,6 +15,7 @@ import { Button } from "../../ui/button";
 import Notification from "./notification";
 import { getUserNotifications } from "@/actions/notifications";
 import { UserNotification } from "@/actions/notifications/type";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const NotificationDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -40,8 +41,8 @@ const NotificationDialog = () => {
     }, [isOpen]);
 
     return (
-        <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
-            <DropdownMenuTrigger asChild>
+        <Popover onOpenChange={setIsOpen} open={isOpen}>
+            <PopoverTrigger asChild>
                 <Button
                     variant="ghost"
                     className={`relative border rounded-full h-auto p-2 ${!isOpen && "text-primary/60"}`}
@@ -51,8 +52,8 @@ const NotificationDialog = () => {
                         <div className="absolute  top-0  right-0 bg-blue-500 rounded-full w-2.5 aspect-square"></div>
                     )}
                 </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[30rem] mx-10 p-0 mt-1">
+            </PopoverTrigger>
+            <PopoverContent className="w-[30rem] mx-10 p-0 mt-1">
                 <Tabs defaultValue="inbox">
                     <TabsList className="flex gap-3 bg-transparent p-0">
                         <TabsTrigger
@@ -107,8 +108,8 @@ const NotificationDialog = () => {
                     </TabsContent>
                 </Tabs>
                 <DropdownMenuSeparator />
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </PopoverContent>
+        </Popover>
     );
 };
 
