@@ -10,6 +10,10 @@ const NotificationsContainer = ({
     userNotifications: UserNotification[];
     refetchNotifications: () => Promise<void>;
 }) => {
+    if (userNotifications.length === 0) {
+        return <p className="p-5 text-center font-medium text-primary/40">Nothing left to show here!</p>;
+    }
+
     return (
         <div className="flex flex-col">
             {userNotifications.map((userNotification) => (
