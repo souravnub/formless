@@ -25,7 +25,8 @@ interface CreateFormProps {
     requiredFields: string[];
 }
 
-export const createForm = async (formData: CreateFormProps) => {
+type formCreateRes = { success: true; formId: string; formTitle: string } | { success: false; message: string };
+export const createForm = async (formData: CreateFormProps): Promise<formCreateRes> => {
     const session = await auth();
     if (!session || session.user.role !== "ADMIN" || !session.user.id) {
         return { success: false, message: "Not authorized" };
@@ -64,7 +65,9 @@ export const createForm = async (formData: CreateFormProps) => {
             },
             prevState: Prisma.JsonNull,
         });
+
         revalidatePath("/admin/forms");
+        return { success: true, formId: form.id, formTitle: form.title };
     } catch (err) {
         console.log(err);
         return { success: false, message: "Error while creating form in DB" };

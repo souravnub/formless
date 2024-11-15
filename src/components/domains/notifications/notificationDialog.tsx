@@ -11,25 +11,32 @@ import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../ui/button";
 import NotificationsContainer from "./notificationsContainer";
+import { useSocketContext } from "@/providers";
 
 const NotificationDialog = () => {
+    const socket = useSocketContext();
     const [isOpen, setIsOpen] = useState(false);
 
     const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
-    const [areThereNewNotifications, setAreThereNewNotifications] = useState(true);
+    const [areThereNewNotifications, setAreThereNewNotifications] = useState(false);
 
     async function fetchNotifications() {
         const getNotificationsRes = await getUserNotifications();
         if (getNotificationsRes.success) {
-            setUserNotifications(
-                getNotificationsRes.userNotifications.map((userNotifications) => ({ ...userNotifications }))
-            );
+            setUserNotifications(getNotificationsRes.userNotifications);
         }
     }
 
     useEffect(() => {
         fetchNotifications();
     }, []);
+
+    useEffect(() => {
+        socket?.on("new-notification", () => {
+            setAreThereNewNotifications(true);
+            fetchNotifications();
+        });
+    }, [socket]);
 
     useEffect(() => {
         if (isOpen) setAreThereNewNotifications(false);
@@ -87,6 +94,7 @@ const NotificationDialog = () => {
                         />
                     </TabsContent>
                 </Tabs>
+
                 <DropdownMenuSeparator />
             </PopoverContent>
         </Popover>
