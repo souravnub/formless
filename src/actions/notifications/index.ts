@@ -86,3 +86,38 @@ export const archiveNotification = async (userId: string, notificationId: string
         return { success: false, message: "Cannot archive notification" };
     }
 };
+
+export const setAllNotificationsToRead = async () => {
+    const session = await auth();
+    if (!session || !session.user.id) {
+        return { success: false, message: "Not authorized" };
+    }
+    try {
+        // INFO: Finding notifications based on just userId is not possible right now. Issue on prisma github: https://github.com/prisma/prisma/issues/16979
+        // await prisma.userNotification.update({
+        //     where: {  notificationId_userId: {userId: session.user.id} },
+        //     data: {
+        //         isRead: true,
+        //     },
+        // });
+
+        const notReadNotifications = await prisma.userNotification.findMany({
+            where: { userId: session.user.id, isRead: false },
+            select: { userId: true, notificationId: true },
+        });
+        const readStatusUpdatePromises = notReadNotifications.map((notification) => {
+            return prisma.userNotification.update({
+                where: {
+                    notificationId_userId: { userId: notification.userId, notificationId: notification.notificationId },
+                },
+                data: { isRead: true },
+            });
+        });
+
+        await prisma.$transaction(readStatusUpdatePromises);
+
+        return { success: true, message: "Notifications read" };
+    } catch (err) {
+        return { success: false, message: "Cannot set notifications to read" };
+    }
+};

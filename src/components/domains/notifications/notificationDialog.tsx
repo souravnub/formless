@@ -2,7 +2,7 @@
 // TODO: fetchNotifications when there is a new notification event on socket
 
 "use client";
-import { getUserNotifications } from "@/actions/notifications";
+import { getUserNotifications, setAllNotificationsToRead } from "@/actions/notifications";
 import { UserNotification } from "@/actions/notifications/type";
 import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -18,12 +18,17 @@ const NotificationDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
-    const [areThereNewNotifications, setAreThereNewNotifications] = useState(false);
+    const [areThereUnReadNotifications, setAreThereUnReadNotifications] = useState(false);
 
     async function fetchNotifications() {
         const getNotificationsRes = await getUserNotifications();
         if (getNotificationsRes.success) {
             setUserNotifications(getNotificationsRes.userNotifications);
+            getNotificationsRes.userNotifications.forEach((notification) => {
+                if (notification.isRead === false) {
+                    setAreThereUnReadNotifications(true);
+                }
+            });
         }
     }
 
@@ -33,13 +38,17 @@ const NotificationDialog = () => {
 
     useEffect(() => {
         socket?.on("new-notification", () => {
-            setAreThereNewNotifications(true);
             fetchNotifications();
         });
     }, [socket]);
 
     useEffect(() => {
-        if (isOpen) setAreThereNewNotifications(false);
+        if (isOpen) {
+            // when the user opens the notification dialog, set all notifications to read
+            setAllNotificationsToRead().then(() => {
+                setAreThereUnReadNotifications(false);
+            });
+        }
     }, [isOpen]);
 
     return (
@@ -50,8 +59,11 @@ const NotificationDialog = () => {
                     className={`relative border rounded-full h-auto p-2 ${!isOpen && "text-primary/60"}`}
                 >
                     <Bell className="size-4" />
-                    {areThereNewNotifications && (
-                        <div className="absolute  top-0  right-0 bg-blue-500 rounded-full w-2.5 aspect-square"></div>
+                    {areThereUnReadNotifications && (
+                        <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-600 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span>
+                        </span>
                     )}
                 </Button>
             </PopoverTrigger>
