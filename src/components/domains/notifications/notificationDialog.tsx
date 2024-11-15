@@ -2,20 +2,15 @@
 // TODO: fetchNotifications when there is a new notification event on socket
 
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell } from "lucide-react";
-import { Button } from "../../ui/button";
-import Notification from "./notification";
 import { getUserNotifications } from "@/actions/notifications";
 import { UserNotification } from "@/actions/notifications/type";
+import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Bell } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "../../ui/button";
+import NotificationsContainer from "./notificationsContainer";
 
 const NotificationDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -72,39 +67,24 @@ const NotificationDialog = () => {
 
                     <TabsContent value="inbox" className="mt-0">
                         <DropdownMenuSeparator className="bg-primary/10" />
-                        <div className="flex flex-col">
-                            {userNotifications
-                                .filter((userNotification) => !userNotification.isArchived)
-                                .map((userNotification) => (
-                                    <>
-                                        <Notification
-                                            key={userNotification.notification.id}
-                                            userNotification={userNotification}
-                                            refetchNotifications={fetchNotifications}
-                                        />
 
-                                        <DropdownMenuSeparator className="bg-primary/10" />
-                                    </>
-                                ))}
-                        </div>
+                        <NotificationsContainer
+                            refetchNotifications={fetchNotifications}
+                            userNotifications={userNotifications.filter(
+                                (userNotification) => !userNotification.isArchived
+                            )}
+                        />
                     </TabsContent>
 
                     <TabsContent value="archive" className="mt-0">
                         <DropdownMenuSeparator className="bg-primary/10" />
-                        <div className="flex flex-col">
-                            {userNotifications
-                                .filter((userNotification) => userNotification.isArchived)
-                                .map((userNotification) => (
-                                    <>
-                                        <Notification
-                                            key={userNotification.notification.id}
-                                            userNotification={userNotification}
-                                            refetchNotifications={fetchNotifications}
-                                        />
-                                        <DropdownMenuSeparator className="bg-primary/10" />
-                                    </>
-                                ))}
-                        </div>
+
+                        <NotificationsContainer
+                            refetchNotifications={fetchNotifications}
+                            userNotifications={userNotifications.filter(
+                                (userNotification) => userNotification.isArchived
+                            )}
+                        />
                     </TabsContent>
                 </Tabs>
                 <DropdownMenuSeparator />
