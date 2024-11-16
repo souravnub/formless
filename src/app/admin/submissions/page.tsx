@@ -89,15 +89,8 @@ export default function SubmissionsPage() {
     fetchAndSetSubmissions();
   }, [currentDateRange, formFilter]);
 
-  const { TTSClick, TTSMouseOut, TTSMouseOver } = useTTS();
-
   return (
-    <div
-      className="container"
-      onClick={TTSClick}
-      onMouseOver={TTSMouseOver}
-      onMouseOut={TTSMouseOut}
-    >
+    <div className="container">
       <CustomBreadcrumb
         className="my-3"
         list={[

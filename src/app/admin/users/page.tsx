@@ -50,15 +50,8 @@ const UsersPage = () => {
     console.log("users", users);
   }, [x]);
 
-  const { TTSClick, TTSMouseOver, TTSMouseOut } = useTTS();
-
   return (
-    <div
-      className="container"
-      onClick={TTSClick}
-      onMouseOver={TTSMouseOver}
-      onMouseOut={TTSMouseOut}
-    >
+    <div className="container">
       <CustomBreadcrumb
         className="my-3"
         list={[

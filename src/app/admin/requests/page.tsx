@@ -50,15 +50,8 @@ export default function requestsPage() {
   const [openDelete, setOpenDelete] = useState<string | null>(null);
   const [openApprove, setOpenApprove] = useState<string | null>(null);
 
-  const { TTSClick, TTSMouseOut, TTSMouseOver } = useTTS();
-
   return (
-    <div
-      className="container"
-      onClick={TTSClick}
-      onMouseOver={TTSMouseOver}
-      onMouseOut={TTSMouseOut}
-    >
+    <div className="container">
       <CustomBreadcrumb
         className="my-3"
         list={[

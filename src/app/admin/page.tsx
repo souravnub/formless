@@ -16,15 +16,8 @@ import Link from "next/link";
 import { TTSButton, useTTS } from "@/components/TTSContext";
 
 export default function AdminDashboard() {
-  const { TTSClick, TTSMouseOver, TTSMouseOut } = useTTS();
-
   return (
-    <div
-      className=" p-2"
-      onClick={TTSClick}
-      onMouseOver={TTSMouseOver}
-      onMouseOut={TTSMouseOut}
-    >
+    <div className=" p-2">
       <div className="container mx-auto space-y-2">
         <CustomBreadcrumb
           list={[

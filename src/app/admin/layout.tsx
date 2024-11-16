@@ -5,6 +5,7 @@ import React, { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { TTSProvider } from "@/components/TTSContext";
 import { TTSButton, useTTS } from "@/components/TTSContext";
+import TTS from "@/components/TTS";
 
 const links = [
   { name: "Overview", href: "/admin" },
@@ -19,7 +20,7 @@ const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
   const a = await auth();
 
   return (
-    <TTSProvider>
+    <TTS>
       <div className="bg-accent/50">
         <header className="py-3 flex justify-between items-center container">
           <div className="text-lg font-semibold">Dashboard</div>
@@ -43,7 +44,7 @@ const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
         </header>
       </div>
       <main>{children}</main>
-    </TTSProvider>
+    </TTS>
   );
 };
 
