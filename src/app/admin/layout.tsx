@@ -1,3 +1,6 @@
+import Header from "@/components/layout/header";
+import TTS from "@/components/TTS";
+import { ReactNode } from "react";
 import { LogoutButton } from "@/components/LogoutButton";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
@@ -15,6 +18,12 @@ const links = [
 ];
 
 const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
+  return (
+    <TTS>
+      <Header />
+      <main>{children}</main>
+    </TTS>
+  );
     const a = await auth();
     return (
 

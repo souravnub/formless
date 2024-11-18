@@ -2,7 +2,6 @@
 
 import prisma from "@/db";
 import { auth } from "@/lib/auth";
-import { $Enums } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { CreateUserInput, SearchUsersRes } from "./types";
 
@@ -55,10 +54,7 @@ export const deleteUser = async (userId: string) => {
     }
 };
 
-export const updateUser = async (
-    userId: string,
-    userData: Partial<CreateUserInput>
-) => {
+export const updateUser = async (userId: string, userData: Partial<CreateUserInput>) => {
     const session = await auth();
 
     if (!session || session.user.role !== "ADMIN") {
@@ -128,10 +124,7 @@ export const searchUsers = async (query: string): Promise<SearchUsersRes> => {
     try {
         const users = await prisma.user.findMany({
             where: {
-                OR: [
-                    { name: { contains: query } },
-                    { email: { contains: query } },
-                ],
+                OR: [{ name: { contains: query } }, { email: { contains: query } }],
             },
             // omitting password
             select: fieldsWithoutPassword,
