@@ -7,6 +7,7 @@ import React, { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { TTSButton } from "@/components/TTSContext";
 
 const links = [
   { name: "Overview", href: "/admin" },
@@ -40,6 +41,7 @@ const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
 
           {/* Right Section */}
           <div className="flex items-center space-x-4">
+            <TTSButton />
             <span className="text-gray-700">{a?.user.name}</span>
             <LogoutButton />
           </div>
