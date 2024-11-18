@@ -3,6 +3,8 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import React, { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
 
 const links = [
     { name: "Overview", href: "/admin" },
@@ -15,32 +17,47 @@ const links = [
 const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
     const a = await auth();
     return (
-        <div>
-            <div className="bg-accent/50">
-                <header className="py-3 flex justify-between items-center container">
-                    <div className="text-lg font-semibold">Dashboard</div>
 
-                    <ul className="flex gap-8">
-                        {links.map((link) => {
-                            return (
-                                <li key={link.name}>
-                                    <Button className="px-0" asChild variant="link">
-                                        <Link href={link.href}>{link.name}</Link>
-                                    </Button>
-                                </li>
-                            );
-                        })}
-                    </ul>
+        <div className="min-h-screen flex flex-col">
 
-                    <div className="flex items-center space-x-4">
-                        <span className="text-gray-700">{a?.user.name}</span>
-                        <LogoutButton />
-                    </div>
-                </header>
-            </div>
+    <div className="bg-accent/50">
+ 
+   
 
-            <main>{children}</main>
+      <header className="py-3 flex justify-between items-center w-full px-6">
+        {/* Left Section */}
+        <div className="text-lg font-semibold px-3">Dashboard</div>
+
+        {/* Center Section */}
+        <ul className="flex flex-1 justify-center gap-8">
+          {links.map((link) => (
+            <li key={link.name}>
+              <Button className="px-0" asChild variant="link">
+                <Link href={link.href}>{link.name}</Link>
+              </Button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Right Section */}
+        <div className="flex items-center space-x-4">
+          <span className="text-gray-700">{a?.user.name}</span>
+          <LogoutButton />
         </div>
+      </header>
+    </div>
+
+    {/* Main Content */}
+    <SidebarProvider>
+    <AppSidebar />
+    <main className="flex-grow flex">
+      <SidebarTrigger />
+      <div className="flex-grow p-6">{children}</div>
+    </main>
+    </SidebarProvider>
+  </div>
+
+
     );
 };
 
