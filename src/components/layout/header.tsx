@@ -14,6 +14,7 @@ const links = [
   { name: "Submissions", href: "/admin/submissions" },
   { name: "Requests", href: "/admin/requests" },
   { name: "Reports", href: "/admin/reports" },
+  { name: "Logs", href: "/admin/logs" },
 ];
 
 const Header = async () => {
