@@ -1,6 +1,5 @@
 import Header from "@/components/layout/header";
 import TTS from "@/components/TTS";
-import { ReactNode } from "react";
 import { LogoutButton } from "@/components/LogoutButton";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
@@ -18,12 +17,6 @@ const links = [
 ];
 
 const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
-  return (
-    <TTS>
-      <Header />
-      <main>{children}</main>
-    </TTS>
-  );
     const a = await auth();
     return (
 
@@ -57,6 +50,7 @@ const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
     </div>
 
     {/* Main Content */}
+    <TTS>
     <SidebarProvider>
     <AppSidebar />
     <main className="flex-grow flex">
@@ -64,8 +58,8 @@ const AdminPageRootLayout = async ({ children }: { children: ReactNode }) => {
       <div className="flex-grow p-6">{children}</div>
     </main>
     </SidebarProvider>
+    </TTS>
   </div>
-
 
     );
 };
