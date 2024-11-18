@@ -23,6 +23,7 @@ model User {
   FormSubmission FormSubmission[]
   Log            Log[]
   Notifications  UserNotification[]
+  messages       Message[]
 }
 
 model Form {
@@ -119,4 +120,21 @@ enum NotificationType {
   ERROR
   REMINDER
   INFO
+}
+
+
+model ChatRoom {
+  id          Int   @id @default(autoincrement())
+  name        String @unique
+  messages    Message[]
+  createdAt DateTime @default(now())
+}
+model Message {
+  id          Int       @id @default(autoincrement())
+  content     String
+  sender      User      @relation(fields: [senderId], references: [id])
+  senderId    String
+  chatRoom    ChatRoom  @relation(fields: [chatRoomId], references: [id])
+  chatRoomId  Int
+  createdAt   DateTime  @default(now())
 }
