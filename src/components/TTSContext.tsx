@@ -27,8 +27,6 @@ export const TTSProvider: React.FC<{ children: ReactNode }> = ({
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
-    } else {
-      console.warn("Text-to-Speech not supported in this browser.");
     }
   };
 
@@ -83,8 +81,12 @@ export const TTSButton: React.FC = () => {
           const utterance = new SpeechSynthesisUtterance(
             TTS ? "TTS off" : "TTS on"
           );
+          speechSynthesis.cancel();
           window.speechSynthesis.speak(utterance);
           toggleTTS();
+        } else {
+          alert("Text-to-Speech not supported in this browser.");
+          console.warn("Text-to-Speech not supported in this browser.");
         }
       }}
     >
