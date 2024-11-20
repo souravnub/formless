@@ -30,7 +30,7 @@ model Form {
   id          String           @id @default(cuid())
   createdAt   DateTime         @default(now())
   createdBy   String
-  user        User             @relation(fields: [createdBy], references: [id])
+  user        User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   updatedAt   DateTime         @updatedAt
   title       String
   description String
@@ -45,8 +45,8 @@ model FormSubmission {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   submissions Json
-  user        User     @relation(fields: [userId], references: [id])
-  form        Form     @relation(fields: [formId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  form        Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
   formId      String
   userId      String
 }
@@ -67,7 +67,7 @@ model Log {
   action     Action
   objectType ObjectType
   objectId   String
-  user       User       @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   prevState  Json
 }

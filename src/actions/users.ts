@@ -66,7 +66,7 @@ export const deleteUser = async (userId: string) => {
     }
 
     try {
-        const user = await prisma.user.delete({ where: { id: userId } });
+        const user = await prisma.user.delete({ where: { id: userId }, include: { FormSubmission: true, FormsCreated: true, Log: true } });
         await createLog({
             userId: session.user.id,
             action: "DELETE",
@@ -78,7 +78,12 @@ export const deleteUser = async (userId: string) => {
                     deletedBy: session.user.name + "(" + session.user.id + ")",
                 },
             },
-            prevState: user,
+            prevState: {
+                ...user,
+                FormSubmission: user.FormSubmission,
+                FormsCreated: user.FormsCreated,
+
+            },
         });
         return { success: true, message: "User deleted!" };
     } catch (err) {
