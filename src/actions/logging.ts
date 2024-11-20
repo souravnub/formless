@@ -207,7 +207,7 @@ export const undoLog = async (logId: string) => {
                                 data: {
                                     ...submission,
                                     formId: form.id,
-                                    userId: form.createdBy,
+                                    userId: submission.userId,
                                 },
                             });
                         }
