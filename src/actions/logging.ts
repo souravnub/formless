@@ -3,6 +3,7 @@
 import prisma from "@/db";
 import { Action, ObjectType, Prisma } from ".prisma/client";
 import { DateRange } from "react-day-picker";
+import { use } from "react";
 
 interface CreateLogProps {
     userId: string;
@@ -162,14 +163,55 @@ export const undoLog = async (logId: string) => {
     
             case "DELETE":
                 if (log.objectType === "USER") {
-                    await prisma.user.create({
-                        data: log.prevState as Prisma.UserCreateInput,
+                    const prevState = log.prevState as any;
+                    
+                    const user = await prisma.user.create({
+                        data: {
+                            id: prevState.id,
+                            name: prevState.name,
+                            email: prevState.email,
+                            role: prevState.role,
+                            password: prevState.password,
+                        },
                     });
+                    
+                    if(prevState.FormSubmission && Array.isArray(prevState.FormSubmission)) {
+                        for (const submission of prevState.FormSubmission) {
+                            await prisma.formSubmission.create({
+                                data: {
+                                    ...submission,
+                                    userId: user.id,
+                                },
+                            });
+                        }
+                    }
                 }
                 if (log.objectType === "FORM") {
-                    await prisma.form.create({
-                        data: log.prevState as Prisma.FormCreateInput,
+                    const prevState = log.prevState as any;
+                    
+                    const form = await prisma.form.create({
+                        data: {
+                            title: prevState.title,
+                            createdBy: prevState.createdBy,
+                            description: prevState.description,
+                            schema: prevState.schema,                          
+                            uiSchema: prevState.uiSchema,
+                            role: prevState.role,
+                            
+                        },
                     });
+                    
+                    if(prevState.FormSubmission && Array.isArray(prevState.FormSubmission)) {
+                        for (const submission of prevState.FormSubmission) {
+                            await prisma.formSubmission.create({
+                                data: {
+                                    ...submission,
+                                    formId: form.id,
+                                    userId: form.createdBy,
+                                },
+                            });
+                        }
+                    }
                 }
                 if (log.objectType === "FORM_SUBMISSION") {
                     await prisma.formSubmission.create({
