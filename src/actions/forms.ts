@@ -87,6 +87,9 @@ export const deleteForms = async (formId: string) => {
             where: {
                 id: formId,
             },
+            include: {
+                submissions: true,
+            }
         });
 
         await createLog({
@@ -102,7 +105,10 @@ export const deleteForms = async (formId: string) => {
                     description: form.description,
                 },
             },
-            prevState: form,
+            prevState: {
+                ...form,
+                FormSubmission: form.submissions,
+            },
         });
         revalidatePath("/admin/forms");
         return { success: true, message: "Form deleted!" };
