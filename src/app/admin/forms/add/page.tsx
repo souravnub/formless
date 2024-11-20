@@ -326,7 +326,7 @@ const AddFormPage = () => {
                                     })}
                                 </div>
 
-                                <DropdownMenu>
+                                <DropdownMenu modal={false}>
                                     <DropdownMenuTrigger asChild>
                                         <Button className="px-8 mt-4">
                                             <PlusIcon />
