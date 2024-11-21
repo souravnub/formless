@@ -25,7 +25,7 @@ const UserForm = ({ form }: { form: any }) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const currentFieldIndex = useRef(0);
-  const [formData, setFormData] = useState({}); // State to hold form values
+  const [formData, setFormData] = useState({});
   const [isListening, setIsListening] = useState(false);
   const [currentFieldName, setCurrentFieldName] = useState("");
 
@@ -48,10 +48,10 @@ const UserForm = ({ form }: { form: any }) => {
       console.log(
         "started listening for" + fieldNames[currentFieldIndex.current]
       );
-      setCurrentFieldName(fieldNames[currentFieldIndex.current]);
       recognition.continuous = false;
       recognition.interimResults = true;
       recognition.lang = "en-US";
+      setCurrentFieldName(fieldNames[currentFieldIndex.current]);
 
       recognition.onresult = (event: any) => {
         const speechResult = event.results[0][0].transcript.trim();
@@ -66,6 +66,12 @@ const UserForm = ({ form }: { form: any }) => {
             speechResult,
             currentFieldName,
             currentField.enum
+          );
+        } else if (currentField.type === "array") {
+          handleCheckboxesSpeechResult(
+            speechResult,
+            currentFieldName,
+            currentField.items.enum
           );
         }
       };
@@ -88,6 +94,7 @@ const UserForm = ({ form }: { form: any }) => {
       recognition.start();
     } else {
       alert("Speech recognition is not supported in this browser.");
+      console.warn("Speech recognition is not supported in this browser.");
     }
   };
 
@@ -119,6 +126,28 @@ const UserForm = ({ form }: { form: any }) => {
         options
       );
     }
+  };
+
+  const handleCheckboxesSpeechResult = (
+    speechResult: string,
+    fieldName: string,
+    options: string[]
+  ) => {
+    const lowerCaseOptions = options.map((option) => option.toLowerCase());
+    const selectedOptions = speechResult
+      .split(" ")
+      .map((option) => option.trim().toLowerCase()) // Convert speechResult to lowercase
+      .filter((option) => lowerCaseOptions.includes(option)) // Check match in lowercase options
+      .map((option) => {
+        // Return the first original-cased option that matches the lowercase value
+        const originalIndex = lowerCaseOptions.indexOf(option);
+        return options[originalIndex];
+      });
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [fieldName]: selectedOptions, // Use the original-cased matched options
+    }));
   };
 
   async function handleFormSubmit(formState: IChangeEvent) {
