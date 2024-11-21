@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { submitForm } from "@/actions/forms";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import handlePDFDownload from "@/actions/handlePDFDownload";
 
 const UserForm = ({ form }: { form: any }) => {
   const { toast } = useToast();
@@ -73,6 +74,10 @@ const UserForm = ({ form }: { form: any }) => {
             currentFieldName,
             currentField.items.enum
           );
+        } else if (currentField.title === "Decision feilds") {
+          handleDecFields(speechResult, currentFieldName);
+        } else if (currentField.title === "Decision and comment") {
+          handleDecComment(speechResult, currentFieldName);
         }
       };
 
@@ -148,6 +153,14 @@ const UserForm = ({ form }: { form: any }) => {
       ...prevData,
       [fieldName]: selectedOptions, // Use the original-cased matched options
     }));
+  };
+
+  const handleDecFields = (speechResult: string, fieldName: string) => {
+    console.log("Inside handleDecFields");
+  };
+
+  const handleDecComment = (speechResult: string, fieldName: string) => {
+    console.log("Inside handleDecComment");
   };
 
   async function handleFormSubmit(formState: IChangeEvent) {
